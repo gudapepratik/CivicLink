@@ -16,10 +16,7 @@ const uploadOnCloudinary = async (localFilePath) => {
         if(!localFilePath) throw new ApiError(500, "invalid Local path while uploading to cloudinary")
         
         // upload the file
-        const uploadDetailsResponse = await cloudinary.uploader.upload(localFilePath, {
-            folder: 'UrbanStore Storage',
-            resource_type: 'auto'
-        })
+        const uploadDetailsResponse = await cloudinary.uploader.upload(localFilePath)
 
         // delete the local stored file after uploading 
         fs.unlinkSync(localFilePath)
@@ -28,6 +25,7 @@ const uploadOnCloudinary = async (localFilePath) => {
         return uploadDetailsResponse
 
     } catch (error) {
+        console.log(error)
         fs.unlinkSync(localFilePath)
         return null
     }

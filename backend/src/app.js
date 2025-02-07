@@ -30,10 +30,9 @@ app.use(express.urlencoded({
 
 app.use(express.static("public"))
 
-
 // // user router
-// import userRouter from './routes/user.routes.js'
-// app.use('/api/v1/users',userRouter)
+import userRouter from './routes/user.routes.js'
+app.use('/api/v1/users',userRouter)
 
 // // product router
 // import productRouter from './routes/product.routes.js'
@@ -55,25 +54,25 @@ app.use(express.static("public"))
 // import reviewRouter from './routes/review.routes.js'
 // app.use('/api/v1/reviews',reviewRouter)
 
-// app.use((err, req, res, next) => {
-//     if (err instanceof ApiError) {
-//         const { statusCode, message, errors} = err;
+app.use((err, req, res, next) => {
+    if (err instanceof ApiError) {
+        const { statusCode, message, errors} = err;
 
-//         res.status(statusCode).json({
-//             success: false,
-//             message,
-//             errors,
-//             stack: undefined,
-//         });
-//     } else {
-//         const { statusCode, message, errors} = err;
-//         console.log(err, "asfasagaga")
-//         res.status(500).json({
-//             success: false,
-//             errors,
-//             message
-//         });
-//     }
-// });
+        res.status(statusCode).json({
+            success: false,
+            message,
+            errors,
+            stack: undefined,
+        });
+    } else {
+        const { statusCode, message, errors} = err;
+        console.log(err, "asfasagaga")
+        res.status(500).json({
+            success: false,
+            errors,
+            message
+        });
+    }
+});
 
 export {app}

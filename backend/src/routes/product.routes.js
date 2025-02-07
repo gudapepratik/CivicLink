@@ -18,8 +18,8 @@ productRouter.route('/add-new-product').post(
     authorizeRole('admin','seller'),
     upload.fields([
         {
-            name: 'images', 
-            maxCount: 4
+            name: 'image', 
+            maxCount: 1
         }
     ]),
     addNewProduct

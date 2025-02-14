@@ -21,15 +21,17 @@ export const getAddressFromCoordinates = async ({lat, lng}) => {
 
 
 export const getCoordinatesFromAddress = async (address) => {
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${config.googleMapsApiKey}`;
+    console.log(address)
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${config.googleMapsGeocodingApiKey}`;
 
     try {
         const response = await axios.get(url);
+        console.log(response)
         if (response.data.status === "OK") {
             const { lat, lng } = response.data.results[0].geometry.location;
             return { lat, lng };
         } else {
-            console.error("Geocoding failed:", response.data.status);
+            console.error("Geocoding failed:", response);
             return null;
         }
     } catch (error) {

@@ -26,7 +26,7 @@ const app = express()
 // just temporary
 app.use(cors({
     origin: (origin, callback) => {
-        if (!origin || origin === 'http://localhost:5173') {
+        if (!origin || origin === 'http://localhost:5173' || origin === "https://civiclink.vercel.app") {
             callback(null, true);
         } else {
             callback(new Error('Not allowed by CORS'));

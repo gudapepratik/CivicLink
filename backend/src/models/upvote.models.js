@@ -1,17 +1,17 @@
 import mongoose from 'mongoose'
 
-const wishlistSchema = mongoose.Schema({
-    customerId: {
+const upvoteSchema = mongoose.Schema({
+    postId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'Post',
         required: true
     },
-    productId: {
+    userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product',
+        ref: 'User',
         required: true
     }
 }, {timestamps: true})
 
 
-export const Wishlist = mongoose.model('Wishlist', wishlistSchema)
+export const Upvote = mongoose.model('Upvote', upvoteSchema)

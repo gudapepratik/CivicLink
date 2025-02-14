@@ -1,0 +1,303 @@
+import PostService from "@/api/services/post.services";
+import { getTimeAgo, parseDateToReadableFormat } from "@/utils/DateParsers/DateParser";
+import { ToasterNotification } from "@/utils/ToastNotification/ToastNotification";
+import { RiCalendarLine, RiCheckboxCircleLine, RiErrorWarningLine, RiMapPin2Line, RiMessage2Line, RiMoreFill, RiPinDistanceLine, RiProgress2Line, RiProgress4Line, RiSendPlane2Line, RiSendPlaneLine, RiThumbUpFill, RiThumbUpLine } from "@remixicon/react";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { useParams, useSearchParams } from "react-router";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import "swiper/css/zoom";
+import { Navigation, Pagination, Zoom } from "swiper/modules";
+import { useLocationContext } from "@/utils/Context/LocationContext";
+
+function Post() {
+  const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  // const {location, setLocation} = useLocationContext()
+
+  const user = useSelector((state) => state.authSlice.user);
+  const [postDetails, setPostDetails] = useState(null);
+
+  // const dummy = {
+  //   address: "WHFH+R6C, Somewhere chowk, Pune, Maharashtra 445204, India",
+  //   commentCount: 0,
+  //   createdAt: "2025-02-09T05:15:01.568Z",
+  //   departmentDetails: [
+  //     {
+  //       address: " 789 Civic Center, Urban Area, Pune, Maharashtra - 411003",
+  //       description:
+  //         "The Municipal Corporation oversees urban development, waste management, road maintenance, and overall civic amenities. It also takes care of public hygiene, drainage systems, and city planning.",
+  //       name: "Pune Municipal Corporation",
+  //       __v: 0,
+  //     },
+  //   ],
+  //   departmentId: "67a7834ff799ce4ca8c59e9e",
+  //   description:
+  //     "A large pothole has developed near my locality at Somewhere Chowk, Pune. This issue poses a serious risk to pedestrians and vehicles, especially during peak traffic hours. The pothole is getting worse over time and needs urgent attention from the municipal authorities to prevent accidents and improve road safety.",
+  //   imageUrls: [
+  //   //   {
+  //   //     publicUrl:
+  //   //       "https://res.cloudinary.com/dm5u6twkl/image/upload/v1739078100/x427owewcnnwhx817wk9.jpg",
+  //   //     public_id: "x427owewcnnwhx817wk9",
+  //   //     _id: "67a839d57024c20102ca3937",
+  //   //   },
+  //     {
+  //       publicUrl:
+  //         "https://res.cloudinary.com/dm5u6twkl/image/upload/v1739078099/cmilfvkoghhbwvgerlwb.jpg",
+  //       public_id: "cmilfvkoghhbwvgerlwb",
+  //       _id: "67a839d57024c20102ca3938",
+  //     },
+  //     {
+  //       publicUrl:
+  //         "https://res.cloudinary.com/dm5u6twkl/image/upload/v1739078100/uguam8uexuct5vc7tgme.jpg",
+  //       public_id: "uguam8uexuct5vc7tgme",
+  //       _id: "67a839d57024c20102ca3939",
+  //     },
+  //   ],
+  //   location: {
+  //     coordinates: [18.521432806997094, 73.85769665098046],
+  //     type: "Point",
+  //   },
+  //   status: "pending",
+  //   title: "🚧 Major Pothole Reported at Somewhere Chowk, Pune",
+  //   updatedAt: "2025-02-09T05:15:01.568Z",
+  //   upvoteCount: 0,
+  //   userDetails: [
+  //     {
+  //       avatar: {
+  //         publicUrl:
+  //           "https://res.cloudinary.com/dm5u6twkl/image/upload/v1738952579/bt7gt5ybqswwbyu1gsnc.jpg",
+  //         public_id: "bt7gt5ybqswwbyu1gsnc",
+  //       },
+  //       email: "pratikgudape9825@gmail.com",
+  //       location: {
+  //         type: "Point",
+  //         coordinates: [],
+  //       },
+  //       name: "pratik gudape",
+  //       role: "citizen",
+  //       __v: 0,
+  //     },
+  //   ],
+  //   userId: "67a64f836b07f4c7295cf9da",
+  //   __v: 0,
+  //   _id: "67a839d57024c20102ca3936",
+  // };
+
+  // set the location so as to get back to the explore page with the same location
+    // useEffect(() => {
+    //   setLocation(searchParams.get("location") || null)
+    // })
+
+  // fetch post from backend
+  const fetchPost = async () => {
+    try {
+      const response = await PostService.getPostByID({
+        postId: id,
+        userId: user?._id,
+      });
+      console.log(response.data.data[0].userDetails)
+      setPostDetails(response.data.data[0])
+    } catch (error) {
+      console.log(error);
+      ToasterNotification({
+        type: "warning",
+        title: "Error Occurred",
+        message: `${error.message}`,
+      });
+    }
+  };
+    useEffect(() => {
+      fetchPost();
+    }, [id]);
+
+  return (
+    <>
+    {postDetails? 
+    
+    <div className="w-full h-[calc(100vh-80px)] font-outfit flex gap-2 flex-col items-center">
+      {/* image slider  */}
+      <div className="h-[31vh] w-full scrollbar-hide ">
+        <Swiper
+          style={{
+            "--swiper-pagination-color": "#2f59cc",
+          }}
+          spaceBetween={10}
+          slidesPerView={1}
+          className="w-full h-full"
+          pagination={{
+            clickable: true,
+          }}
+          zoom={{
+            maxRatio: 2,
+          }}
+          modules={[Zoom, Pagination]}
+        >
+          {postDetails.imageUrls &&
+            postDetails.imageUrls.map((imageFile, index) => (
+              <SwiperSlide key={index} className="w-full">
+                <div className="swiper-zoom-container">
+                  <img
+                    src={imageFile.publicUrl}
+                    alt="image"
+                    className="w-full object-fill"
+                  />
+                </div>
+              </SwiperSlide>
+            ))}
+        </Swiper>
+      </div>
+
+      {/* Post title  */}
+      <div className="w-full p-3 flex flex-col gap-5">
+          {/* title  */}
+          <h1 className="text-pretty text-lg">
+              {postDetails.title || "No title"}
+          </h1>
+
+          {/* description  */}
+          <h2 className="text-zinc-600 leading-5">
+              {postDetails.description || "No description available"}
+          </h2>
+
+          {/* calender and location  */}
+          <div className="w-full flex gap-4 items-center">
+              <div className="flex gap-2 items-center">
+                  <RiCalendarLine size={20}/>
+                  <p className="text-xs text-zinc-600 text-nowrap">{parseDateToReadableFormat(postDetails.createdAt)}</p>
+              </div>
+              <div className="flex gap-2 items-center">
+                  <RiMapPin2Line size={30}/>
+                  <p className="text-xs text-zinc-600">{postDetails.address}</p>
+              </div>
+          </div>
+
+          {/* comment and upvote counts  */}
+          <div className="w-full flex justify-between">
+              <div className="flex gap-3 items-center">
+                  <div className="flex items-center gap-2">
+                      <RiMessage2Line size={18} className="text-blue-600" />
+                      <h4 className="text-xs text-blue-600">
+                          {postDetails.commentCount || 115} <span>Comments</span>
+                      </h4>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                      {postDetails.isUserVoted?
+                      <RiThumbUpFill size={18} className="text-red-500" />
+                      :
+                      <RiThumbUpLine size={18} className="text-red-500" />
+                      }
+                      <h4 className="text-xs text-red-500">
+                          {postDetails.upvoteCount || 11523} <span>Upvotes</span>
+                      </h4>
+                  </div>
+              </div>
+
+              <div className="mr-3">
+              {postDetails.status === 'pending' && (
+              <div className="flex gap-2 text-yellow-500 font-poppins text-xs items-center border bg-yellow-50 border-yellow-500 p-1 rounded-md">
+                <RiProgress2Line size={15}/>
+                <h2>Pending</h2>
+              </div>
+            )}
+            {postDetails.status === 'inprogress' && (
+              <div className="flex gap-2 text-orange-500 font-poppins text-xs items-center border bg-orange-50 border-orange-500 p-1 rounded-md">
+                <RiProgress4Line size={15}/>
+                <h2>In Progress</h2>
+              </div>
+            )}
+            {postDetails.status === 'resolved' && (
+              <div className="flex gap-2 text-green-500 font-poppins text-xs items-center border bg-green-50 border-green-500-500 p-1 rounded-md">
+                <RiCheckboxCircleLine size={15}/>
+                <h2>Resolved</h2>
+              </div>
+            )}
+            {postDetails.status === 'rejected' && (
+              <div className="flex gap-2 text-red-600 font-poppins text-xs items-center border bg-red-50 border-red-600 p-1 rounded-md">
+                <RiErrorWarningLine size={15}/>
+                <h2>Rejected</h2>
+              </div>
+            )}
+              </div>
+          </div>
+
+      </div>
+
+      {/* seperator  */}
+      <div className="w-[calc(100vw-14px)] flex justify-center h-[1px] border-t-[1px]"></div>
+      {/* User details (post owner) */}
+      <div className="w-full flex gap-2 items-center justify-between rounded-lg p-3">
+        {/* avatar  */}
+        <div className="w-full flex gap-5">
+          <div className="h-12 w-12 overflow-hidden rounded-full">
+            <img
+              src={postDetails.userDetails[0].avatar.publicUrl}
+              alt=""
+              className="object-contain"
+            />
+          </div>
+          <div className="h-12 flex items-start flex-col">
+            <h2 className="font-semibold text-zinc-800">
+              {postDetails.userDetails[0].name}
+            </h2>
+            <h3 className="text-xs text-zinc-500">
+              {postDetails.userDetails[0].email}
+            </h3>
+          </div>
+        </div>
+      </div>
+
+      {/* seperator  */}
+      <div className="w-[calc(100vw-14px)] flex justify-center h-[1px] border-t-[1px]"></div>
+      
+      {/* department details  */}
+      <div className="w-[calc(100vw-10vw)] bg-zinc-100 rounded-lg flex flex-col gap-1 p-2">
+          <h3>Department details</h3>
+          <h4>{postDetails.departmentDetails[0].name}</h4>
+          <h3 className="text-zinc-500 text-xs">{postDetails.departmentDetails[0].description}</h3>
+          <h4 className="text-zinc-500 text-xs flex items-center gap-2">
+              <RiMapPin2Line size={12}/>
+              {postDetails.departmentDetails[0].address}
+          </h4>
+      </div>
+
+      {/* seperator  */}
+      <div className="w-[calc(100vw-14px)] flex justify-center h-[1px] border-t-[1px]"></div>
+      
+      {/* department comment section  */}
+      <div className="w-full h-48 p-3 flex">
+              <h2 >Department Update</h2>
+      </div>
+
+
+      {/* seperator  */}
+      <div className="w-[calc(100vw-14px)] flex justify-center h-[1px] border-t-[1px]"></div>
+
+      <div className="w-full p-3 flex flex-col gap-2">
+          <h2>Comments</h2>
+          
+          {/* make comment section  */}
+          <div className="w-full flex flex-col gap-2 ">
+              <input type="text" id="comment" placeholder="Add comment..." className="w-full p-3 border-b-[1px] focus:outline-none focus:bg-zinc-50"/>
+              <button className="flex gap-2 size-fit border rounded-full bg-blue-600 px-5 py-2 text-white text-xs items-center">comment <span><RiSendPlane2Line size={14}/></span></button>
+          </div>
+
+          {/* All comments  */}
+          <div className="w-full h-40 bg-zinc-100">
+
+          </div>
+      </div>
+    </div>
+    :
+    <div>loading....</div>
+
+    }
+    </>
+  );
+}
+
+export default Post;

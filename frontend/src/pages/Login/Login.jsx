@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Button, Input } from "@chakra-ui/react";
+import { Button, Input, HStack } from "@chakra-ui/react";
 import { Field } from "@/components/ui/field";
 import { PasswordInput } from "@/components/ui/password-input";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { LoginPageImg } from "@/assets/assets.config";
-import { Checkbox } from "@/components/ui/checkbox";
 import AuthService from "@/api/services/auth.services";
 import { useDispatch } from "react-redux";
 import { login } from "@/store/authSlice";
@@ -12,6 +11,16 @@ import { ToasterNotification } from "../../utils/ToastNotification/ToastNotifica
 import { RiUpload2Line } from "@remixicon/react";
 import Loader from "@/components/ui/Loader/Loader";
 import { useNavigate } from "react-router";
+import departmentInfo from "@/utils/departmentInfo";
+import { Radio, RadioGroup } from "@/components/ui/radio";
+import {
+  SelectContent,
+  SelectItem,
+  SelectLabel,
+  SelectRoot,
+  SelectTrigger,
+  SelectValueText,
+} from "@/components/ui/select";
 
 function Login() {
   // functions from react hook form
@@ -20,6 +29,7 @@ function Login() {
     handleSubmit,
     formState: { errors },
     reset,
+    control,
   } = useForm();
 
   // location state to store current location (will be used for signup)
@@ -31,7 +41,7 @@ function Login() {
   // avatar file state (required for signup)
   const [avatar, setAvatar] = useState(null);
   // loading state
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
   // user role data object
   const userRoles = [
     { label: "Citizen", value: "citizen" },
@@ -44,7 +54,7 @@ function Login() {
   // state to store preview blob user of uploaded avatar image
   const [previewAvatar, setPreviewAvatar] = useState(null);
   // navigate instance
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   // temporary data
   // const typesOfUser = [
@@ -59,7 +69,7 @@ function Login() {
   //     image: ""
   //   }
   // ]
-  
+
   // fetch current device location on login page load
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -78,10 +88,11 @@ function Login() {
   // submit data handler
   const onSubmit = handleSubmit(async (data) => {
     try {
-      setIsLoading(true)
+      setIsLoading(true);
       // console.log(data)
-      if (toRegister && (role == "" || !location.latitude || !location.longitude || !avatar)) throw new Error("All details are required");
-
+      if (toRegister && (!data.role || (data.role === "authority" && !data.departmentId)) || toRegister && (!location.latitude || !location.longitude || !avatar))
+        throw new Error("All details are required");
+      console.log(data)
       if (toRegister) {
         // register the user first
         await AuthService.registerUser({
@@ -90,8 +101,9 @@ function Login() {
           password: data.password,
           latitude: location.latitude,
           longitude: location.longitude,
-          role: role,
+          role: data.role,
           avatar: avatar,
+          departmentId: data?.departmentId?.at(0),
         });
         // console.log(response);
         // console.log(role,location,avatar,data)
@@ -115,8 +127,8 @@ function Login() {
       });
 
       setTimeout(() => {
-        navigate("/") // navigate to home page after 2 seconds
-      },2000)
+        navigate("/"); // navigate to home page after 2 seconds
+      }, 2000);
     } catch (error) {
       console.log(error);
       ToasterNotification({
@@ -124,27 +136,27 @@ function Login() {
         title: "Login/Signup Failed",
         description: `${error.message}`,
       });
-    } finally{
-      setIsLoading(false)
+    } finally {
+      setIsLoading(false);
     }
   });
 
   // handle role input
   const handleRoleInput = (role) => {
-    setRole(prevRole => prevRole === role ? "": role);
+    setRole(role);
   };
 
   // handle avatar file input
   const handleFileChange = (file) => {
     setAvatar(file[0]);
     // create blob url and store in the state
-    setPreviewAvatar(URL.createObjectURL(file[0]))
+    setPreviewAvatar(URL.createObjectURL(file[0]));
   };
 
   return (
     <>
       {/* loading component  */}
-      {isLoading && <Loader/>}
+      {isLoading && <Loader />}
       {/* background image  */}
       <img
         src={LoginPageImg}
@@ -157,7 +169,7 @@ function Login() {
             onSubmit={onSubmit}
             className="font-outfit gap-4 p-5 rounded-lg flex items-center flex-col bg-white "
           >
-            <h1 className="font-bold text-xl text-green-600">CivicLink</h1>
+            <h1 className="font-bold text-xl text-blue-800">CivicLink</h1>
             {toRegister && (
               <>
                 <div>
@@ -230,32 +242,75 @@ function Login() {
             </Field>
             {
               toRegister && (
-                // <CheckboxGroup>
-                <div className="flex flex-col w-full ">
-                  <label className="text-sm">Role</label>
-                  <div className="w-full flex gap-2">
-                    {userRoles.map((type, key) => (
-                      <>
-                        <input
-                          type="checkbox"
-                          name={type.value}
-                          key={key}
-                          value={type.value}
-                          checked={role === type.value ? true : false}
-                          onClick={() => handleRoleInput(type.value)}
-                        />
-                        <label htmlFor={type.label}>{type.label}</label>
-                      </>
-                    ))}
-                  </div>
-                </div>
-              )
+                <>
+                  <Field required>Select role</Field>
+                  <Controller
+                    name="role"
+                    control={control}
+                    render={({ field }) => (
+                      <RadioGroup
+                        name={field.name}
+                        value={field.value}
+                        onValueChange={({ value }) => {
+                          field.onChange(value);
+                        }}
+                        onChange={(e) => handleRoleInput(e.target.defaultValue)}
+                        className="w-full "
+                        colorPalette={"blue"}
+                        size={"sm"}
+                      >
+                        <HStack gap="6">
+                          {userRoles.map((item) => (
+                            <Radio
+                              key={item.value}
+                              value={item.value}
+                              inputProps={{ onBlur: field.onBlur }}
+                            >
+                              {item.label}
+                            </Radio>
+                          ))}
+                        </HStack>
+                      </RadioGroup>
+                    )}
+                  />
 
-              // </CheckboxGroup>
+                  {role === "authority" && (
+                    <Field label="department">
+                      <Controller
+                        control={control}
+                        name="departmentId"
+                        render={({ field }) => (
+                          <SelectRoot
+                            name={field.name}
+                            value={field.value}
+                            onValueChange={({ value }) => field.onChange(value)}
+                            onInteractOutside={() => field.onBlur()}
+                            className="px-6"
+                          >
+                            <SelectTrigger clearable>
+                              <SelectValueText placeholder="Select department" />
+                            </SelectTrigger>
+                            <SelectContent className="font-outfit">
+                              {departmentInfo.map((department) => (
+                                <SelectItem
+                                  item={department.departmentId}
+                                  key={department.departmentId}
+                                >
+                                  {department.title}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </SelectRoot>
+                        )}
+                      />
+                    </Field>
+                  )}
+                </>
+              )
             }
             <button
               type="submit"
-              className="bg-green-500 w-fit px-5 py-2 text-white rounded-lg"
+              className="bg-blue-600 w-fit px-5 py-2 text-white rounded-lg"
             >
               {toRegister ? "SignUp" : "Login"}
             </button>

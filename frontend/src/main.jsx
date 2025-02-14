@@ -1,4 +1,4 @@
-import { StrictMode, useEffect } from "react";
+import { createContext, StrictMode, useContext, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.jsx";
 import store from "./store/store.js";
@@ -19,7 +19,13 @@ import Layout from "./components/ui/Layout/Layout.jsx";
 import ErrorPage from "./pages/ErrorPage/ErrorPage.jsx";
 import { Provider as ChakraProvider} from "@/components/ui/provider"
 import Login from "./pages/Login/Login.jsx";
-import { Toaster } from "@chakra-ui/react";
+import PostForm from "./pages/NewPost/PostForm.jsx";
+import ExplorePosts from "./pages/Explore/ExplorePosts.jsx";
+import Post from "./pages/PostPage/Post.jsx";
+import { LocationProvider } from "./utils/Context/LocationContext.jsx";
+// import { Toaster } from "@chakra-ui/react";
+// import { io } from "socket.io-client"; // socket io trails
+// import config from "../config/config.js";
 
 
 const router = createBrowserRouter(
@@ -27,6 +33,9 @@ const router = createBrowserRouter(
     <Route path="/" element={<Layout/>}>
       <Route index element={<Home />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/new-post" element={<PostForm />} />
+      <Route path="/explore-posts" element={<ExplorePosts />} />
+      <Route path="/explore-posts/:id" element={<Post />} />
       {/* <Route path="sellerdashboard/" element={<SellerDashboard />}>
         <Route path="login" element={<SellerLogin />} />
         <Route path="products" element={<Productscomp />} />
@@ -54,20 +63,46 @@ const CheckAuth = ({ children }) => {
         ErrorHandler(error)
       }
     };
-
     checkToken();
   }, [dispatch]);
 
   return children;
 };
 
+
+// socket io trails
+// const SocketContext = createContext(null);
+// const socket = io(config.backendApiBaseUrl); // Connect to backend
+
+// const SocketProvider = ({ children }) => {
+//   useEffect(() => {
+//     socket.on("connect", () => {
+//       console.log("Connected to server:", socket.id);
+//     });
+
+//     return () => {
+//       socket.disconnect(); // Cleanup when unmounting
+//     };
+//   }, []);
+
+//   return <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>;
+// };
+
+// export const useSocket = () => {
+//   return useContext(SocketContext);
+// };
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ChakraProvider>
       <Provider store={store}>
-        <CheckAuth>
-          <RouterProvider router={router} />
-        </CheckAuth>
+        {/* <SocketProvider> */}
+        <LocationProvider>
+            <CheckAuth>
+              <RouterProvider router={router} />
+            </CheckAuth>
+        </LocationProvider>
+        {/* </SocketProvider> */}
         {/* <App /> */}
       </Provider>
     </ChakraProvider>

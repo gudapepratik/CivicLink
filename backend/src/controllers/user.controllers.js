@@ -4,11 +4,12 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import jwt from "jsonwebtoken";
 import { uploadOnCloudinary } from "../utils/Cloudinary.js";
+import mongoose from "mongoose";
 
 // reginster new user
 const registerUser = asyncHandler(async (req, res) => {
   // get the details
-  const { name, email, password, role, latitude, longitude } = req.body;
+  const { name, email, password, role, latitude, longitude, departmentId } = req.body;
   console.log(req)
   const locatAvatarFile = req.file
 
@@ -20,6 +21,8 @@ const registerUser = asyncHandler(async (req, res) => {
   ) {
     throw new ApiError(400, "Required fields are missing");
   }
+
+  if(role === "authority" && !mongoose.isValidObjectId(departmentId)) throw new ApiError(400, "Invalid departmentId")
 
   if(!latitude || !longitude) throw new ApiError(400, "Location is required")
   // 3. check if user already exists
@@ -49,7 +52,8 @@ const registerUser = asyncHandler(async (req, res) => {
     avatar: {
       publicUrl: uploadResponse.secure_url,
       public_id: uploadResponse.public_id
-    }
+    },
+    departmentId: departmentId || null
   });
 
   // get the user details
@@ -175,7 +179,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 
 // refresh access token
 const refreshAccessToken = asyncHandler(async (req, res) => {
-//   console.log(req.body);
+  console.log("asfa");
   // get the refresh token
   const refreshToken =
     req.cookies?.refreshToken || req.headers["x-refresh-token"];
@@ -208,7 +212,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     httpOnly: true,
     secure: true,
   };
-
+  console.log(refreshToken)
   // send the tokens in response and in cookie also
   return res
     .status(200)

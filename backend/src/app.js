@@ -2,8 +2,26 @@ import express from 'express'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import {ApiError} from './utils/ApiError.js'
+// socket.io trials
+import {Server} from 'socket.io'
+import {createServer} from 'node:http'
 
 const app = express()
+// socketio trials
+// const server = createServer(app)
+// const io = new Server(server, {
+//     cors: {
+//         origin: "*",
+//     }
+// })
+// io.on('connection', (socket) => {
+//     console.log("new client connected!!",socket.id)
+
+//     socket.on("disconnect", () => {
+//         console.log("Client disconnected:", socket.id);
+//     });
+// })
+// socketio trails
 
 // just temporary
 app.use(cors({
@@ -34,25 +52,25 @@ app.use(express.static("public"))
 import userRouter from './routes/user.routes.js'
 app.use('/api/v1/users',userRouter)
 
-// // product router
-// import productRouter from './routes/product.routes.js'
-// app.use('/api/v1/products',productRouter)
+// post router
+import postRouter from './routes/post.routes.js'
+app.use('/api/v1/posts',postRouter)
 
-// // wishlist router
-// import wishlistRouter from './routes/wishlist.routes.js'
-// app.use('/api/v1/wishlist',wishlistRouter)
+//  upvote router
+import upvoteRouter from './routes/upvote.routes.js'
+app.use('/api/v1/upvote',upvoteRouter)
 
-// // cart router
-// import cartRouter from './routes/cart.routes.js'
-// app.use('/api/v1/cart',cartRouter)
+// department router
+import departmentRouter from './routes/department.routes.js'
+app.use('/api/v1/department',departmentRouter)
 
 // // order router
 // import orderRouter from './routes/order.routes.js'
 // app.use('/api/v1/order',orderRouter)
 
-// // review router
-// import reviewRouter from './routes/review.routes.js'
-// app.use('/api/v1/reviews',reviewRouter)
+// commnet router
+import commentRouter from './routes/comment.routes.js'
+app.use('/api/v1/comment',commentRouter)
 
 app.use((err, req, res, next) => {
     if (err instanceof ApiError) {

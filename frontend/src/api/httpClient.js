@@ -60,7 +60,7 @@ httpClient.interceptors.response.use(
 
         try {
             // Call the refresh token endpoint
-            const refreshResponse = await axios.post(`${API_ENDPOINTS.AUTH}/refresh-token`, null, {
+            const refreshResponse = await axios.post(`${config.backendApiBaseUrl}${API_ENDPOINTS.AUTH}/refresh-token`,{}, {
                 withCredentials: true,
             });
 
@@ -77,6 +77,7 @@ httpClient.interceptors.response.use(
             // Retry the original request with the new token
             return httpClient(originalRequest);
         } catch (refreshError) {
+            console.log(refreshError)
             // If refresh token is also invalid or expired, redirect to login
             processQueue(refreshError, null);
             // window.location.href = '/login'

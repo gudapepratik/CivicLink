@@ -36,6 +36,10 @@ const userSchema = mongoose.Schema(
       enum: ["citizen", "authority", "admin"],
       required: true,
     },
+    departmentId: { // only required id the role is 'authority'
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Department"
+    },
     avatar: imageSchema,
     refreshToken: {
         type: String,

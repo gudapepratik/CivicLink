@@ -19,10 +19,6 @@ function Navbar() {
   const user = useSelector(state => state.authSlice.user)
   // dispatch instance to handle store
   const dispatch =  useDispatch()
-  
-  useEffect(() => {
-    console.log(user)
-  })
 
   const citizenTabs = [
     {
@@ -111,18 +107,22 @@ function Navbar() {
     }
   }
 
+  const toggleSidebar = () => {
+    setSidebar(prev => !prev)
+  }
+
   return (
     <>
-      <div className="bg-[#001044] shadow-inner w-full h-20  z-50 ">
+      <div className="bg-[#001044] shadow-inner sticky top-0 w-full h-20  z-50 ">
         <div className="flex w-full items-center justify-between h-full px-4">
-          {!sidebar && <RiSidebarUnfoldFill onClick={() => setSidebar(prev => !prev)} size={28} className="text-white"/>}
+          {!sidebar && <RiSidebarUnfoldFill onClick={toggleSidebar} size={28} className="text-white"/>}
           <h1 className="font-outfit font-bold text-2xl text-white">CivicLink</h1>
           {!user? <RiUser3Fill size={36} className="bg-zinc-600 p-2 font-heebo text-white rounded-full"/>: <img src={user.avatar.publicUrl} alt="profile" className="bg-zinc-600 w-10 h-10 font-heebo text-white rounded-full"/>}
         </div>
 
         <div className={`min-h-screen w-[80vw] shadow-lg absolute flex flex-col z-50 top-0  ${sidebar? 'translate-x-0': '-translate-x-full'} duration-100 bg-white`}>
           <div className="w-full h-20 p-4 flex gap-3 items-center bg-[#001044]">
-            <RiSidebarFoldFill onClick={() => setSidebar(prev => !prev)}  size={28} className="text-white"/>
+            <RiSidebarFoldFill onClick={toggleSidebar}  size={28} className="text-white"/>
             <div className="w-full shadow-inner p-2 rounded-md font-outfit bg-zinc-100">
               <h1 className="text-sm text-zinc-600">{user? user.name : "Username"}</h1>
             </div>
@@ -131,7 +131,7 @@ function Navbar() {
           {/* User location map  */}
           <div className="w-full p-3 h-36">
             <div className="flex w-full  rounded-2xl shadow-inner bg-zinc-400 h-full">
-              <GoogleMapComponent />
+              {/* <GoogleMapComponent /> */}
             </div>
           </div>
 

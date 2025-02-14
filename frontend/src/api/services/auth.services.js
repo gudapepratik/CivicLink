@@ -8,7 +8,7 @@ export class AuthService {
     // all the service functions here
     // method to handle login
     // data required - name(string), email(string), password(string), contactNumber(string), role(string)
-    async registerUser({name, email, password, latitude, longitude, role, avatar}) {
+    async registerUser({name, email, password, latitude, longitude, role, avatar, departmentId}) {
         try {
             if(
                 [name, email, password, role].some(fields => fields === '')
@@ -31,6 +31,7 @@ export class AuthService {
             formData.append('longitude', longitude);
             formData.append('role', role);
             formData.append('avatar', avatar)
+            formData.append('departmentId', departmentId)
             
             // call the api
             const registerResponse = await httpClient.post(

@@ -6,7 +6,7 @@ import { API_ENDPOINTS } from "@/api/apiConstants";
 
 export const getAddressFromCoordinates = async ({lat, lng}) => {
     try {
-        const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${config.googleMapsApiKey}`)
+        const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${config.googleMapsGeocodingApiKey}`)
         console.log(response)
         if (response.data.status === "OK") {
             const address = response.data.results[0].formatted_address

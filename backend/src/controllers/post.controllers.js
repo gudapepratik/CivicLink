@@ -284,7 +284,6 @@ const getPostById = asyncHandler(async (req,res) => {
     // get the id
     const {postId} = req.query
     const userId = req.query.userId || null
-    console.log(postId,userId)
 
     // aggregation
     const aggregate = [

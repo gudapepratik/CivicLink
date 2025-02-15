@@ -4,7 +4,6 @@ export const fetchSuggestions = async (req,res) => {
     const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(input)}&key=${process.env.googleMapsApiKey}`;
     try {
         const response = await axios.get(url)
-        console.log(response)
         res.json(response.data);
     } catch (error) {
         res.status(500).json({ error: error.message });

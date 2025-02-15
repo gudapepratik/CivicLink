@@ -5,7 +5,6 @@ import { User } from "../models/user.models.js";
 
 export const verifyJWT = asyncHandler(async (req, res, next) => {
   try {
-    console.log(req)
     // get the accesstoken from either cookie or header
     const token =
       req.cookies?.accessToken ||
@@ -31,7 +30,6 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
     // pass control to next middleware
     next();
   } catch (error) {
-    console.log(error)
     if(error.name === 'TokenExpiredError') {
       throw new ApiError(401, "Access token has expired. Please refresh your token");
       console.log("Efas")

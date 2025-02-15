@@ -9,54 +9,42 @@ import { useParams, useSearchParams } from "react-router";
 function ExplorePosts() {
   const defaultCoordinates = [18.521432806997094, 73.85769665098046];
   const { location, setLocation } = useLocationContext();
-  const [coordinates, setCoordinates] = useState(null);
   const [prevLocation, setPrevLocation] = useState(null);
 
   const user = useSelector((state) => state.authSlice.user);
   const [posts, setPosts] = useState([]);
 
   const fetchPosts = async () => {
-    console.log("As");
-    // console.log(location, prevLocation);
-    // if (user && location === defaultCoordinates) {
-    //   setLocation(user.location.coordinates);
-    // }
-    setPrevLocation(location);
-    // setCurrentLocation(coordiante)
-    // console.log(coordiante)
-    const coordiante = location;
+    setPrevLocation(location)
+    // console.log("fetching")
+    // console.log(location)
     const response = await PostService.getPostsByLocation({
-      latitude: coordiante[0],
-      longitude: coordiante[1],
+      latitude: location.lat,
+      longitude: location.lng,
     });
-    console.log(response.data.data);
+    // console.log(response.data.data);
     setPosts(response.data.data);
   };
 
-  useEffect(() => {
-    console.log(location,defaultCoordinates)
-        if (
+    // Effect for setting user location when available
+    useEffect(() => {
+      if (
         user &&
-        defaultCoordinates[0] === location[0] &&
-        defaultCoordinates[1] === location[1]
-        ) {
-        setLocation(user.location.coordinates);
-        }
-        
-        if (
-        defaultCoordinates[0] === location[0] &&
-        defaultCoordinates[1] === location[1]
-        ) {
-            console.log("As")
-        fetchPosts();
-        } else if (
-        prevLocation &&
-        prevLocation[0] !== location[0] &&
-        prevLocation[1] !== location[1]
-        ) {
-        fetchPosts();
-        } else{
-            fetchPosts()
+        (location.lat === defaultCoordinates[0] || location.lng === defaultCoordinates[1])
+      ) {
+        setLocation({
+          lat: user.location.coordinates[0],
+          lng: user.location.coordinates[1],
+        });
+      }
+    }, [user]);
+
+  useEffect(() => {
+      console.log(location,defaultCoordinates, prevLocation)
+        if(prevLocation && (prevLocation.lat !== location.lat || prevLocation.lng !== location.lng)) {
+          fetchPosts();
+        } else if(!prevLocation) {
+          fetchPosts();
         }
   }, [location]);
 

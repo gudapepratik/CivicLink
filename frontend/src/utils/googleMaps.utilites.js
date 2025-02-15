@@ -42,7 +42,6 @@ export const getCoordinatesFromAddress = async (address) => {
 
 export const fetchSuggestions = async ({ input, setSuggestions }) => {
     try {
-        console.log(input)
         const response = await httpClient.get(`${API_ENDPOINTS.POST}/get-search-suggestions`,{
             params: {
                 input: encodeURIComponent(input)

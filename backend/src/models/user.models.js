@@ -38,7 +38,8 @@ const userSchema = mongoose.Schema(
     },
     departmentId: { // only required id the role is 'authority'
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Department"
+      ref: "Department",
+      default: null
     },
     avatar: imageSchema,
     refreshToken: {

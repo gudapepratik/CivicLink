@@ -17,7 +17,7 @@ export class AuthService {
             }
 
             if(!avatar) throw new Error("Profile image is required")
-
+                console.log(departmentId)
             if(!latitude || !longitude) throw new Error("Location is required")
              // Create a new FormData instance
             
@@ -31,7 +31,9 @@ export class AuthService {
             formData.append('longitude', longitude);
             formData.append('role', role);
             formData.append('avatar', avatar)
-            formData.append('departmentId', departmentId)
+            if(departmentId) {
+                formData.append('departmentId', departmentId)
+            }
             
             // call the api
             const registerResponse = await httpClient.post(

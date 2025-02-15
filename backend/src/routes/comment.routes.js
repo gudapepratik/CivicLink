@@ -21,7 +21,6 @@ commentRouter.route('/get-comments-by-user').get(
 
 // get all the comments done for a post
 commentRouter.route('/get-comments-for-post').get(
-    verifyJWT,
     getPostComments
 )
 

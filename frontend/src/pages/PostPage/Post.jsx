@@ -12,6 +12,9 @@ import "swiper/css/pagination";
 import "swiper/css/zoom";
 import { Navigation, Pagination, Zoom } from "swiper/modules";
 import { useLocationContext } from "@/utils/Context/LocationContext";
+import MakeComment from "@/components/Comment/MakeComment";
+import  CommentService  from "@/api/services/comment.services";
+import Comment from "@/components/Comment/Comment";
 
 function Post() {
   const { id } = useParams();
@@ -20,6 +23,9 @@ function Post() {
 
   const user = useSelector((state) => state.authSlice.user);
   const [postDetails, setPostDetails] = useState(null);
+  const [postComments, setPostComments] = useState([])
+  const [departmentComments, setDepartmentComments] = useState([])
+  const [refreshCommentTrigger, setRefreshCommentTrigger] = useState(false)
 
   // const dummy = {
   //   address: "WHFH+R6C, Somewhere chowk, Pune, Maharashtra 445204, India",
@@ -93,14 +99,20 @@ function Post() {
     // })
 
   // fetch post from backend
+  
   const fetchPost = async () => {
     try {
       const response = await PostService.getPostByID({
         postId: id,
         userId: user?._id,
       });
-      console.log(response.data.data[0].userDetails)
+      console.log(response)
+      // console.log(response.data.data[0].userDetails)
       setPostDetails(response.data.data[0])
+
+      // fetch comments after that
+      fetchComments(response.data.data[0]._id)
+  
     } catch (error) {
       console.log(error);
       ToasterNotification({
@@ -110,9 +122,35 @@ function Post() {
       });
     }
   };
+
     useEffect(() => {
       fetchPost();
     }, [id]);
+
+    const fetchComments = async (postId) => {
+      try {
+        const commentsResponse = await CommentService.getCommentsOnPost({
+          postId: postId
+        })
+
+        const comments = commentsResponse.data.data
+
+        comments.map((comment) => {
+          if(comment.isDepartmentUpdate) {
+            setDepartmentComments(prev => [...prev,comment])
+          } else{
+            setPostComments(prev => [...prev, comment])
+          }
+        })
+      } catch (error) {
+        ToasterNotification({
+          type: "warning",
+          title: "",
+          message: "Error while fetching comments"
+        })
+      }
+    }
+
 
   return (
     <>
@@ -154,7 +192,7 @@ function Post() {
       {/* Post title  */}
       <div className="w-full p-3 flex flex-col gap-5">
           {/* title  */}
-          <h1 className="text-pretty text-lg">
+          <h1 className="text-pretty font-outfit font-bold text-lg">
               {postDetails.title || "No title"}
           </h1>
 
@@ -269,8 +307,19 @@ function Post() {
       <div className="w-[calc(100vw-14px)] flex justify-center h-[1px] border-t-[1px]"></div>
       
       {/* department comment section  */}
-      <div className="w-full h-48 p-3 flex">
-              <h2 >Department Update</h2>
+      <div className="w-full p-3 flex flex-col gap-1">
+        <h2 >Department Update</h2>
+        {departmentComments.length !== 0 ?
+          <div className="w-full flex flex-col gap-2">
+            {departmentComments.map((comment, index) => (
+              <Comment key={index} commentDetails={comment}/>
+            ))}
+          </div>
+        :
+          <div className="w-full flex flex-col gap-2">
+            <h4 className="text-sm text-zinc-500">No Updates</h4>
+          </div>
+        }
       </div>
 
 
@@ -281,15 +330,20 @@ function Post() {
           <h2>Comments</h2>
           
           {/* make comment section  */}
-          <div className="w-full flex flex-col gap-2 ">
-              <input type="text" id="comment" placeholder="Add comment..." className="w-full p-3 border-b-[1px] focus:outline-none focus:bg-zinc-50"/>
-              <button className="flex gap-2 size-fit border rounded-full bg-blue-600 px-5 py-2 text-white text-xs items-center">comment <span><RiSendPlane2Line size={14}/></span></button>
-          </div>
+          <MakeComment postDetails={postDetails}/>
 
           {/* All comments  */}
-          <div className="w-full h-40 bg-zinc-100">
-
-          </div>
+          {postComments ?
+              <div className="w-full flex flex-col gap-2">
+                {postComments.map((comment, index) => (
+                  <Comment key={index} commentDetails={comment}/>
+                ))}
+              </div>
+            :
+              <div className="w-full flex flex-col gap-2">
+                <h4>No Updates</h4>
+              </div>
+        }
       </div>
     </div>
     :

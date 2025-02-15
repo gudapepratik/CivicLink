@@ -13,20 +13,20 @@ commentRouter.route('/add-commment-to-post').post(
 )
 
 // get all comments by the user
-commentRouter.route('/get-reviews-by-customer').get(
+commentRouter.route('/get-comments-by-user').get(
     verifyJWT,
     authorizeRole('citizen','admin','authority'),
     getCommentsByUser
 )
 
 // get all the comments done for a post
-commentRouter.route('/get-comments-for-post/:postId').get(
+commentRouter.route('/get-comments-for-post').get(
     verifyJWT,
     getPostComments
 )
 
 // remove comment on a post
-commentRouter.route('/remove-product-review/:reviewId').delete(
+commentRouter.route('/remove-comment-from-post').delete(
     verifyJWT,
     authorizeRole('citizen','admin','authority'),
     removePostComment

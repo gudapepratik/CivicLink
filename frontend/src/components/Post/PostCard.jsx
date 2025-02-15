@@ -148,7 +148,7 @@ function PostCard({ postDetails , CurrentLocation}) {
               >
                 <RiThumbUpLine size={18} className="text-red-600" />
                 <h4 className="text-xs text-red-600">
-                  {postDetails.commentCount}
+                  {postDetails.upvoteCount}
                 </h4>
               </div>
             </div>

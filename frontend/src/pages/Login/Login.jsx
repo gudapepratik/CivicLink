@@ -9,7 +9,7 @@ import { useDispatch } from "react-redux";
 import { login } from "@/store/authSlice";
 import { ToasterNotification } from "../../utils/ToastNotification/ToastNotification";
 import { RiUpload2Line } from "@remixicon/react";
-import Loader from "@/components/ui/Loader/Loader";
+import Loader from "@/components/Loader/Loader";
 import { useNavigate } from "react-router";
 import departmentInfo from "@/utils/departmentInfo";
 import { Radio, RadioGroup } from "@/components/ui/radio";
@@ -90,9 +90,13 @@ function Login() {
     try {
       setIsLoading(true);
       // console.log(data)
-      if (toRegister && (!data.role || (data.role === "authority" && !data.departmentId)) || toRegister && (!location.latitude || !location.longitude || !avatar))
+      if (
+        (toRegister &&
+          (!data.role || (data.role === "authority" && !data.departmentId))) ||
+        (toRegister && (!location.latitude || !location.longitude || !avatar))
+      )
         throw new Error("All details are required");
-      console.log(data)
+      console.log(data);
       if (toRegister) {
         // register the user first
         await AuthService.registerUser({
@@ -240,74 +244,72 @@ function Login() {
                 {...register("password", { required: "email is required" })}
               />
             </Field>
-            {
-              toRegister && (
-                <>
-                  <Field required>Select role</Field>
-                  <Controller
-                    name="role"
-                    control={control}
-                    render={({ field }) => (
-                      <RadioGroup
-                        name={field.name}
-                        value={field.value}
-                        onValueChange={({ value }) => {
-                          field.onChange(value);
-                        }}
-                        onChange={(e) => handleRoleInput(e.target.defaultValue)}
-                        className="w-full "
-                        colorPalette={"blue"}
-                        size={"sm"}
-                      >
-                        <HStack gap="6">
-                          {userRoles.map((item) => (
-                            <Radio
-                              key={item.value}
-                              value={item.value}
-                              inputProps={{ onBlur: field.onBlur }}
-                            >
-                              {item.label}
-                            </Radio>
-                          ))}
-                        </HStack>
-                      </RadioGroup>
-                    )}
-                  />
-
-                  {role === "authority" && (
-                    <Field label="department">
-                      <Controller
-                        control={control}
-                        name="departmentId"
-                        render={({ field }) => (
-                          <SelectRoot
-                            name={field.name}
-                            value={field.value}
-                            onValueChange={({ value }) => field.onChange(value)}
-                            onInteractOutside={() => field.onBlur()}
-                            className="px-6"
+            {toRegister && (
+              <>
+                <Field required>Select role</Field>
+                <Controller
+                  name="role"
+                  control={control}
+                  render={({ field }) => (
+                    <RadioGroup
+                      name={field.name}
+                      value={field.value}
+                      onValueChange={({ value }) => {
+                        field.onChange(value);
+                      }}
+                      onChange={(e) => handleRoleInput(e.target.defaultValue)}
+                      className="w-full "
+                      colorPalette={"blue"}
+                      size={"sm"}
+                    >
+                      <HStack gap="6">
+                        {userRoles.map((item) => (
+                          <Radio
+                            key={item.value}
+                            value={item.value}
+                            inputProps={{ onBlur: field.onBlur }}
                           >
-                            <SelectTrigger clearable>
-                              <SelectValueText placeholder="Select department" />
-                            </SelectTrigger>
-                            <SelectContent className="font-outfit">
-                              {departmentInfo.map((department) => (
-                                <SelectItem
-                                  item={department.departmentId}
-                                  key={department.departmentId}
-                                >
-                                  {department.title}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </SelectRoot>
-                        )}
-                      />
-                    </Field>
+                            {item.label}
+                          </Radio>
+                        ))}
+                      </HStack>
+                    </RadioGroup>
                   )}
-                </>
-              )
-            }
+                />
+
+                {role === "authority" && (
+                  <Field label="department">
+                    <Controller
+                      control={control}
+                      name="departmentId"
+                      render={({ field }) => (
+                        <SelectRoot
+                          name={field.name}
+                          value={field.value}
+                          onValueChange={({ value }) => field.onChange(value)}
+                          onInteractOutside={() => field.onBlur()}
+                          className="px-6"
+                        >
+                          <SelectTrigger clearable>
+                            <SelectValueText placeholder="Select department" />
+                          </SelectTrigger>
+                          <SelectContent className="font-outfit">
+                            {departmentInfo.map((department) => (
+                              <SelectItem
+                                item={department.departmentId}
+                                key={department.departmentId}
+                              >
+                                {department.title}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </SelectRoot>
+                      )}
+                    />
+                  </Field>
+                )}
+              </>
+            )}
             <button
               type="submit"
               className="bg-blue-600 w-fit px-5 py-2 text-white rounded-lg"

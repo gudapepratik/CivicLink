@@ -11,13 +11,13 @@ import {
   createRoutesFromElements,
 } from "react-router-dom";
 import "./index.css";
-import AuthService  from "./api/services/auth.services.js";
+import AuthService from "./api/services/auth.services.js";
 import { login, logout } from "./store/authSlice.js";
 import ErrorHandler from "./utils/ErrorHandler.utils.js";
 import Home from "./pages/Home/Home.jsx";
-import Layout from "./components/ui/Layout/Layout.jsx";
+import Layout from "./components/Layout/Layout.jsx";
 import ErrorPage from "./pages/ErrorPage/ErrorPage.jsx";
-import { Provider as ChakraProvider} from "@/components/ui/provider"
+import { Provider as ChakraProvider } from "@/components/ui/provider";
 import Login from "./pages/Login/Login.jsx";
 import PostForm from "./pages/NewPost/PostForm.jsx";
 import ExplorePosts from "./pages/Explore/ExplorePosts.jsx";
@@ -27,10 +27,9 @@ import { LocationProvider } from "./utils/Context/LocationContext.jsx";
 // import { io } from "socket.io-client"; // socket io trails
 // import config from "../config/config.js";
 
-
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path="/" element={<Layout/>}>
+    <Route path="/" element={<Layout />}>
       <Route index element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/new-post" element={<PostForm />} />
@@ -52,15 +51,15 @@ const CheckAuth = ({ children }) => {
   useEffect(() => {
     const checkToken = async () => {
       try {
-        const user = await AuthService.getCurrentUser() // Calls backend to check session
-        
+        const user = await AuthService.getCurrentUser(); // Calls backend to check session
+
         if (user) {
-          dispatch(login(user))
+          dispatch(login(user));
         } else {
-          dispatch(logout())
+          dispatch(logout());
         }
-      } catch(error) {
-        ErrorHandler(error)
+      } catch (error) {
+        ErrorHandler(error);
       }
     };
     checkToken();
@@ -68,7 +67,6 @@ const CheckAuth = ({ children }) => {
 
   return children;
 };
-
 
 // socket io trails
 // const SocketContext = createContext(null);
@@ -98,9 +96,9 @@ createRoot(document.getElementById("root")).render(
       <Provider store={store}>
         {/* <SocketProvider> */}
         <LocationProvider>
-            <CheckAuth>
-              <RouterProvider router={router} />
-            </CheckAuth>
+          <CheckAuth>
+            <RouterProvider router={router} />
+          </CheckAuth>
         </LocationProvider>
         {/* </SocketProvider> */}
         {/* <App /> */}

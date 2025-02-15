@@ -14,6 +14,10 @@ const commentSchema = mongoose.Schema({
     comment: {
         type: String,
         required: true
+    },
+    isDepartmentUpdate: {
+        type: Boolean,
+        required: true
     }
 }, {timestamps: true})
 

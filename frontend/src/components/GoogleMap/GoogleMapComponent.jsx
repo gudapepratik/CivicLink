@@ -1,22 +1,27 @@
-import { GoogleMap, LoadScript, Marker, useLoadScript } from "@react-google-maps/api";
+import {
+  GoogleMap,
+  LoadScript,
+  Marker,
+  useLoadScript,
+} from "@react-google-maps/api";
 import { useState } from "react";
-import config from "../../../../config/config";
+import config from "../../../config/config";
 
 const mapContainerStyle = {
   width: "100%",
   height: "200px",
-  borderRadius: "10px"
+  borderRadius: "10px",
 };
 
 const defaultCenter = {
-  lat: 18.5204, 
-  lng: 73.8567, 
+  lat: 18.5204,
+  lng: 73.8567,
 };
 
-const GoogleMapComponent = ({onLocationSelect}) => {
+const GoogleMapComponent = ({ onLocationSelect }) => {
   // const [mapCenter, setMapCenter] = useState({ lat: 18.5204, lng: 73.8567 }); // Default: Pune
   const [markerPosition, setMarkerPosition] = useState(defaultCenter);
-  
+
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: config.googleMapsApiKey,
   });

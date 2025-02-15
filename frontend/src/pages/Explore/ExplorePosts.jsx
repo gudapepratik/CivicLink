@@ -1,6 +1,6 @@
 import PostService from "@/api/services/post.services";
 import SearchBar from "@/components/SearchBar/SearchBar";
-import PostCard from "@/components/ui/Post/PostCard";
+import PostCard from "@/components/Post/PostCard";
 import { useLocationContext } from "@/utils/Context/LocationContext";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -15,7 +15,7 @@ function ExplorePosts() {
   const [posts, setPosts] = useState([]);
 
   const fetchPosts = async () => {
-    setPrevLocation(location)
+    setPrevLocation(location);
     // console.log("fetching")
     // console.log(location)
     const response = await PostService.getPostsByLocation({
@@ -26,26 +26,30 @@ function ExplorePosts() {
     setPosts(response.data.data);
   };
 
-    // Effect for setting user location when available
-    useEffect(() => {
-      if (
-        user &&
-        (location.lat === defaultCoordinates[0] || location.lng === defaultCoordinates[1])
-      ) {
-        setLocation({
-          lat: user.location.coordinates[0],
-          lng: user.location.coordinates[1],
-        });
-      }
-    }, [user]);
+  // Effect for setting user location when available
+  useEffect(() => {
+    if (
+      user &&
+      (location.lat === defaultCoordinates[0] ||
+        location.lng === defaultCoordinates[1])
+    ) {
+      setLocation({
+        lat: user.location.coordinates[0],
+        lng: user.location.coordinates[1],
+      });
+    }
+  }, [user]);
 
   useEffect(() => {
-      console.log(location,defaultCoordinates, prevLocation)
-        if(prevLocation && (prevLocation.lat !== location.lat || prevLocation.lng !== location.lng)) {
-          fetchPosts();
-        } else if(!prevLocation) {
-          fetchPosts();
-        }
+    console.log(location, defaultCoordinates, prevLocation);
+    if (
+      prevLocation &&
+      (prevLocation.lat !== location.lat || prevLocation.lng !== location.lng)
+    ) {
+      fetchPosts();
+    } else if (!prevLocation) {
+      fetchPosts();
+    }
   }, [location]);
 
   return (

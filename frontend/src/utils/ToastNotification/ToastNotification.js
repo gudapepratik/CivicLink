@@ -6,7 +6,6 @@ export const ToasterNotification = ({ type, description, title }) => {
     type: type,
     description: description,
     duration: 2000,
-    
     // offsets: {bottom: "500px"},
   });
 };

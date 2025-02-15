@@ -7,7 +7,7 @@ import { Comment } from '../models/comment.models.js';
 // add comment to a post
 const addComment = asyncHandler(async (req,res) => {
     // get the data
-    const {postId, comment} = req.body
+    const {postId, comment, isDepartmentUpdate} = req.body
     // get the user id
     const user = req.user
 
@@ -22,7 +22,8 @@ const addComment = asyncHandler(async (req,res) => {
     const newComment = await Comment.create({
         userId: user._id,
         postId: postIdObj,
-        comment
+        comment,
+        isDepartmentUpdate
     })
 
     if(!newComment) throw new ApiError(500, "error while adding a Comment")
@@ -44,7 +45,7 @@ const getCommentsByUser= asyncHandler(async (req,res) => {
         userId: user._id
     })
 
-    if(!comments) throw new ApiError(400, "No Comments addded by the customer")
+    if(!comments) throw new ApiError(400, "Error occurred while fetching comments!!")
 
     return res
     .status(200)
@@ -56,14 +57,38 @@ const getCommentsByUser= asyncHandler(async (req,res) => {
 // get all the comments for a post
 const getPostComments = asyncHandler(async (req,res) => {
     // get the Post id
-    const postId = req.params.postId
+    const {postId} = req.query
+    if(!mongoose.isValidObjectId(postId)) throw new ApiError(400, "Invalid post id")
+    
+    const aggregate = [
+        {
+            $match: {
+                postId: new mongoose.Types.ObjectId(postId)
+            }
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "userId",
+                foreignField: "_id",
+                as: "userDetails"
+            }
+        },
+        {
+            $project: {
+                "userDetails._id": 0,
+                "userDetails.createdAt": 0,
+                "userDetails.updatedAt": 0,
+                "userDetails.password": 0,
+                "userDetails.refreshToken": 0,
+            }
+        }
+    ]
 
     // get all the Comments done for the Post
-    const postComments = await Comment.find({
-        postId
-    })
+    const postComments = await Comment.aggregate(aggregate)
 
-    if(!postComments || postComments.length == 0) throw new ApiError(400, "No comments to the post")
+    if(!postComments) throw new ApiError(400, "Error while fetching comments")
 
     return res
     .status(200)

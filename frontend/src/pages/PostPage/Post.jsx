@@ -156,7 +156,7 @@ function Post() {
     <>
     {postDetails? 
     
-    <div className="w-full h-[calc(100vh-80px)] font-outfit flex gap-2 flex-col items-center">
+    <div className="w-full h-[calc(100vh-80px)] dark:bg-zinc-950 dark:text-white font-outfit flex gap-2 flex-col items-center">
       {/* image slider  */}
       <div className="h-[31vh] w-full scrollbar-hide ">
         <Swiper
@@ -197,7 +197,7 @@ function Post() {
           </h1>
 
           {/* description  */}
-          <h2 className="text-zinc-600 leading-5">
+          <h2 className="text-zinc-800 dark:text-zinc-500 leading-5">
               {postDetails.description || "No description available"}
           </h2>
 
@@ -205,11 +205,11 @@ function Post() {
           <div className="w-full flex gap-4 items-center">
               <div className="flex gap-2 items-center">
                   <RiCalendarLine size={20}/>
-                  <p className="text-xs text-zinc-600 text-nowrap">{parseDateToReadableFormat(postDetails.createdAt)}</p>
+                  <p className="text-xs text-zinc-600 dark:text-zinc-500 text-nowrap">{parseDateToReadableFormat(postDetails.createdAt)}</p>
               </div>
               <div className="flex gap-2 items-center">
                   <RiMapPin2Line size={30}/>
-                  <p className="text-xs text-zinc-600">{postDetails.address}</p>
+                  <p className="text-xs text-zinc-600 dark:text-zinc-500">{postDetails.address}</p>
               </div>
           </div>
 
@@ -266,7 +266,7 @@ function Post() {
       </div>
 
       {/* seperator  */}
-      <div className="w-[calc(100vw-14px)] flex justify-center h-[1px] border-t-[1px]"></div>
+      <div className="w-[calc(100vw-14px)] flex justify-center h-[1px] border-t-[1px] dark:border-zinc-500"></div>
       {/* User details (post owner) */}
       <div className="w-full flex gap-2 items-center justify-between rounded-lg p-3">
         {/* avatar  */}
@@ -279,7 +279,7 @@ function Post() {
             />
           </div>
           <div className="h-12 flex items-start flex-col">
-            <h2 className="font-semibold text-zinc-800">
+            <h2 className="font-semibold text-zinc-800 dark:text-white">
               {postDetails.userDetails[0].name}
             </h2>
             <h3 className="text-xs text-zinc-500">
@@ -290,21 +290,21 @@ function Post() {
       </div>
 
       {/* seperator  */}
-      <div className="w-[calc(100vw-14px)] flex justify-center h-[1px] border-t-[1px]"></div>
+      <div className="w-[calc(100vw-14px)] flex justify-center h-[1px] border-t-[1px] dark:border-zinc-500"></div>
       
       {/* department details  */}
-      <div className="w-[calc(100vw-10vw)] bg-zinc-100 rounded-lg flex flex-col gap-1 p-2">
-          <h3>Department details</h3>
+      <div className="w-[calc(100vw-10vw)] bg-zinc-100 dark:bg-zinc-800 rounded-lg flex flex-col gap-1 p-2">
+          <h3 className="">Department details</h3>
           <h4>{postDetails.departmentDetails[0].name}</h4>
           <h3 className="text-zinc-500 text-xs">{postDetails.departmentDetails[0].description}</h3>
-          <h4 className="text-zinc-500 text-xs flex items-center gap-2">
+          <h4 className="text-zinc-500 text-xs flex items-start gap-2">
               <RiMapPin2Line size={12}/>
               {postDetails.departmentDetails[0].address}
           </h4>
       </div>
 
       {/* seperator  */}
-      <div className="w-[calc(100vw-14px)] flex justify-center h-[1px] border-t-[1px]"></div>
+      <div className="w-[calc(100vw-14px)] flex justify-center h-[1px] border-t-[1px] dark:border-zinc-500"></div>
       
       {/* department comment section  */}
       <div className="w-full p-3 flex flex-col gap-1">
@@ -326,7 +326,7 @@ function Post() {
       {/* seperator  */}
       <div className="w-[calc(100vw-14px)] flex justify-center h-[1px] border-t-[1px]"></div>
 
-      <div className="w-full p-3 flex flex-col gap-2">
+      <div className="w-full p-3 flex flex-col gap-2 dark:bg-zinc-950">
           <h2>Comments</h2>
           
           {/* make comment section  */}

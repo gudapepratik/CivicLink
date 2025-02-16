@@ -90,7 +90,7 @@ function PostCard({ postDetails , CurrentLocation}) {
       {!postDetails ? (
         <PostCardSkeleton />
       ) : (
-        <div className="w-full p-3 flex flex-col gap-2 border bg-zinc-50  shadow-inner rounded-xl font-outfit">
+        <div className="w-full p-3 flex flex-col gap-2 border bg-zinc-50 dark:bg-zinc-800 dark:text-white  shadow-inner rounded-xl font-outfit">
           {/* profile section  */}
           <div className="w-full mb-1 flex gap-2 items-center justify-between rounded-lg">
             {/* avatar  */}
@@ -103,10 +103,10 @@ function PostCard({ postDetails , CurrentLocation}) {
                 />
               </div>
               <div className="h-10 flex items-start flex-col">
-                <h2 className="font-semibold text-zinc-800">
+                <h2 className="font-semibold text-zinc-800 dark:text-inherit">
                   {postDetails.userDetails[0].name}
                 </h2>
-                <h3 className="text-xs text-zinc-600">
+                <h3 className="text-xs text-zinc-600 dark:text-zinc-500">
                   {getTimeAgo(postDetails.createdAt)}
                 </h3>
               </div>
@@ -154,10 +154,6 @@ function PostCard({ postDetails , CurrentLocation}) {
             </div>
 
             {/* status  */}
-              {/* <RiCheckboxCircleFill/>
-              <RiErrorWarningFill/>
-              <RiProgress4Fill/>
-              <RiProgress2Fill/> */}
             <div>
               {postDetails.status === 'pending' && (
                 <div className="flex gap-2 text-yellow-500 font-poppins text-xs items-center border bg-yellow-50 border-yellow-500 p-1 rounded-md">

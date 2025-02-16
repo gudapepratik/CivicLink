@@ -171,9 +171,9 @@ function Login() {
         <div className="w-full p-8 duration-100">
           <form
             onSubmit={onSubmit}
-            className="font-outfit gap-4 p-5 rounded-lg flex items-center flex-col bg-white "
+            className="font-outfit gap-4 p-5 rounded-lg flex items-center dark:bg-zinc-800 flex-col bg-white "
           >
-            <h1 className="font-bold text-xl text-blue-800">CivicLink</h1>
+            <h1 className="font-bold text-xl text-blue-800 dark:text-white">CivicLink</h1>
             {toRegister && (
               <>
                 <div>

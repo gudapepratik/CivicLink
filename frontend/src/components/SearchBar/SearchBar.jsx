@@ -51,9 +51,9 @@ function SearchBar({setCoordinates}) {
 
 
   return (
-    <div className="w-full relative font-outfit bg-white flex items-center gap-3 border p-3">
+    <div className="w-full relative font-outfit bg-white dark:bg-zinc-800 rounded-lg flex items-center gap-3 border p-3">
       <label htmlFor="search">Search:</label>
-      <form onSubmit={handleSearchSubmit} className="flex  items-center w-full border rounded-lg bg-zinc-50">
+      <form onSubmit={handleSearchSubmit} className="flex items-center w-full border dark:border-zinc-500 rounded-lg bg-zinc-50 dark:bg-zinc-700">
         <div className="w-full">
           <input
             type="text"
@@ -61,7 +61,7 @@ function SearchBar({setCoordinates}) {
             value={query}
             list="search"
             autoComplete="billing street-address"
-            className="bg-zinc-50 focus:outline-none p-2"
+            className="bg-zinc-50 dark:bg-zinc-700 rounded-l-lg focus:outline-none p-2"
             placeholder="Enter a location"
             onChange={(e) => handleSearchInput(e)}
           />
@@ -72,7 +72,7 @@ function SearchBar({setCoordinates}) {
           </datalist>
         </div>
         <button 
-        className="w-12 bg-zinc-100 p-2 flex items-center justify-center rounded-r-lg"
+        className="w-12 bg-zinc-100 dark:bg-zinc-700 p-2 flex items-center justify-center rounded-r-lg"
         type="submit"
         >
           <RiSearchLine className=""/>

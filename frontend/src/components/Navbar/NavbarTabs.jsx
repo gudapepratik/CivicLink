@@ -8,7 +8,7 @@ function NavbarTabs({ tabs }) {
       {tabs.map((tab, index) => (
         <div
           key={index}
-          className="w-full font-outfit p-4 bg-white hover:bg-zinc-100 duration-75 flex justify-between"
+          className="w-full font-outfit p-4 bg-white dark:bg-zinc-950 dark:hover:bg-zinc-800  hover:bg-zinc-100 duration-75 flex justify-between"
         >
           <NavLink to={`/${tab.link}`} className={"w-full flex justify-between"}>
               <h2>{tab.title}</h2> 

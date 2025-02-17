@@ -23,6 +23,7 @@ import PostForm from "./pages/NewPost/PostForm.jsx";
 import ExplorePosts from "./pages/Explore/ExplorePosts.jsx";
 import Post from "./pages/PostPage/Post.jsx";
 import { LocationProvider } from "./utils/Context/LocationContext.jsx";
+import CitizenPosts from "./pages/CitizenPosts/CitizenPosts.jsx";
 // import { Toaster } from "@chakra-ui/react";
 // import { io } from "socket.io-client"; // socket io trails
 // import config from "../config/config.js";
@@ -35,6 +36,7 @@ const router = createBrowserRouter(
       <Route path="/new-post" element={<PostForm />} />
       <Route path="/explore-posts" element={<ExplorePosts />} />
       <Route path="/explore-posts/:id" element={<Post />} />
+      <Route path="/user-posts" element={<CitizenPosts />} />
       {/* <Route path="sellerdashboard/" element={<SellerDashboard />}>
         <Route path="login" element={<SellerLogin />} />
         <Route path="products" element={<Productscomp />} />

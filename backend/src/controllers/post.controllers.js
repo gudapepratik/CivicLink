@@ -147,6 +147,7 @@ const getPostsByLocation = asyncHandler(async (req,res) => {
 
 // get all posts by user
 const getPostsByUser = asyncHandler(async (req,res) => {
+    const {filter} = req.query
     // get the user
     const user = req.user
 
@@ -156,7 +157,8 @@ const getPostsByUser = asyncHandler(async (req,res) => {
     const aggregate = [
         {
             $match: {
-                userId: user._id
+                userId: new mongoose.Types.ObjectId(user._id),
+                ...(filter && { status: filter })
             }
         },
         {
@@ -186,18 +188,38 @@ const getPostsByUser = asyncHandler(async (req,res) => {
         {
             $addFields: {
                 upvoteCount: { $size: "$upvotes" }, // Count upvotes
-                commentCount: { $size: "$comments" } // Count comments
+                commentCount: { $size: "$comments" }, // Count comments
+                isUserVoted: {
+                    $cond: {
+                        if: { $gt: [{ $ifNull: [user.id, null] }, null] },
+                        then: { $in: [user.id, "$upvotes"] },
+                        else: "$$REMOVE"
+                    }
+                },
+                userDetails: [
+                    {
+                        name: user.name,
+                        avatar: {
+                            publicUrl: user.avatar.publicUrl
+                        },
+                        email: user.email
+                    }
+                ]
+            }
+        },
+        {
+            $project: {
+                upvotes: 0, // Exclude upvotes array (we dont want that)
+                comments: 0,  // Exclude comments array (we dont want that)
+                "departmentDetails._id": 0,
+                "departmentDetails.createdAt": 0,
+                "departmentDetails.updatedAt": 0,
+                "departmentDetails.authorityUsers": 0,
             }
         },
         { // Sort by date
             $sort: { createdAt: -1 } 
         },
-        {
-            $project: {
-                upvotes: 0, // Exclude upvotes array (we dont want that)
-                comments: 0  // Exclude comments array (we dont want that)
-            }
-        }
     ]
 
     const posts = await Post.aggregate(aggregate)

@@ -32,7 +32,7 @@ function Navbar() {
     },
     {
       title: "My Reports",
-      link: "myreports",
+      link: "user-posts",
     },
     {
       title: "Notifications",

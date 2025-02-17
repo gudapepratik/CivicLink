@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/file-upload";
 import departmentInfo from "@/utils/departmentInfo";
 import { getAddressFromCoordinates } from "@/utils/googleMaps.utilites";
+import { NotLoginImg1 } from "@/assets/assets.config";
 // import { error } from "console";
 
 function PostForm() {
@@ -126,7 +127,7 @@ function PostForm() {
     <>
       {isLoading && <Loader />}
       {!userStatus ? (
-        <Error />
+        <Error image={NotLoginImg1} title={'User Not Logged in'} message={'Log in to your account to Create a post'}/>
       ) : (
         <div className="w-full font-outfit p-3">
           <h1 className="text-zinc-800 text-2xl font-extrabold">

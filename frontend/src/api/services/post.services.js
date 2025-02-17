@@ -52,7 +52,6 @@ export class PostService {
     }
   }
 
-
   async getPostsByLocation({latitude, longitude}) {
     try{
       console.log(latitude,longitude)
@@ -88,6 +87,21 @@ export class PostService {
       ErrorHandler(error)
     }
   }
+
+  async getPostsByUser({filter}) {
+    try{
+      console.log(filter)
+      const reponse = await httpClient.get(`${API_ENDPOINTS.POST}/get-posts-by-user`, {
+        params: {
+          filter
+        }
+      });
+
+      return reponse
+    } catch(error) {
+      ErrorHandler(error)
+    }
+  }  
 }
 
 export default new PostService();

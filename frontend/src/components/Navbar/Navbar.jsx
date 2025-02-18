@@ -44,11 +44,11 @@ function Navbar() {
     },
     {
       title: "Help & Support",
-      link: "helpandsupport",
+      link: "help-and-support",
     },
     {
       title: "Community Guidelines",
-      link: "guidelines",
+      link: "community-guidelines",
     },
   ];
 
@@ -79,11 +79,11 @@ function Navbar() {
     },
     {
       title: "Help & Support",
-      link: "helpandsupport",
+      link: "help-and-support",
     },
     {
       title: "Community Guidelines",
-      link: "guidelines",
+      link: "community-guidelines",
     },
   ];
 

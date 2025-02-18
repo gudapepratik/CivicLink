@@ -24,6 +24,8 @@ import ExplorePosts from "./pages/Explore/ExplorePosts.jsx";
 import Post from "./pages/PostPage/Post.jsx";
 import { LocationProvider } from "./utils/Context/LocationContext.jsx";
 import CitizenPosts from "./pages/CitizenPosts/CitizenPosts.jsx";
+import HelpnSupport from "./pages/Help and Support/HelpnSupport.jsx";
+import CommunityGuideline from "./pages/CommunityGuideline/CommunityGuideline.jsx";
 // import { Toaster } from "@chakra-ui/react";
 // import { io } from "socket.io-client"; // socket io trails
 // import config from "../config/config.js";
@@ -37,6 +39,8 @@ const router = createBrowserRouter(
       <Route path="/explore-posts" element={<ExplorePosts />} />
       <Route path="/explore-posts/:id" element={<Post />} />
       <Route path="/user-posts" element={<CitizenPosts />} />
+      <Route path="/help-and-support" element={<HelpnSupport/>} />
+      <Route path="/community-guidelines" element={<CommunityGuideline/>} />
       {/* <Route path="sellerdashboard/" element={<SellerDashboard />}>
         <Route path="login" element={<SellerLogin />} />
         <Route path="products" element={<Productscomp />} />

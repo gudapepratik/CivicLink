@@ -66,9 +66,9 @@ function CitizenPosts() {
                     </select>   
                 </div>
             </div>
-            {posts.length === 0 ? 
+            {posts && posts.length === 0 ? 
                 <div className='w-full flex flex-col gap-2'>
-                <Error image={NotResultImg1} title={"No Results"} message={"No Results available for your query"}/>
+                <Error image={NotResultImg1} title={"No Results"} message={"Sorry, we couldn’t find any results matching your query."}/>
                 </div>
             :
                 <div className='w-full flex flex-col gap-2'>

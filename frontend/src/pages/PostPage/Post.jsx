@@ -137,6 +137,10 @@ function Post() {
 
     const fetchComments = async (postId) => {
       try {
+        console.log("here")
+        setDepartmentComments([])
+        setPostComments([])
+
         const commentsResponse = await CommentService.getCommentsOnPost({
           postId: postId
         })
@@ -154,7 +158,7 @@ function Post() {
         ToasterNotification({
           type: "warning",
           title: "",
-          message: "Error while fetching comments"
+          description: "Error while fetching comments"
         })
       }
     }
@@ -238,7 +242,7 @@ function Post() {
                       <RiThumbUpLine size={18} className="text-red-500" />
                       }
                       <h4 className="text-xs text-red-500">
-                          {postDetails.upvoteCount || 11523} <span>Upvotes</span>
+                          {postDetails.upvoteCount} <span>Upvotes</span>
                       </h4>
                   </div>
               </div>

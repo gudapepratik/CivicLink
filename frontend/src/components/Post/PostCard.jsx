@@ -1,5 +1,5 @@
 import { RiCheckboxCircleFill, RiErrorWarningFill, RiMessage2Fill, RiMessage2Line, RiMoreFill, RiProgress2Fill, RiProgress4Fill, RiThumbUpFill, RiThumbUpLine } from "@remixicon/react";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import PostCardSkeleton from "./PostCardSkeleton";
 import { useNavigate } from "react-router";
 import { getTimeAgo, parseDateToReadableFormat } from "@/utils/DateParsers/DateParser";
@@ -80,6 +80,7 @@ function PostCard({ postDetails , CurrentLocation}) {
   };
 
   const navigate = useNavigate()
+
   // handle navigation to post page
   const handleNavigate = () => {
     navigate(`/explore-posts/${postDetails._id}?location=${encodeURIComponent(location)}`)
@@ -90,7 +91,7 @@ function PostCard({ postDetails , CurrentLocation}) {
       {!postDetails ? (
         <PostCardSkeleton />
       ) : (
-        <div className="w-full p-3 flex flex-col gap-2 border bg-zinc-50 dark:bg-zinc-800 dark:text-white  shadow-inner rounded-xl font-outfit">
+        <div className="w-full p-3 flex flex-col gap-2 border bg-zinc-50 dark:bg-zinc-900 dark:text-white  shadow-inner rounded-xl font-outfit">
           {/* profile section  */}
           <div className="w-full mb-1 flex gap-2 items-center justify-between rounded-lg">
             {/* avatar  */}

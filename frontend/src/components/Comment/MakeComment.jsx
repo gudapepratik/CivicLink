@@ -57,7 +57,7 @@ function MakeComment({postDetails,setReloadTrigger}) {
                 />
             </div>
             <div className="h-8 flex items-start flex-col">
-                <h2 className="font-semibold text-xs text-zinc-800">
+                <h2 className="font-semibold text-xs text-zinc-800 dark:text-white">
                 {user.name}
                 </h2>
                 <h3 className="text-xs text-zinc-500">
@@ -72,7 +72,7 @@ function MakeComment({postDetails,setReloadTrigger}) {
       <textarea
         id="comment"
         placeholder="Add comment..."
-        className="w-full p-2 border-b-[1px] focus:outline-none leading-4"
+        className="w-full p-2 border-b-[1px] focus:outline-none leading-4 dark:bg-zinc-800"
         onChange={(e) => setCommentInput(e.target.value)}
         value={commentInput}
       />

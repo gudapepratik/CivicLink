@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import AuthService from "@/api/services/auth.services";
 import { ToasterNotification } from "@/utils/ToastNotification/ToastNotification";
 import { logout } from "@/store/authSlice";
+import Loader from "../Loader/Loader";
 
 function Navbar() {
   const { toggleColorMode } = useColorMode();
@@ -24,6 +25,8 @@ function Navbar() {
   const user = useSelector((state) => state.authSlice.user);
   // dispatch instance to handle store
   const dispatch = useDispatch();
+  // loading state
+  const [isLoading, setIsLoading] = useState(false)
 
   const citizenTabs = [
     {
@@ -90,6 +93,7 @@ function Navbar() {
   // logout handler
   const handleLogout = async () => {
     try {
+      setIsLoading(true)
       // logout user
       await AuthService.logoutUser();
 
@@ -109,6 +113,8 @@ function Navbar() {
         title: "Logout Failed",
         description: `${error.message}`,
       });
+    } finally{
+      setIsLoading(false)
     }
   };
 
@@ -118,6 +124,7 @@ function Navbar() {
 
   return (
     <>
+      {isLoading && <Loader/>}
       <div className="bg-[#001044] dark:bg-zinc-950 shadow-inner sticky top-0 w-full h-20  z-50 ">
         <div className="flex w-full items-center justify-between h-full px-4">
           {!sidebar && (
@@ -145,7 +152,7 @@ function Navbar() {
         <div
           className={`min-h-screen w-full shadow-lg absolute flex  z-50 top-0  ${
             sidebar ? "translate-x-0" : "-translate-x-full"
-          } duration-100`}
+          } duration-200`}
         >
           <div className="flex flex-col w-[80%] bg-white dark:bg-zinc-950 dark:text-white">
               <div className="w-full h-20 p-4 flex gap-3 items-center bg-[#001044] dark:bg-zinc-950">
@@ -178,6 +185,8 @@ function Navbar() {
                         : authorityTabs
                       : citizenTabs
                   }
+
+                  toggleSidebar={toggleSidebar}
                 />
               </div>
 

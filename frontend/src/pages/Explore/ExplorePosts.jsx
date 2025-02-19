@@ -5,25 +5,41 @@ import { useLocationContext } from "@/utils/Context/LocationContext";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams, useSearchParams } from "react-router";
+import { ToasterNotification } from "@/utils/ToastNotification/ToastNotification";
+import Loader from "@/components/Loader/Loader";
 
 function ExplorePosts() {
   const defaultCoordinates = [18.521432806997094, 73.85769665098046];
   const { location, setLocation } = useLocationContext();
   const [prevLocation, setPrevLocation] = useState(null);
+  const [isLoading, setIsLoading] = useState(false)
 
   const user = useSelector((state) => state.authSlice.user);
   const [posts, setPosts] = useState([]);
 
   const fetchPosts = async () => {
-    setPrevLocation(location);
-    // console.log("fetching")
-    // console.log(location)
-    const response = await PostService.getPostsByLocation({
-      latitude: location.lat,
-      longitude: location.lng,
-    });
-    // console.log(response.data.data);
-    setPosts(response.data.data);
+    try {
+      setIsLoading(true)
+
+      setPrevLocation(location);
+      // console.log("fetching")
+      // console.log(location)
+      const response = await PostService.getPostsByLocation({
+        latitude: location.lat,
+        longitude: location.lng,
+      });
+      // console.log(response.data.data);
+      setPosts(response.data.data);
+    } catch (error) {
+      console.log(error)
+      ToasterNotification({
+        type: "warning",
+        title: "Error Occurred",
+        description: `${error.message}`
+      })
+    } finally {
+      setIsLoading(false)
+    }
   };
 
   // Effect for setting user location when available
@@ -54,6 +70,7 @@ function ExplorePosts() {
 
   return (
     <>
+      {isLoading && <Loader/>}
       <div className="h-[calc(100vh-80px)] w-full p-2 flex flex-col gap-5 ">
         <SearchBar />
         {posts ? (

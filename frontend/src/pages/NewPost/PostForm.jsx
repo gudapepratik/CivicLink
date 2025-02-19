@@ -130,7 +130,7 @@ function PostForm() {
         <Error image={NotLoginImg1} title={'User Not Logged in'} message={'Log in to your account to Create a post'}/>
       ) : (
         <div className="w-full font-outfit p-3">
-          <h1 className="text-zinc-800 text-2xl font-extrabold">
+          <h1 className="text-zinc-800 text-2xl font-extrabold text-center dark:text-white">
             Report an Issue
           </h1>
           {/* <GoogleMapComponent/> */}
@@ -177,7 +177,7 @@ function PostForm() {
               <select
                 required
                 id="department"
-                className="border p-2 w-full rounded-lg bg-zinc-50"
+                className="border p-2 w-full rounded-lg bg-zinc-50 dark:bg-zinc-800"
                 // value={}
                 {...register("departmentId", {
                   required: "Department is required",
@@ -200,11 +200,11 @@ function PostForm() {
               <div className="flex items-end">
                 <RiMapPinLine /> <Field label="Location"></Field>
               </div>
-              <div className="w-full h-[200px] bg-red-100 rounded-3xl">
+              <div className="w-full h-[200px] bg-zinc-300 dark:bg-zinc-800 rounded-3xl">
                 <GoogleMapComponent onLocationSelect={setLocation} />
               </div>
               {location && (
-                <p className="font-outfit text-xs w-full p-2 text-blue-400 bg-zinc-50">
+                <p className="font-outfit text-xs w-full p-2 text-blue-400 bg-zinc-50 dark:bg-zinc-800">
                   {locationAddress}
                 </p>
               )}

@@ -27,7 +27,7 @@ function Comment({commentDetails}) {
 
         {/* Comment form  */}
       <h3 className='w-full text-sm pl-2 dark:text-zinc-300'>
-        {commentDetails.comment}
+        {commentDetails.comment}  
       </h3>
     </div>
   );

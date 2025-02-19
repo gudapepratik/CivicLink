@@ -17,7 +17,7 @@ export class AuthService {
             }
 
             if(!avatar) throw new Error("Profile image is required")
-                console.log(departmentId)
+                // console.log(departmentId)
             if(!latitude || !longitude) throw new Error("Location is required")
              // Create a new FormData instance
             
@@ -89,19 +89,31 @@ export class AuthService {
         }
     }
 
-    async updateUserDetails({name, email, password}) {
+    async updateUserDetails({name, email,age, avatar}) {
         try{
             if(
-                [name, email, password].some(fields => fields === '')
+                [name, email].some(fields => fields === '') || !age
             ) {
                 throw new Error("All fields are required !!")
             }
+            console.log(name, email, age, avatar)
 
-            const updatedDetailsResponse = await httpClient.post(`${API_ENDPOINTS.AUTH}/update-user-details`, {
-                name,
-                email,
-                password
-            })
+            const formData = new FormData();
+    
+            // Append fields to FormData
+            formData.append('name', name);
+            formData.append('email', email);
+            formData.append('age', age);
+            formData.append('avatar', avatar);
+
+            const updatedDetailsResponse = await httpClient.post(`${API_ENDPOINTS.AUTH}/update-user-details`,
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    }
+                }
+            )
             
             return updatedDetailsResponse;
         }catch(error) {

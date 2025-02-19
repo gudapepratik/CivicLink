@@ -136,11 +136,9 @@ function Navbar() {
               className="bg-zinc-600 p-2 font-heebo text-white rounded-full"
             />
           ) : (
-            <img
-              src={user.avatar.publicUrl}
-              alt="profile"
-              className="bg-zinc-600 w-10 h-10 font-heebo text-white rounded-full"
-            />
+            <div className="w-12 h-12 rounded-full overflow-hidden">
+              <img src={user.avatar.publicUrl} alt="profile image" className="object-contain"/>
+            </div>
           )}
         </div>
 

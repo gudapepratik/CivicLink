@@ -1,15 +1,18 @@
 import CommentService from "@/api/services/comment.services";
 import { ToasterNotification } from "@/utils/ToastNotification/ToastNotification";
-import { RiSendPlane2Fill } from "@remixicon/react";
+import { RiLoaderLine, RiSendPlane2Fill } from "@remixicon/react";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 
-function MakeComment({postDetails}) {
+function MakeComment({postDetails,setReloadTrigger}) {
     const user = useSelector(state => state.authSlice.user)
+    const [isLoading, setIsLoading] = useState(false)
     const [commentInput, setCommentInput] = useState("")
 
     const handleCommentSubmit = async () => {
         try {
+            setIsLoading(true)
+
             if(!user) throw new Error("User must be logged in to comment")
 
             if(!commentInput || commentInput.length < 10) throw new Error("Comment must be atleast 10 characters long")
@@ -24,20 +27,18 @@ function MakeComment({postDetails}) {
                 isDepartmentUpdate
             })
 
-            ToasterNotification({
-                type: "success",
-                title: "",
-                description: "Comment done"
-            })
-
             setCommentInput("")
-
+            
+            // reload the comments
+            setReloadTrigger(prev => !prev)
         } catch (error) {
             ToasterNotification({
                 type: "warning",
                 title: "Error Occurred",
                 description: `${error.message}`
             })
+        } finally{
+          setIsLoading(false)
         }
     }
 
@@ -75,15 +76,30 @@ function MakeComment({postDetails}) {
         onChange={(e) => setCommentInput(e.target.value)}
         value={commentInput}
       />
-      <button 
-      className="flex gap-2 size-fit border rounded-full bg-blue-600 px-5 py-2 text-white text-xs items-center"
-      onClick={handleCommentSubmit}
-      >
-        comment
-        <span>
-          <RiSendPlane2Fill size={14} />
-        </span>
-      </button>
+
+      { !isLoading ?
+        <button 
+        className="flex gap-2 size-fit border rounded-full bg-blue-600 px-5 py-2 text-white text-xs items-center"
+        onClick={handleCommentSubmit}
+        >
+          comment
+          <span>
+            <RiSendPlane2Fill size={14} />
+          </span>
+        </button>
+      :
+        <button 
+        className="flex gap-2 size-fit rounded-full bg-blue-600 px-5 py-2 text-white text-xs items-center"
+        onClick={handleCommentSubmit}
+        >
+          sending
+          <span>
+            <RiLoaderLine size={14} className="animate-spin"/>
+          </span>
+        </button>
+
+
+      }
     </div>
   );
 }

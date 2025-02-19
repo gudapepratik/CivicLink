@@ -3,7 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import jwt from "jsonwebtoken";
-import { uploadOnCloudinary } from "../utils/Cloudinary.js";
+import { deleteFromCloudinary, uploadOnCloudinary } from "../utils/Cloudinary.js";
 import mongoose from "mongoose";
 
 // reginster new user
@@ -38,7 +38,7 @@ const registerUser = asyncHandler(async (req, res) => {
   
   // upload the avatar to cloudinary
   const uploadResponse = await uploadOnCloudinary(locatAvatarFile.path)
-    console.log(uploadResponse)
+    // console.log(uploadResponse)
   // create new user
   const user = await User.create({
     name,
@@ -285,21 +285,48 @@ const updateUserPassword = asyncHandler(async (req, res) => {
 // upadate user details
 const updateUserDetails = asyncHandler(async (req, res) => {
   // get the details to be updated (email, password, name, contactNumber)
-  const { email, name, contactNumber } = req.body;
+  const { email, name, age } = req.body;
+  const user = req.user
+  const localAvatarFile = req.file
 
   // check if atleast one field is to be updated
-  if (!email && !name && !contactNumber) {
+  if (!email && !name && !age) {
     throw new ApiError(400, "Fields to be updated not specified");
+  }
+
+  if(email !== user.email) {
+    // check if there is any user registered on the new email address
+    const anotherUser = await User.findOne({
+      email: email
+    })
+  
+    if(anotherUser) throw new ApiError(400, "User with same email Id already exists")
+  }
+  
+  let newImageUploadResponse;
+  // check if new image is given
+  if(localAvatarFile) {
+    // delete the previous image
+    const deleteImageResponse = await deleteFromCloudinary(user.avatar.public_id)
+
+    if(!deleteImageResponse) throw new ApiError(500, "Unexpected error while updating details")
+
+    // upload new image
+    newImageUploadResponse = await uploadOnCloudinary(localAvatarFile.path)
   }
 
   // the user is already verified and authorized
   const updatedUser = await User.findOneAndUpdate(
-    req?.user._id,
+    {_id: user._id},
     {
       $set: {
-        email: email || req.user.email,
-        name: name || req.user.name,
-        contactNumber: contactNumber || req.user.contactNumber,
+        email: email,
+        name: name,
+        age: Number(age),
+        avatar: {
+          publicUrl: newImageUploadResponse? newImageUploadResponse.secure_url : user.avatar.publicUrl,
+          public_id: newImageUploadResponse? newImageUploadResponse.public_id : user.avatar.public_id
+        },
       },
     },
     { new: true }

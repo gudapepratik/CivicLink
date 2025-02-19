@@ -36,6 +36,13 @@ const userSchema = mongoose.Schema(
       enum: ["citizen", "authority", "admin"],
       required: true,
     },
+    gender: {
+      type: String,
+      enum: ["Male", "Female", "Other"]
+    },
+    age: {
+      type: Number,
+    },
     departmentId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Department",

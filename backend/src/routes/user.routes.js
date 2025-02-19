@@ -27,7 +27,11 @@ userRouter.route('/protected-route').post(verifyJWT,
     }
 )
 
-userRouter.route('/update-user-details').post(verifyJWT,updateUserDetails)
+userRouter.route('/update-user-details').post(
+    verifyJWT,
+    upload.single("avatar"),
+    updateUserDetails
+)
 
 userRouter.route('/update-user-password').post(verifyJWT,updateUserPassword)
 

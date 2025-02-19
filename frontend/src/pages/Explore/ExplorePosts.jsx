@@ -34,8 +34,8 @@ function ExplorePosts() {
         location.lng === defaultCoordinates[1])
     ) {
       setLocation({
-        lat: user.location.coordinates[0],
-        lng: user.location.coordinates[1],
+        lat: user.location.coordinates[1],
+        lng: user.location.coordinates[0],
       });
     }
   }, [user]);

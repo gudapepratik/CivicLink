@@ -47,7 +47,7 @@ function HelpnSupport() {
     technicalSupport: [
       {
         question: "What should I do if I encounter a technical issue on the platform?",
-        answer: "If you face any technical difficulties, please contact our technical support team at support@communityconnect.com or call +91-9876543210."
+        answer: "If you face any technical difficulties, please contact our technical support team at support@civiclink.com or call +91-9876543210."
       },
       {
         question: "How do I reset my password?",
@@ -66,7 +66,7 @@ function HelpnSupport() {
         answer: "Check your internet connection and make sure that location services are enabled in your browser settings. If the problem continues, contact technical support."
       },
       {
-        question: "Is my data secure on Community Connect?",
+        question: "Is my data secure on CivicLink?",
         answer: "Yes, we use industry-standard encryption and security measures to ensure that your data is safe and secure."
       }
     ]
@@ -120,7 +120,7 @@ function HelpnSupport() {
             <h1 className='font-bold text-xl text-center'>Contact Us</h1>
               <div className='w-full flex flex-col gap-1 bg-zinc-500 dark:bg-zinc-800 p-3 rounded-xl text-white'>
                   <h3>If you need further assistance, feel free to reach out to our support team:</h3>
-                  <h3>Email: support@communityconnect.com</h3>
+                  <h3>Email: support@cciviclink.com</h3>
                   <h3>Phone: +91-9876543210</h3>
                   <h3>Office: 123 Civic Center, Pune, Maharashtra – 411001</h3>
               </div>

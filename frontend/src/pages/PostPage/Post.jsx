@@ -99,6 +99,8 @@ function Post() {
     // })
 
   // fetch post from backend
+
+  const [reloadTrigger, setReloadTrigger] = useState(false)
   
   const fetchPost = async () => {
     try {
@@ -126,6 +128,12 @@ function Post() {
     useEffect(() => {
       fetchPost();
     }, [id]);
+
+    useEffect(() => {
+      if(postDetails) {
+        fetchComments(postDetails._id)
+      }
+    },[reloadTrigger])
 
     const fetchComments = async (postId) => {
       try {
@@ -330,7 +338,7 @@ function Post() {
           <h2>Comments</h2>
           
           {/* make comment section  */}
-          <MakeComment postDetails={postDetails}/>
+          <MakeComment postDetails={postDetails} setReloadTrigger={setReloadTrigger}/>
 
           {/* All comments  */}
           {postComments ?

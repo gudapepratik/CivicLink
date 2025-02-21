@@ -312,7 +312,7 @@ function Post() {
       </div>
 
       {/* <div className="w-full flex justify-center items-center"> */}
-        {user._id === postDetails.userId  && 
+        {postDetails && postDetails.userId === user?._id && 
           <Dialog ToDelete={handleDeletePost} actionTitle={"Delete Post"} title={"Are you sure?"} message={"This post will be permanently deleted. Do you want to proceed?"}/>
         } 
       {/* </div> */}

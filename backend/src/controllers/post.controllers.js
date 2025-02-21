@@ -394,8 +394,9 @@ const deletePost = asyncHandler(async (req,res) => {
     const {postId} = req.query
     // get the user
     const user = req.user
+    console.log(postId)
 
-    if(mongoose.isValidObjectId(postId)) throw new ApiError(400, "The post Id is Invalid")
+    if(!mongoose.isValidObjectId(postId)) throw new ApiError(400, "The post Id is Invalid")
 
     // get the post details
     const postToDelete = await Post.findOne({
@@ -405,12 +406,12 @@ const deletePost = asyncHandler(async (req,res) => {
     if(!postToDelete) throw new ApiError(400, "The post does not exists")
     
     // check if the post is made by the same user that is deleting it
-    if(user.role === 'citizen' && user._id !== postToDelete.userId) throw new ApiError(400, "Current user is unauthorized to delete the post")
+    if(user.role === 'citizen' && user._id.toString() !== postToDelete.userId.toString()) throw new ApiError(400, "Current user is unauthorized to delete the post")
 
     // delete the images from cloudinary
-    const cloudinaryDeleteResponse = Promise.all(
+    const cloudinaryDeleteResponse = await Promise.all(
         postToDelete.imageUrls.map(async (image) => {
-            const response = await deleteFromCloudinary(image.public_id)
+            return await deleteFromCloudinary(image.public_id)
         })
     )
 
@@ -424,7 +425,7 @@ const deletePost = asyncHandler(async (req,res) => {
     res
     .status(200)
     .json(
-        new ApiResponse(200, deleteReponse, "The post is deleted successfully")
+        new ApiResponse(200, deleteReponse, "The post has been deleted successfully")
     )
     
 })

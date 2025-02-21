@@ -4,7 +4,7 @@ import { ToasterNotification } from "@/utils/ToastNotification/ToastNotification
 import { RiCalendarLine, RiCheckboxCircleLine, RiErrorWarningLine, RiMapPin2Line, RiMessage2Line, RiMoreFill, RiPinDistanceLine, RiProgress2Line, RiProgress4Line, RiSendPlane2Line, RiSendPlaneLine, RiThumbUpFill, RiThumbUpLine } from "@remixicon/react";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useParams, useSearchParams } from "react-router";
+import { useNavigate, useParams, useSearchParams } from "react-router";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -15,6 +15,9 @@ import { useLocationContext } from "@/utils/Context/LocationContext";
 import MakeComment from "@/components/Comment/MakeComment";
 import  CommentService  from "@/api/services/comment.services";
 import Comment from "@/components/Comment/Comment";
+import Dialog from "@/components/Dialog/Dialog";
+import Loader from "@/components/Loader/Loader";
+import postServices from "@/api/services/post.services";
 
 function Post() {
   const { id } = useParams();
@@ -26,6 +29,8 @@ function Post() {
   const [postComments, setPostComments] = useState([])
   const [departmentComments, setDepartmentComments] = useState([])
   const [refreshCommentTrigger, setRefreshCommentTrigger] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate()
 
   // const dummy = {
   //   address: "WHFH+R6C, Somewhere chowk, Pune, Maharashtra 445204, India",
@@ -163,9 +168,38 @@ function Post() {
       }
     }
 
+    const handleDeletePost =async () => {
+      try {
+        setIsLoading(true)
+
+        await PostService.deletePost({postId: postDetails._id});
+
+        ToasterNotification({
+          type: "success",
+          title: "Post deleted",
+          description: `Your post has been deleted successfully`
+        })
+
+        setTimeout(() => {
+          navigate('/')
+        },2000)
+        
+      } catch (error) {
+        console.log(error)
+        ToasterNotification({
+          type: "error",
+          title: "Error Occurred",
+          description: `${error.message}`
+        })
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
 
   return (
     <>
+    {isLoading && <Loader/>}
     {postDetails? 
     
     <div className="w-full h-[calc(100vh-80px)] dark:bg-zinc-950 dark:text-white font-outfit flex gap-2 flex-col items-center">
@@ -276,6 +310,12 @@ function Post() {
           </div>
 
       </div>
+
+      {/* <div className="w-full flex justify-center items-center"> */}
+        {user._id === postDetails.userId  && 
+          <Dialog ToDelete={handleDeletePost} actionTitle={"Delete Post"} title={"Are you sure?"} message={"This post will be permanently deleted. Do you want to proceed?"}/>
+        } 
+      {/* </div> */}
 
       {/* seperator  */}
       <div className="w-[calc(100vw-14px)] flex justify-center h-[1px] border-t-[1px] dark:border-zinc-500"></div>

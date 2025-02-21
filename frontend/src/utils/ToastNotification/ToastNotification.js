@@ -1,7 +1,7 @@
 import { toaster } from "@/components/ui/toaster";
 
 export const ToasterNotification = ({ type, description, title }) => {
-  toaster.create({
+  return toaster.create({
     title: title,
     type: type,
     description: description,

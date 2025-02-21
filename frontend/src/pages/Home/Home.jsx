@@ -1,9 +1,11 @@
 import { HomeHeroImg } from "@/assets/assets.config";
 import HomePostCard from "@/components/Post/HomePostCard";
-import React from "react";
+import { ToasterNotification } from "@/utils/ToastNotification/ToastNotification";
+import React, { useEffect } from "react";
 import { NavLink } from "react-router";
 
 function Home() {
+  
   return (
     <>
       {/* backeground image  */}

@@ -102,6 +102,21 @@ export class PostService {
       ErrorHandler(error)
     }
   }  
+
+  async deletePost({postId}) {
+    try {
+      console.log(postId)
+      await httpClient.delete(`${API_ENDPOINTS.POST}/remove-post`, {
+        params: {
+          postId
+        }
+      })
+
+      return true
+    } catch (error) {
+      ErrorHandler(error)
+    }
+  }
 }
 
 export default new PostService();

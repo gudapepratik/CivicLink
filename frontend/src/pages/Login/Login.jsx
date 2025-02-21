@@ -46,9 +46,16 @@ function Login() {
   const userRoles = [
     { label: "Citizen", value: "citizen" },
     { label: "Authority", value: "authority" },
+  ]
+  // user genders data object
+  const genders = [
+    { label: "Male", value: "Male" },
+    { label: "Female", value: "Female" },
+    { label: "Other", value: "Other" },
   ];
   // role state to store the role of user (required on signup)
   const [role, setRole] = useState("");
+  const [gender, setGender] = useState("");
   // login/signup toggle state
   const [toRegister, setToRegister] = useState(false);
   // state to store preview blob user of uploaded avatar image
@@ -93,10 +100,10 @@ function Login() {
       if (
         (toRegister &&
           (!data.role || (data.role === "authority" && !data.departmentId))) ||
-        (toRegister && (!location.latitude || !location.longitude || !avatar))
+        (toRegister && (!location.latitude || !location.longitude || !avatar)) || 
+        (toRegister && !data.gender)
       )
         throw new Error("All details are required");
-      console.log(data);
       if (toRegister) {
         // register the user first
         await AuthService.registerUser({
@@ -105,9 +112,11 @@ function Login() {
           password: data.password,
           latitude: location.latitude,
           longitude: location.longitude,
+          age: data.age,
+          gender: data.gender,
           role: data.role,
           avatar: avatar,
-          departmentId: data?.departmentId?.at(0),
+          departmentId: data?.departmentId,
         });
         // console.log(response);
         // console.log(role,location,avatar,data)
@@ -150,6 +159,10 @@ function Login() {
     setRole(role);
   };
 
+  const handleGenderInput = (gender) => {
+    setGender(gender);
+  };
+
   // handle avatar file input
   const handleFileChange = (file) => {
     setAvatar(file[0]);
@@ -168,7 +181,7 @@ function Login() {
         className="w-full h-screen absolute object-cover"
       />
       <div className="w-full h-screen relative flex items-center justify-center">
-        <div className="w-full p-8 duration-100">
+        <div className="w-full p-2 duration-100">
           <form
             onSubmit={onSubmit}
             className="font-outfit gap-4 p-5 rounded-lg flex items-center dark:bg-zinc-800 flex-col bg-white "
@@ -176,30 +189,6 @@ function Login() {
             <h1 className="font-bold text-xl text-blue-800 dark:text-white">CivicLink</h1>
             {toRegister && (
               <>
-                <div>
-                  <input
-                    type="file"
-                    // max={2}
-                    onChange={(e) => handleFileChange(e.target.files)}
-                    style={{ display: "none" }}
-                    id="fileInput"
-                  />
-                  <label
-                    htmlFor="fileInput"
-                    className="flex items-center bg-zinc-50 p-3 rounded-lg text-zinc-800 gap-3"
-                  >
-                    {previewAvatar && (
-                      <img
-                        src={previewAvatar}
-                        alt=""
-                        className="w-12 h-12 object-cover rounded-md"
-                      />
-                    )}
-                    <RiUpload2Line size={22} /> upload your image
-                  </label>
-                </div>
-                {/* {file && <Text mt={2}>Selected file: {file.name}</Text>} */}
-
                 <Field
                   label="Name"
                   required
@@ -215,6 +204,59 @@ function Login() {
                     })}
                   />
                 </Field>
+
+                
+                <Field
+                  label="Age"
+                  required
+                  invalid={!!errors.age}
+                  errorText={errors.age?.message}
+                >
+                  <Input
+                    variant={"subtle"}
+                    className="p-2"
+                    type="number"
+                    placeholder="Enter you age"
+                    {...register("age", {
+                      required: "First name is required",
+                      min: {value: 18, message: "Age must be atleast 18"},
+                      max: {value: 110, message: "Enter valid age"}
+                    })}
+                  />
+                </Field>
+                
+                
+                <Field required label="Gender"></Field>
+                <Controller
+                  name="gender"
+                  control={control}
+                  render={({ field }) => (
+                    <RadioGroup
+                      name={field.name}
+                      value={field.value}
+                      onValueChange={({ value }) => {
+                        field.onChange(value);
+                      }}
+                      onChange={(e) => handleGenderInput(e.target.defaultValue)}
+                      className="w-full "
+                      colorPalette={"blue"}
+                      size={"sm"}
+                    >
+                      <HStack gap="6">
+                        {genders.map((item) => (
+                          <Radio
+                            key={item.value}
+                            value={item.value}
+                            inputProps={{ onBlur: field.onBlur }}
+                          >
+                            {item.label}
+                          </Radio>
+                        ))}
+                      </HStack>
+                    </RadioGroup>
+                  )}
+                />
+
               </>
             )}
             <Field
@@ -246,7 +288,7 @@ function Login() {
             </Field>
             {toRegister && (
               <>
-                <Field required>Select role</Field>
+                <Field required label="role"></Field>
                 <Controller
                   name="role"
                   control={control}
@@ -277,37 +319,85 @@ function Login() {
                   )}
                 />
 
-                {role === "authority" && (
-                  <Field label="department">
-                    <Controller
+                {/* {role === "authority" && ( */}
+                  {/* // <Field label="department"> */}
+                    {/* <Controller 
                       control={control}
                       name="departmentId"
                       render={({ field }) => (
-                        <SelectRoot
-                          name={field.name}
-                          value={field.value}
-                          onValueChange={({ value }) => field.onChange(value)}
-                          onInteractOutside={() => field.onBlur()}
+                      )}
+                    /> */}
+                        {/* <SelectRoot
+                          // name={field.name}
+                          // value={field.value}
+                          // onValueChange={({ value }) => field.onChange(value)}
+                          // onInteractOutside={() => field.onBlur()}
                           className="px-6"
                         >
                           <SelectTrigger clearable>
                             <SelectValueText placeholder="Select department" />
                           </SelectTrigger>
                           <SelectContent className="font-outfit">
-                            {departmentInfo.map((department) => (
+                            {departmentInfo.map((department,key) => (
                               <SelectItem
                                 item={department.departmentId}
-                                key={department.departmentId}
+                                key={key}
                               >
                                 {department.title}
                               </SelectItem>
                             ))}
                           </SelectContent>
                         </SelectRoot>
-                      )}
-                    />
-                  </Field>
+                  </Field> */}
+                {/* // )} */}
+
+                {role === 'authority' && (
+                  <>
+                    <Field label="department" required>
+                    <select
+                      required
+                      id="department"
+                      className="border p-2 w-full rounded-lg bg-zinc-50 dark:bg-zinc-800"
+                      {...register("departmentId", {
+                        required: "Department is required",
+                      })}
+                    >
+                      {departmentInfo.map((department, index) => (
+                        <option
+                          className="duration-100 bg-zinc-700 font-outfit text-white"
+                          key={index}
+                          value={department.departmentId}
+                        >
+                          {department.title}
+                        </option>
+                      ))}
+                    </select>
+                    </Field>
+                  </>
                 )}
+
+                <div>
+                  <input
+                    type="file"
+                    // max={2}
+                    onChange={(e) => handleFileChange(e.target.files)}
+                    style={{ display: "none" }}
+                    id="fileInput"
+                  />
+                  <label
+                    htmlFor="fileInput"
+                    className="flex items-center bg-zinc-50 p-3 rounded-lg text-zinc-800 dark:bg-zinc-700 dark:text-white gap-3"
+                  >
+                    {previewAvatar && (
+                      <img
+                        src={previewAvatar}
+                        alt=""
+                        className="w-12 h-12 object-cover rounded-md"
+                      />
+                    )}
+                    <RiUpload2Line size={22} /> upload your profile image
+                  </label>
+                </div>
               </>
             )}
             <button

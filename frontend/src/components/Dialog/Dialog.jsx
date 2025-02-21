@@ -12,12 +12,12 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@chakra-ui/react";
 
-function Dialog({ToDelete, actionTitle, title, message, onSaveClick, onCancelClick }) {
+function Dialog({ToDelete, actionTitle, title, message }) {
     const [toOpen, setToOpen] = useState(false);
   return (
     <>
       <div className="">
-        <button onClick={() => setToOpen(prev => !prev)} className="bg-red-100 dark:bg-zinc-800 px-4 py-1 text-red-600 rounded-md">Delete Post</button>
+        <button onClick={() => setToOpen(prev => !prev)} className="bg-red-100 dark:bg-zinc-800 px-4 py-1 text-red-600 rounded-md">{actionTitle}</button>
 
         <div
         className={`fixed inset-0 flex items-center z-10 justify-center p-2 bg-black bg-opacity-50 
@@ -30,9 +30,9 @@ function Dialog({ToDelete, actionTitle, title, message, onSaveClick, onCancelCli
           transform transition-all duration-300 ${toOpen ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 translate-y-5"}`}
           onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
         >
-          <h2 className="text-lg font-semibold text-red-500">Delete Post?</h2>
+          <h2 className="text-lg font-semibold text-red-500">{title}</h2>
           <p className="text-gray-600 dark:text-inherit mt-2">
-            Are you sure you want to delete this post? This action cannot be undone.
+            {message}
           </p>
 
           {/* Buttons */}

@@ -1,5 +1,5 @@
 import {app} from '../app.js'
-import { registerUser, loginUser, refreshAccessToken, logoutUser, updateUserDetails, updateUserPassword, getCurrentUser } from '../controllers/user.controllers.js'
+import { registerUser, loginUser, refreshAccessToken, logoutUser, updateUserDetails, updateUserPassword, getCurrentUser, deleteUser } from '../controllers/user.controllers.js'
 import { Router } from 'express'
 import { verifyJWT } from '../middlewares/auth.middleware.js'
 import { authorizeRole } from '../middlewares/authRole.middleware.js'
@@ -36,6 +36,7 @@ userRouter.route('/update-user-details').post(
 userRouter.route('/update-user-password').post(verifyJWT,updateUserPassword)
 
 userRouter.route('/get-current-user').get(verifyJWT, getCurrentUser)
+userRouter.route('/remove-user').delete(verifyJWT, deleteUser)
 
 // // admin only route
 // userRouter.route('/admin-only-route').get(verifyJWT,authorizeRole('admin'),(req,res) => {

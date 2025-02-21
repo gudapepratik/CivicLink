@@ -8,10 +8,10 @@ export class AuthService {
     // all the service functions here
     // method to handle login
     // data required - name(string), email(string), password(string), contactNumber(string), role(string)
-    async registerUser({name, email, password, latitude, longitude, role, avatar, departmentId}) {
+    async registerUser({name, email, password, latitude, longitude, role,age,gender, avatar, departmentId}) {
         try {
             if(
-                [name, email, password, role].some(fields => fields === '')
+                [name, email, password, role, gender].some(fields => fields === '') || !age 
             ) {
                 throw new Error("All fields are required !!")
             }
@@ -29,6 +29,8 @@ export class AuthService {
             formData.append('password', password);
             formData.append('latitude', latitude);
             formData.append('longitude', longitude);
+            formData.append('age', age);
+            formData.append('gender', gender);
             formData.append('role', role);
             formData.append('avatar', avatar)
             if(departmentId) {
@@ -136,6 +138,16 @@ export class AuthService {
             
             return updatedDetailsResponse;
         }catch(error) {
+            ErrorHandler(error)
+        }
+    }
+
+
+    async deleteUser() {
+        try {
+            await httpClient.delete(`${API_ENDPOINTS.AUTH}/remove-user`)
+            return true
+        } catch (error) {
             ErrorHandler(error)
         }
     }

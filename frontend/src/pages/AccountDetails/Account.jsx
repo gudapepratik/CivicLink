@@ -1,8 +1,9 @@
 import  AuthService  from "@/api/services/auth.services";
 import { NotLoginImg1 } from "@/assets/assets.config";
+import Dialog from "@/components/Dialog/Dialog";
 import Error from "@/components/Error/Error";
 import Loader from "@/components/Loader/Loader";
-import { login } from "@/store/authSlice";
+import { login, logout } from "@/store/authSlice";
 import { getAddressFromCoordinates } from "@/utils/googleMaps.utilites";
 import { ToasterNotification } from "@/utils/ToastNotification/ToastNotification";
 import React, { useEffect, useState } from "react";
@@ -105,6 +106,30 @@ function Account() {
   const handleRemoveImage = () => {
     setPreviewNewImageUrl("")
     setValue("newProfileImage", null);
+  }
+
+  const handleDeleteAccount = async () => {
+    try {
+      setIsLoading(true)
+      await AuthService.deleteUser()
+
+      ToasterNotification({
+        type: "success",
+        description: "Your Account has been deleted successfully"
+      })
+
+      dispatch(logout())
+    
+    } catch (error) {
+      console.log(error)
+      ToasterNotification({
+        type: "warning",
+        title: "Error occurred",
+        description: `${error.message}`
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
 
@@ -258,7 +283,8 @@ function Account() {
             <div className='w-full border-b-[1px] border-zinc-200'></div>
 
             <div className="w-full flex flex-col mt-3 items-start">
-                <button className="text-red-500 font-bold">delete Account</button>
+                {/* <button className="text-red-500 font-bold">delete Account</button> */}
+                <Dialog ToDelete={handleDeleteAccount} title={"Are You Sure?"} actionTitle={"delete Account"} message={"Are you sure you want to delete your account. You won't be able to get the account back"}/>
                 <h3 className="">Deleting your account will remove all your posts, comments, reactions from the app</h3>
             </div>
 

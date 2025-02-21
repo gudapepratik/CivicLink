@@ -9,15 +9,15 @@ import mongoose from "mongoose";
 // reginster new user
 const registerUser = asyncHandler(async (req, res) => {
   // get the details
-  const { name, email, password, role, latitude, longitude, departmentId } = req.body;
+  const { name, email, password, role,age,gender, latitude, longitude, departmentId } = req.body;
   console.log(req)
   const locatAvatarFile = req.file
 
   // check if all details present or not
   if (
-    [name, email, password, role].some(
+    [name, email, password, role, gender].some(
       (field) => field === ""
-    )
+    ) || !age
   ) {
     throw new ApiError(400, "Required fields are missing");
   }
@@ -45,6 +45,8 @@ const registerUser = asyncHandler(async (req, res) => {
     email,
     password,
     role,
+    age,
+    gender,
     location: {
       type: "Point",
       coordinates: [longitude, latitude],
@@ -349,6 +351,34 @@ const updateUserDetails = asyncHandler(async (req, res) => {
     );
 });
 
+const deleteUser = asyncHandler(async (req,res) => {
+  const user = req.user
+
+  // first delete the avatar
+  const deleteResponse = await deleteFromCloudinary(user.avatar.public_id);
+
+  if(!deleteResponse) throw new ApiError(500, "Error occurred while deleting account")
+
+  const response = await User.findOneAndDelete({
+    _id: user._id
+  })
+
+  if(!response) throw new ApiError(500, "Error occurred while deleting account.")
+
+    // clear the cookies
+  const options = {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none"
+  };
+
+  return res
+    .status(200)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
+    .json(new ApiResponse(200, {}, "Account has been deleted successfully"));
+})
+
 export {
   registerUser,
   loginUser,
@@ -357,4 +387,5 @@ export {
   updateUserDetails,
   updateUserPassword,
   getCurrentUser,
+  deleteUser
 };

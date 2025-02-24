@@ -11,6 +11,7 @@ import {
   createRoutesFromElements,
 } from "react-router-dom";
 import "./index.css";
+import { Analytics } from '@vercel/analytics/react';
 import AuthService from "./api/services/auth.services.js";
 import { login, logout } from "./store/authSlice.js";
 import ErrorHandler from "./utils/ErrorHandler.utils.js";
@@ -110,6 +111,7 @@ createRoot(document.getElementById("root")).render(
         <LocationProvider>
           <CheckAuth>
             <RouterProvider router={router} />
+            <Analytics />
           </CheckAuth>
         </LocationProvider>
         {/* </SocketProvider> */}

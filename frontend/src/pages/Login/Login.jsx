@@ -139,9 +139,17 @@ function Login() {
         description: "Login successful",
       });
 
+      let redirectPath = "";
+      if(userDetails?.role == "authority") {
+        redirectPath = "/authority-dashboard"
+      } else{
+        redirectPath = "/"
+      }
+
       setTimeout(() => {
-        navigate("/"); // navigate to home page after 2 seconds
+        navigate(redirectPath); // navigate to home page after 2 seconds
       }, 2000);
+      
     } catch (error) {
       console.log(error);
       ToasterNotification({

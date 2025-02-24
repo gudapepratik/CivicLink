@@ -100,7 +100,7 @@ const getPostComments = asyncHandler(async (req,res) => {
 // remove a comment from a post by the user
 const removePostComment = asyncHandler(async (req,res) => {
     // get the id of the Comment to be removed
-    const commentId = req.params.commentId
+    const {commentId} = req.query
     const user = req.user
 
     if (!mongoose.Types.ObjectId.isValid(commentId)) throw new ApiError(400, "Invalid Comment ID")

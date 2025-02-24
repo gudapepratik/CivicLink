@@ -147,7 +147,12 @@ function PostCard({ postDetails , CurrentLocation}) {
                 className="flex gap-2 items-center border rounded-md shadow-inner p-2"
                 onClick={handleUpvoteUpdate}
               >
-                <RiThumbUpLine size={18} className="text-red-600" />
+                {postDetails.isUserVoted ? (
+                  <RiThumbUpFill size={18} className="text-red-500 " />
+                ) : (
+                  <RiThumbUpLine size={18} className="text-red-500" />
+                )}
+                {/* <RiThumbUpLine size={18} className="text-red-600" /> */}
                 <h4 className="text-xs text-red-600">
                   {postDetails.upvoteCount}
                 </h4>

@@ -4,8 +4,6 @@ import httpClient from "../httpClient.js";
 import ErrorHandler from "../../utils/ErrorHandler.utils.js";
 
 export class PostService {
-
-
   async addNewPost({
     departmentId,
     title,
@@ -13,24 +11,24 @@ export class PostService {
     latitude,
     longitude,
     images,
-    address
+    address,
   }) {
     try {
-        if (!images) throw new Error("Atleast one Image is required");
+      if (!images) throw new Error("Atleast one Image is required");
 
-        const formData = new FormData();
+      const formData = new FormData();
 
-        // Append fields to FormData
-        formData.append("title", title);
-        formData.append("description", description)
-        formData.append("latitude", latitude);
-        formData.append("longitude", longitude)
-        formData.append("departmentId", departmentId);
-        formData.append("address", address);
-        console.log(images)
-        images.forEach((image, index) => {
-            formData.append('images', image); // Field name matches your multer configuration
-        });
+      // Append fields to FormData
+      formData.append("title", title);
+      formData.append("description", description);
+      formData.append("latitude", latitude);
+      formData.append("longitude", longitude);
+      formData.append("departmentId", departmentId);
+      formData.append("address", address);
+      console.log(images);
+      images.forEach((image, index) => {
+        formData.append("images", image); // Field name matches your multer configuration
+      });
 
       // call the api
       const postResponse = await httpClient.post(
@@ -52,69 +50,100 @@ export class PostService {
     }
   }
 
-  async getPostsByLocation({latitude, longitude}) {
-    try{
-      console.log(latitude,longitude)
-      if(!latitude || !longitude) throw new Error("Location is missing")
-
-      const response = await httpClient.get(`${API_ENDPOINTS.POST}/get-posts-by-location`, {
-        params: {
-          latitude,longitude
-        }
-      })
-
-      return response
-
-    }catch(error) {
-      ErrorHandler(error)
-    }
-  }
-
-  async getPostByID({postId,userId}) {
-    try{
-      if(!postId) throw new Error("PostId is required")
-
-      const response = await httpClient.get(`${API_ENDPOINTS.POST}/get-post-by-id`, {
-        params: {
-          postId,
-          userId
-        }
-      })
-
-      return response
-
-    }catch(error) {
-      ErrorHandler(error)
-    }
-  }
-
-  async getPostsByUser({filter}) {
-    try{
-      console.log(filter)
-      const reponse = await httpClient.get(`${API_ENDPOINTS.POST}/get-posts-by-user`, {
-        params: {
-          filter
-        }
-      });
-
-      return reponse
-    } catch(error) {
-      ErrorHandler(error)
-    }
-  }  
-
-  async deletePost({postId}) {
+  async getPostsByLocation({ latitude, longitude }) {
     try {
-      console.log(postId)
+      console.log(latitude, longitude);
+      if (!latitude || !longitude) throw new Error("Location is missing");
+
+      const response = await httpClient.get(
+        `${API_ENDPOINTS.POST}/get-posts-by-location`,
+        {
+          params: {
+            latitude,
+            longitude,
+          },
+        }
+      );
+
+      return response;
+    } catch (error) {
+      ErrorHandler(error);
+    }
+  }
+
+  async getPostByID({ postId, userId }) {
+    try {
+      if (!postId) throw new Error("PostId is required");
+
+      const response = await httpClient.get(
+        `${API_ENDPOINTS.POST}/get-post-by-id`,
+        {
+          params: {
+            postId,
+            userId,
+          },
+        }
+      );
+
+      return response;
+    } catch (error) {
+      ErrorHandler(error);
+    }
+  }
+
+  async getPostsByUser({ filter }) {
+    try {
+      console.log(filter);
+      const reponse = await httpClient.get(
+        `${API_ENDPOINTS.POST}/get-posts-by-user`,
+        {
+          params: {
+            filter,
+          },
+        }
+      );
+
+      return reponse;
+    } catch (error) {
+      ErrorHandler(error);
+    }
+  }
+
+  async deletePost({ postId }) {
+    try {
+      console.log(postId);
       await httpClient.delete(`${API_ENDPOINTS.POST}/remove-post`, {
         params: {
-          postId
-        }
-      })
+          postId,
+        },
+      });
 
-      return true
+      return true;
     } catch (error) {
-      ErrorHandler(error)
+      ErrorHandler(error);
+    }
+  }
+
+  // authority functions
+  async getPostsByDepartmentAndLocation({ departmentId, latitude, longitude }) {
+    try {
+      if (!departmentId || departmentId === "")
+        throw new Error("deaprtment ID is missing");
+
+      const response = await httpClient.get(
+        `${API_ENDPOINTS.POST}/get-posts-by-department`,
+        {
+          params: {
+            departmentId,
+            latitude,
+            longitude,
+          },
+        }
+      );
+
+      return response;
+    } catch (error) {
+      ErrorHandler(error);
     }
   }
 }

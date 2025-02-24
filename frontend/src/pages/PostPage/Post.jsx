@@ -1,7 +1,24 @@
 import PostService from "@/api/services/post.services";
-import { getTimeAgo, parseDateToReadableFormat } from "@/utils/DateParsers/DateParser";
+import {
+  getTimeAgo,
+  parseDateToReadableFormat,
+} from "@/utils/DateParsers/DateParser";
 import { ToasterNotification } from "@/utils/ToastNotification/ToastNotification";
-import { RiCalendarLine, RiCheckboxCircleLine, RiErrorWarningLine, RiMapPin2Line, RiMessage2Line, RiMoreFill, RiPinDistanceLine, RiProgress2Line, RiProgress4Line, RiSendPlane2Line, RiSendPlaneLine, RiThumbUpFill, RiThumbUpLine } from "@remixicon/react";
+import {
+  RiCalendarLine,
+  RiCheckboxCircleLine,
+  RiErrorWarningLine,
+  RiMapPin2Line,
+  RiMessage2Line,
+  RiMoreFill,
+  RiPinDistanceLine,
+  RiProgress2Line,
+  RiProgress4Line,
+  RiSendPlane2Line,
+  RiSendPlaneLine,
+  RiThumbUpFill,
+  RiThumbUpLine,
+} from "@remixicon/react";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams, useSearchParams } from "react-router";
@@ -13,11 +30,12 @@ import "swiper/css/zoom";
 import { Navigation, Pagination, Zoom } from "swiper/modules";
 import { useLocationContext } from "@/utils/Context/LocationContext";
 import MakeComment from "@/components/Comment/MakeComment";
-import  CommentService  from "@/api/services/comment.services";
+import CommentService from "@/api/services/comment.services";
 import Comment from "@/components/Comment/Comment";
 import Dialog from "@/components/Dialog/Dialog";
 import Loader from "@/components/Loader/Loader";
 import postServices from "@/api/services/post.services";
+import UpvoteService from "@/api/services/upvote.services";
 
 function Post() {
   const { id } = useParams();
@@ -26,11 +44,11 @@ function Post() {
 
   const user = useSelector((state) => state.authSlice.user);
   const [postDetails, setPostDetails] = useState(null);
-  const [postComments, setPostComments] = useState([])
-  const [departmentComments, setDepartmentComments] = useState([])
-  const [refreshCommentTrigger, setRefreshCommentTrigger] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const navigate = useNavigate()
+  const [postComments, setPostComments] = useState([]);
+  const [departmentComments, setDepartmentComments] = useState([]);
+  const [refreshCommentTrigger, setRefreshCommentTrigger] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   // const dummy = {
   //   address: "WHFH+R6C, Somewhere chowk, Pune, Maharashtra 445204, India",
@@ -99,27 +117,26 @@ function Post() {
   // };
 
   // set the location so as to get back to the explore page with the same location
-    // useEffect(() => {
-    //   setLocation(searchParams.get("location") || null)
-    // })
+  // useEffect(() => {
+  //   setLocation(searchParams.get("location") || null)
+  // })
 
   // fetch post from backend
 
-  const [reloadTrigger, setReloadTrigger] = useState(false)
-  
+  const [reloadTrigger, setReloadTrigger] = useState(false);
+
   const fetchPost = async () => {
     try {
       const response = await PostService.getPostByID({
         postId: id,
         userId: user?._id,
       });
-      console.log(response)
+      console.log(response);
       // console.log(response.data.data[0].userDetails)
-      setPostDetails(response.data.data[0])
+      setPostDetails(response.data.data[0]);
 
       // fetch comments after that
-      fetchComments(response.data.data[0]._id)
-  
+      fetchComments(response.data.data[0]._id);
     } catch (error) {
       console.log(error);
       ToasterNotification({
@@ -130,278 +147,337 @@ function Post() {
     }
   };
 
-    useEffect(() => {
-      fetchPost();
-    }, [id]);
+  useEffect(() => {
+    fetchPost();
+  }, [id]);
 
-    useEffect(() => {
-      if(postDetails) {
-        fetchComments(postDetails._id)
-      }
-    },[reloadTrigger])
-
-    const fetchComments = async (postId) => {
-      try {
-        console.log("here")
-        setDepartmentComments([])
-        setPostComments([])
-
-        const commentsResponse = await CommentService.getCommentsOnPost({
-          postId: postId
-        })
-
-        const comments = commentsResponse.data.data
-
-        comments.map((comment) => {
-          if(comment.isDepartmentUpdate) {
-            setDepartmentComments(prev => [...prev,comment])
-          } else{
-            setPostComments(prev => [...prev, comment])
-          }
-        })
-      } catch (error) {
-        ToasterNotification({
-          type: "warning",
-          title: "",
-          description: "Error while fetching comments"
-        })
-      }
+  useEffect(() => {
+    if (postDetails) {
+      fetchComments(postDetails._id);
     }
+  }, [reloadTrigger]);
 
-    const handleDeletePost =async () => {
-      try {
-        setIsLoading(true)
+  const fetchComments = async (postId) => {
+    try {
+      console.log("here");
+      setDepartmentComments([]);
+      setPostComments([]);
 
-        await PostService.deletePost({postId: postDetails._id});
+      const commentsResponse = await CommentService.getCommentsOnPost({
+        postId: postId,
+      });
 
-        ToasterNotification({
-          type: "success",
-          title: "Post deleted",
-          description: `Your post has been deleted successfully`
-        })
+      const comments = commentsResponse.data.data;
 
-        setTimeout(() => {
-          navigate('/')
-        },2000)
-        
-      } catch (error) {
-        console.log(error)
-        ToasterNotification({
-          type: "error",
-          title: "Error Occurred",
-          description: `${error.message}`
-        })
-      } finally {
-        setIsLoading(false)
-      }
+      comments.map((comment) => {
+        if (comment.isDepartmentUpdate) {
+          setDepartmentComments((prev) => [...prev, comment]);
+        } else {
+          setPostComments((prev) => [...prev, comment]);
+        }
+      });
+    } catch (error) {
+      ToasterNotification({
+        type: "warning",
+        title: "",
+        description: "Error while fetching comments",
+      });
     }
+  };
 
+  const handleDeletePost = async () => {
+    try {
+      setIsLoading(true);
+
+      await PostService.deletePost({ postId: postDetails._id });
+
+      ToasterNotification({
+        type: "success",
+        title: "Post deleted",
+        description: `Your post has been deleted successfully`,
+      });
+
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
+    } catch (error) {
+      console.log(error);
+      ToasterNotification({
+        type: "error",
+        title: "Error Occurred",
+        description: `${error.message}`,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleUpvote = async () => {
+    try {
+      if (!user) throw new Error("User not Logged in");
+
+      if (postDetails.isUserVoted) {
+        // remove the vote
+        setPostDetails((prev) => ({
+          ...prev,
+          isUserVoted: false,
+          upvoteCount: prev.upvoteCount - 1,
+        }));
+
+        await UpvoteService.removeUpvoteFromPost({ postId: postDetails._id });
+      } else {
+        // add the vote
+        setPostDetails((prev) => ({
+          ...prev,
+          isUserVoted: true,
+          upvoteCount: prev.upvoteCount + 1,
+        }));
+
+        await UpvoteService.addNewUpvote({ postId: postDetails._id });
+      }
+    } catch (error) {
+      console.log(error);
+
+      if(user) {
+        // Rollback the state changes if an error occurs
+        setPostDetails((prev) => ({
+          ...prev,
+          isUserVoted: !prev.isUserVoted,
+          upvoteCount: prev.isUserVoted
+            ? prev.upvoteCount + 1
+            : prev.upvoteCount - 1,
+        }));
+      }
+
+      ToasterNotification({
+        type: "error",
+        description: `${error.message}`,
+      });
+    }
+  };
 
   return (
     <>
-    {isLoading && <Loader/>}
-    {postDetails? 
-    
-    <div className="w-full h-[calc(100vh-80px)] dark:bg-zinc-950 dark:text-white font-outfit flex gap-2 flex-col items-center">
-      {/* image slider  */}
-      <div className="h-[31vh] w-full scrollbar-hide ">
-        <Swiper
-          style={{
-            "--swiper-pagination-color": "#2f59cc",
-          }}
-          spaceBetween={10}
-          slidesPerView={1}
-          className="w-full h-full"
-          pagination={{
-            clickable: true,
-          }}
-          zoom={{
-            maxRatio: 2,
-          }}
-          modules={[Zoom, Pagination]}
-        >
-          {postDetails.imageUrls &&
-            postDetails.imageUrls.map((imageFile, index) => (
-              <SwiperSlide key={index} className="w-full">
-                <div className="swiper-zoom-container">
-                  <img
-                    src={imageFile.publicUrl}
-                    alt="image"
-                    className="w-full object-fill"
-                  />
-                </div>
-              </SwiperSlide>
-            ))}
-        </Swiper>
-      </div>
-
-      {/* Post title  */}
-      <div className="w-full p-3 flex flex-col gap-5">
-          {/* title  */}
-          <h1 className="text-pretty font-outfit font-bold text-lg">
-              {postDetails.title || "No title"}
-          </h1>
-
-          {/* description  */}
-          <h2 className="text-zinc-800 dark:text-zinc-500 leading-5">
-              {postDetails.description || "No description available"}
-          </h2>
-
-          {/* calender and location  */}
-          <div className="w-full flex gap-4 items-center">
-              <div className="flex gap-2 items-center">
-                  <RiCalendarLine size={20}/>
-                  <p className="text-xs text-zinc-600 dark:text-zinc-500 text-nowrap">{parseDateToReadableFormat(postDetails.createdAt)}</p>
-              </div>
-              <div className="flex gap-2 items-center">
-                  <RiMapPin2Line size={30}/>
-                  <p className="text-xs text-zinc-600 dark:text-zinc-500">{postDetails.address}</p>
-              </div>
+      {isLoading && <Loader />}
+      {postDetails ? (
+        <div className="w-full h-[calc(100vh-80px)] dark:bg-zinc-950 dark:text-white font-outfit flex gap-2 flex-col items-center">
+          {/* image slider  */}
+          <div className="h-[31vh] w-full scrollbar-hide ">
+            <Swiper
+              style={{
+                "--swiper-pagination-color": "#2f59cc",
+              }}
+              spaceBetween={10}
+              slidesPerView={1}
+              className="w-full h-full"
+              pagination={{
+                clickable: true,
+              }}
+              zoom={{
+                maxRatio: 2,
+              }}
+              modules={[Zoom, Pagination]}
+            >
+              {postDetails.imageUrls &&
+                postDetails.imageUrls.map((imageFile, index) => (
+                  <SwiperSlide key={index} className="w-full">
+                    <div className="swiper-zoom-container">
+                      <img
+                        src={imageFile.publicUrl}
+                        alt="image"
+                        className="w-full object-fill"
+                      />
+                    </div>
+                  </SwiperSlide>
+                ))}
+            </Swiper>
           </div>
 
-          {/* comment and upvote counts  */}
-          <div className="w-full flex justify-between">
-              <div className="flex gap-3 items-center">
-                  <div className="flex items-center gap-2">
-                      <RiMessage2Line size={18} className="text-blue-600" />
-                      <h4 className="text-xs text-blue-600">
-                          {postDetails.commentCount || 115} <span>Comments</span>
-                      </h4>
-                  </div>
+          {/* Post title  */}
+          <div className="w-full p-3 flex flex-col gap-5">
+            {/* title  */}
+            <h1 className="text-pretty font-outfit font-bold text-lg">
+              {postDetails.title || "No title"}
+            </h1>
 
-                  <div className="flex items-center gap-2">
-                      {postDetails.isUserVoted?
-                      <RiThumbUpFill size={18} className="text-red-500" />
-                      :
-                      <RiThumbUpLine size={18} className="text-red-500" />
-                      }
-                      <h4 className="text-xs text-red-500">
-                          {postDetails.upvoteCount} <span>Upvotes</span>
-                      </h4>
-                  </div>
+            {/* description  */}
+            <h2 className="text-zinc-800 dark:text-zinc-500 leading-5">
+              {postDetails.description || "No description available"}
+            </h2>
+
+            {/* calender and location  */}
+            <div className="w-full flex gap-4 items-center">
+              <div className="flex gap-2 items-center">
+                <RiCalendarLine size={20} />
+                <p className="text-xs text-zinc-600 dark:text-zinc-500 text-nowrap">
+                  {parseDateToReadableFormat(postDetails.createdAt)}
+                </p>
+              </div>
+              <div className="flex gap-2 items-center">
+                <RiMapPin2Line size={30} />
+                <p className="text-xs text-zinc-600 dark:text-zinc-500">
+                  {postDetails.address}
+                </p>
+              </div>
+            </div>
+
+            {/* comment and upvote counts  */}
+            <div className="w-full flex justify-between">
+              <div className="flex gap-3 items-center">
+                <div className="flex items-center gap-2">
+                  <RiMessage2Line size={18} className="text-blue-600" />
+                  <h4 className="text-xs text-blue-600">
+                    {postDetails.commentCount} <span>Comments</span>
+                  </h4>
+                </div>
+
+                <div className="flex items-center gap-2" onClick={handleUpvote}>
+                  {postDetails.isUserVoted ? (
+                    <RiThumbUpFill size={18} className="text-red-500 " />
+                  ) : (
+                    <RiThumbUpLine size={18} className="text-red-500" />
+                  )}
+                  <h4 className="text-xs text-red-500">
+                    {postDetails.upvoteCount} <span>Upvotes</span>
+                  </h4>
+                </div>
               </div>
 
               <div className="mr-3">
-              {postDetails.status === 'pending' && (
-              <div className="flex gap-2 text-yellow-500 font-poppins text-xs items-center border bg-yellow-50 border-yellow-500 p-1 rounded-md">
-                <RiProgress2Line size={15}/>
-                <h2>Pending</h2>
+                {postDetails.status === "pending" && (
+                  <div className="flex gap-2 text-yellow-500 font-poppins text-xs items-center border bg-yellow-50 border-yellow-500 p-1 rounded-md">
+                    <RiProgress2Line size={15} />
+                    <h2>Pending</h2>
+                  </div>
+                )}
+                {postDetails.status === "inprogress" && (
+                  <div className="flex gap-2 text-orange-500 font-poppins text-xs items-center border bg-orange-50 border-orange-500 p-1 rounded-md">
+                    <RiProgress4Line size={15} />
+                    <h2>In Progress</h2>
+                  </div>
+                )}
+                {postDetails.status === "resolved" && (
+                  <div className="flex gap-2 text-green-500 font-poppins text-xs items-center border bg-green-50 border-green-500-500 p-1 rounded-md">
+                    <RiCheckboxCircleLine size={15} />
+                    <h2>Resolved</h2>
+                  </div>
+                )}
+                {postDetails.status === "rejected" && (
+                  <div className="flex gap-2 text-red-600 font-poppins text-xs items-center border bg-red-50 border-red-600 p-1 rounded-md">
+                    <RiErrorWarningLine size={15} />
+                    <h2>Rejected</h2>
+                  </div>
+                )}
               </div>
-            )}
-            {postDetails.status === 'inprogress' && (
-              <div className="flex gap-2 text-orange-500 font-poppins text-xs items-center border bg-orange-50 border-orange-500 p-1 rounded-md">
-                <RiProgress4Line size={15}/>
-                <h2>In Progress</h2>
-              </div>
-            )}
-            {postDetails.status === 'resolved' && (
-              <div className="flex gap-2 text-green-500 font-poppins text-xs items-center border bg-green-50 border-green-500-500 p-1 rounded-md">
-                <RiCheckboxCircleLine size={15}/>
-                <h2>Resolved</h2>
-              </div>
-            )}
-            {postDetails.status === 'rejected' && (
-              <div className="flex gap-2 text-red-600 font-poppins text-xs items-center border bg-red-50 border-red-600 p-1 rounded-md">
-                <RiErrorWarningLine size={15}/>
-                <h2>Rejected</h2>
-              </div>
-            )}
-              </div>
+            </div>
           </div>
 
-      </div>
-
-      {/* <div className="w-full flex justify-center items-center"> */}
-        {postDetails && postDetails.userId === user?._id && 
-          <Dialog ToDelete={handleDeletePost} actionTitle={"Delete Post"} title={"Are you sure?"} message={"This post will be permanently deleted. Do you want to proceed?"}/>
-        } 
-      {/* </div> */}
-
-      {/* seperator  */}
-      <div className="w-[calc(100vw-14px)] flex justify-center h-[1px] border-t-[1px] dark:border-zinc-500"></div>
-      {/* User details (post owner) */}
-      <div className="w-full flex gap-2 items-center justify-between rounded-lg p-3">
-        {/* avatar  */}
-        <div className="w-full flex gap-5">
-          <div className="h-12 w-12 overflow-hidden rounded-full">
-            <img
-              src={postDetails.userDetails[0].avatar.publicUrl}
-              alt=""
-              className="object-contain"
+          {/* <div className="w-full flex justify-center items-center"> */}
+          {postDetails && postDetails.userId === user?._id && (
+            <Dialog
+              ToDelete={handleDeletePost}
+              actionTitle={"Delete Post"}
+              title={"Are you sure?"}
+              message={
+                "This post will be permanently deleted. Do you want to proceed?"
+              }
             />
+          )}
+          {/* </div> */}
+
+          {/* seperator  */}
+          <div className="w-[calc(100vw-14px)] flex justify-center h-[1px] border-t-[1px] dark:border-zinc-500"></div>
+          {/* User details (post owner) */}
+          <div className="w-full flex gap-2 items-center justify-between rounded-lg p-3">
+            {/* avatar  */}
+            <div className="w-full flex gap-5">
+              <div className="h-12 w-12 overflow-hidden rounded-full">
+                <img
+                  src={postDetails.userDetails[0].avatar.publicUrl}
+                  alt=""
+                  className="object-contain"
+                />
+              </div>
+              <div className="h-12 flex items-start flex-col">
+                <h2 className="font-semibold text-zinc-800 dark:text-white">
+                  {postDetails.userDetails[0].name}
+                </h2>
+                <h3 className="text-xs text-zinc-500">
+                  {postDetails.userDetails[0].email}
+                </h3>
+              </div>
+            </div>
           </div>
-          <div className="h-12 flex items-start flex-col">
-            <h2 className="font-semibold text-zinc-800 dark:text-white">
-              {postDetails.userDetails[0].name}
-            </h2>
-            <h3 className="text-xs text-zinc-500">
-              {postDetails.userDetails[0].email}
+
+          {/* seperator  */}
+          <div className="w-[calc(100vw-14px)] flex justify-center h-[1px] border-t-[1px] dark:border-zinc-500"></div>
+
+          {/* department details  */}
+          <div className="w-[calc(100vw-10vw)] bg-zinc-100 dark:bg-zinc-800 rounded-lg flex flex-col gap-1 p-2">
+            <h3 className="">Department details</h3>
+            <h4>{postDetails.departmentDetails[0].name}</h4>
+            <h3 className="text-zinc-500 text-xs">
+              {postDetails.departmentDetails[0].description}
             </h3>
-          </div>
-        </div>
-      </div>
-
-      {/* seperator  */}
-      <div className="w-[calc(100vw-14px)] flex justify-center h-[1px] border-t-[1px] dark:border-zinc-500"></div>
-      
-      {/* department details  */}
-      <div className="w-[calc(100vw-10vw)] bg-zinc-100 dark:bg-zinc-800 rounded-lg flex flex-col gap-1 p-2">
-          <h3 className="">Department details</h3>
-          <h4>{postDetails.departmentDetails[0].name}</h4>
-          <h3 className="text-zinc-500 text-xs">{postDetails.departmentDetails[0].description}</h3>
-          <h4 className="text-zinc-500 text-xs flex items-start gap-2">
-              <RiMapPin2Line size={12}/>
+            <h4 className="text-zinc-500 text-xs flex items-start gap-2">
+              <RiMapPin2Line size={12} />
               {postDetails.departmentDetails[0].address}
-          </h4>
-      </div>
-
-      {/* seperator  */}
-      <div className="w-[calc(100vw-14px)] flex justify-center h-[1px] border-t-[1px] dark:border-zinc-500"></div>
-      
-      {/* department comment section  */}
-      <div className="w-full p-3 flex flex-col gap-1">
-        <h2 >Department Update</h2>
-        {departmentComments.length !== 0 ?
-          <div className="w-full flex flex-col gap-2">
-            {departmentComments.map((comment, index) => (
-              <Comment key={index} commentDetails={comment}/>
-            ))}
+            </h4>
           </div>
-        :
-          <div className="w-full flex flex-col gap-2">
-            <h4 className="text-sm text-zinc-500">No Updates</h4>
-          </div>
-        }
-      </div>
 
+          {/* seperator  */}
+          <div className="w-[calc(100vw-14px)] flex justify-center h-[1px] border-t-[1px] dark:border-zinc-500"></div>
 
-      {/* seperator  */}
-      <div className="w-[calc(100vw-14px)] flex justify-center h-[1px] border-t-[1px]"></div>
-
-      <div className="w-full p-3 flex flex-col gap-2 dark:bg-zinc-950">
-          <h2>Comments</h2>
-          
-          {/* make comment section  */}
-          <MakeComment postDetails={postDetails} setReloadTrigger={setReloadTrigger}/>
-
-          {/* All comments  */}
-          {postComments ?
+          {/* department comment section  */}
+          <div className="w-full p-3 flex flex-col gap-1">
+            <h2>Department Update</h2>
+            {departmentComments.length !== 0 ? (
               <div className="w-full flex flex-col gap-2">
-                {postComments.map((comment, index) => (
-                  <Comment key={index} commentDetails={comment}/>
+                {departmentComments.map((comment, index) => (
+                  <Comment key={index} commentDetails={comment} isAuthorityComment={true} setReloadTrigger={setReloadTrigger}/>
                 ))}
               </div>
-            :
+            ) : (
+              <div className="w-full flex flex-col gap-2">
+                <h4 className="text-sm text-zinc-500">No Updates</h4>
+              </div>
+            )}
+          </div>
+
+          {/* seperator  */}
+          <div className="w-[calc(100vw-14px)] flex justify-center h-[1px] border-t-[1px]"></div>
+
+          <div className="w-full p-3 flex flex-col gap-2 dark:bg-zinc-950">
+            <h2>Comments</h2>
+
+            {/* make comment section  */}
+            <MakeComment
+              postDetails={postDetails}
+              setReloadTrigger={setReloadTrigger}
+            />
+
+            {/* All comments  */}
+            {postComments ? (
+              <div className="w-full flex flex-col gap-2">
+                {postComments.map((comment, index) => (
+                  <Comment
+                    key={index}
+                    commentDetails={comment}
+                    isAuthorityComment={false}
+                    setReloadTrigger={setReloadTrigger}
+                  />
+                ))}
+              </div>
+            ) : (
               <div className="w-full flex flex-col gap-2">
                 <h4>No Updates</h4>
               </div>
-        }
-      </div>
-    </div>
-    :
-    <div>loading....</div>
-
-    }
+            )}
+          </div>
+        </div>
+      ) : (
+        <div>loading....</div>
+      )}
     </>
   );
 }

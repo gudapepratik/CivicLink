@@ -235,19 +235,34 @@ const getPostsByUser = asyncHandler(async (req,res) => {
 
 // get posts by department (anyone can access)
 const getPostsByDepartment = asyncHandler(async (req,res) => {
-    const {departmentId} = req.query
+    const {departmentId, latitude, longitude} = req.query
 
-    if(mongoose.isValidObjectId(departmentId)) throw new ApiError(400, "The departmentId is Invalid")
+    if(!mongoose.isValidObjectId(departmentId)) throw new ApiError(400, "The departmentId is Invalid")
     
     // const posts = await Post.find({
     //     departmentId
     // }).populate("userId", "avatar name email"); // not finalized
+    const searchRadius = 30*1000 // 30 km
 
-    const aggregate = [
+    const aggregate = [];
+
+    if (latitude && longitude) {
+        aggregate.push({
+            $geoNear: {
+                near: { type: 'Point', coordinates: [Number(latitude), Number(longitude)] },
+                distanceField: "distance",
+                maxDistance: searchRadius,
+                spherical: true
+            }
+        });
+    }
+
+    aggregate.push(
         {
             $match: {
-                departmentId
+                departmentId: new mongoose.Types.ObjectId(departmentId)
             }
+            
         },
         {
             $lookup: {
@@ -256,6 +271,14 @@ const getPostsByDepartment = asyncHandler(async (req,res) => {
                 foreignField: "_id",
                 as: "userDetails"
             }
+        },
+        {
+            $lookup: {
+                from: "departments",
+                localField: "departmentId",
+                foreignField: "_id",
+                as: "departmentDetails"
+            },
         },
         {
             $lookup: {
@@ -279,16 +302,24 @@ const getPostsByDepartment = asyncHandler(async (req,res) => {
                 commentCount: { $size: "$comments" } // Count comments
             }
         },
-        { // Sort by date
-            $sort: { createdAt: -1 } 
+        { // Sort by nearest first
+            $sort: { distance: 1 } 
         },
         {
             $project: {
                 upvotes: 0, // Exclude upvotes array (we dont want that)
-                comments: 0  // Exclude comments array (we dont want that)
+                comments: 0,  // Exclude comments array (we dont want that)
+                "departmentDetails.createdAt": 0,
+                "departmentDetails.updatedAt": 0,
+                "departmentDetails.authorityUsers": 0,
+                "userDetails._id": 0,
+                "userDetails.createdAt": 0,
+                "userDetails.updatedAt": 0,
+                "userDetails.password": 0,
+                "userDetails.refreshToken": 0,
             }
         }
-    ]
+    )
 
     const posts = await Post.aggregate(aggregate)
 
@@ -304,8 +335,7 @@ const getPostsByDepartment = asyncHandler(async (req,res) => {
 // get a post by id
 const getPostById = asyncHandler(async (req,res) => {
     // get the id
-    const {postId} = req.query
-    const userId = req.query.userId || null
+    const {postId, userId} = req.query
 
     // aggregation
     const aggregate = [
@@ -353,7 +383,7 @@ const getPostById = asyncHandler(async (req,res) => {
                 isUserVoted: {
                     $cond: {
                         if: { $gt: [{ $ifNull: [userId, null] }, null] },
-                        then: { $in: [userId, "$upvotes"] },
+                        then: { $in: [new mongoose.Types.ObjectId(userId), "$upvotes.userId"] },
                         else: "$$REMOVE"
                     }
                 }

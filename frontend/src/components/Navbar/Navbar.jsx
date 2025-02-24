@@ -58,11 +58,11 @@ function Navbar() {
   const authorityTabs = [
     {
       title: "Dashboard",
-      link: "dashboard",
+      link: "authority-dashboard",
     },
     {
       title: "New Reports",
-      link: "reports",
+      link: "new-reports",
     },
     {
       title: "Pending Reports",
@@ -162,7 +162,7 @@ function Navbar() {
                   className="text-white"
                 />
                 <div className="w-full shadow-inner p-2 rounded-md font-outfit bg-zinc-100 dark:bg-zinc-800">
-                  <h1 className="text-sm text-zinc-600 dark:text-white">
+                  <h1 className="text-sm text-center text-zinc-600 dark:text-white">
                     {user ? user.name : "Username"}
                   </h1>
                 </div>

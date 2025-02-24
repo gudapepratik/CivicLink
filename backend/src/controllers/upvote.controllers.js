@@ -41,7 +41,7 @@ const addUpvoteToPost = asyncHandler(async (req,res) => {
 // remove upvote from a post
 const removeUpvoteFromPost = asyncHandler(async (req,res) => {
     // get the Post id of the Post to be removed from Upvote
-    const {postId} = req.body
+    const {postId} = req.query
     const userId = req.user?._id
 
     // check the Post id if it is valid or not

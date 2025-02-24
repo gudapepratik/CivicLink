@@ -27,6 +27,8 @@ import CitizenPosts from "./pages/CitizenPosts/CitizenPosts.jsx";
 import HelpnSupport from "./pages/Help and Support/HelpnSupport.jsx";
 import CommunityGuideline from "./pages/CommunityGuideline/CommunityGuideline.jsx";
 import Account from "./pages/AccountDetails/Account.jsx";
+import Dashboard from "./pages/Authority Pages/DashBoard/Dashboard.jsx";
+import NewReports from "./pages/NewReports/NewReports.jsx";
 // import { Toaster } from "@chakra-ui/react";
 // import { io } from "socket.io-client"; // socket io trails
 // import config from "../config/config.js";
@@ -43,6 +45,8 @@ const router = createBrowserRouter(
       <Route path="/help-and-support" element={<HelpnSupport/>} />
       <Route path="/community-guidelines" element={<CommunityGuideline/>} />
       <Route path="/account" element={<Account/>} />
+      <Route path="/authority-dashboard" element={<Dashboard/>} />
+      <Route path="/new-reports" element={<NewReports/>} />
       {/* <Route path="sellerdashboard/" element={<SellerDashboard />}>
         <Route path="login" element={<SellerLogin />} />
         <Route path="products" element={<Productscomp />} />

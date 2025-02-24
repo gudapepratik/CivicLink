@@ -55,9 +55,10 @@ export class CommentService {
 
   async removeCommentFromPost({commentId}) {
     try{
+      console.log(commentId)
       if(!commentId || commentId === "") throw new Error("Comment id is required")
 
-      const response = await httpClient.delete(`${API_ENDPOINTS.POST}/remove-comment-from-post`, {
+      const response = await httpClient.delete(`${API_ENDPOINTS.COMMENT}/remove-comment-from-post`, {
         params: {
           commentId
         }

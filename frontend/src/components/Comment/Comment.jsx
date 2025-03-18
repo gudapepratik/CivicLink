@@ -1,11 +1,13 @@
 import React, { useRef } from 'react'
+import PropTypes from 'prop-types'
 import Tooltip from '../MenuList/MenuList'
 import { RiEdit2Line } from '@remixicon/react'
 import  CommentService  from '@/api/services/comment.services'
 import { ToasterNotification } from '@/utils/ToastNotification/ToastNotification'
 import { useSelector } from 'react-redux'
 
-function Comment({isAuthorityComment, commentDetails, setReloadTrigger}) {
+function Comment({isAuthorityComment,onDeleteComment, commentDetails, setReloadTrigger}) {
+
   const user = useSelector(state => state.authSlice.user)
 
   const editCommentHandler =async () => {
@@ -15,28 +17,7 @@ function Comment({isAuthorityComment, commentDetails, setReloadTrigger}) {
       title: "yet to be implemented"
     })
   }
-  
 
-  const deleteCommentHandler = async () => {
-    try {
-      console.log("editing...")
-      console.log(commentDetails)
-      await CommentService.removeCommentFromPost({commentId: commentDetails._id})
-
-      ToasterNotification({
-        type: "success",
-        title: "Comment has been removed successfully"
-      })
-
-      setReloadTrigger(prev => !prev)
-    } catch (error) {
-      console.log(error)
-      ToasterNotification({
-        type: "error",
-        title: "Error Occurred while deleting comment"
-      })
-    }
-  }
 
   const MenuItems = [
     {
@@ -45,7 +26,7 @@ function Comment({isAuthorityComment, commentDetails, setReloadTrigger}) {
     },
     {
       label: "Delete",
-      onClickHandler: deleteCommentHandler
+      onClickHandler: onDeleteComment
     }
   ]
 
@@ -88,6 +69,12 @@ function Comment({isAuthorityComment, commentDetails, setReloadTrigger}) {
       </h3>
     </div>
   );
+}
+Comment.propTypes = {
+  isAuthorityComment: PropTypes.bool.isRequired,
+  onDeleteComment: PropTypes.func.isRequired,
+  commentDetails: PropTypes.object.isRequired,
+  setReloadTrigger: PropTypes.func.isRequired,
 }
 
 export default Comment

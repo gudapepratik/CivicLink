@@ -64,6 +64,9 @@ app.use('/api/v1/upvote',upvoteRouter)
 import departmentRouter from './routes/department.routes.js'
 app.use('/api/v1/department',departmentRouter)
 
+import departmentUpdateRouter from './routes/departmentUpdate.routes.js'
+app.use('/api/v1/departmentUpdate', departmentUpdateRouter)
+
 // // order router
 // import orderRouter from './routes/order.routes.js'
 // app.use('/api/v1/order',orderRouter)

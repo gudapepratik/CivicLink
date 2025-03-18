@@ -19,7 +19,7 @@ function MakeComment({postDetails,setReloadTrigger}) {
             
             if(user.role === "authority" && user.departmentId !== postDetails.departmentId) throw new Error("User not authorized to comment on current post")
             
-            const isDepartmentUpdate = user.role === "authority"? true : false
+            const isDepartmentUpdate = usehttr.role === "authority"? true : false
             
             await CommentService.addNewComment({
                 postId: postDetails._id,

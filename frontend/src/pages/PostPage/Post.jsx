@@ -36,6 +36,9 @@ import Dialog from "@/components/Dialog/Dialog";
 import Loader from "@/components/Loader/Loader";
 import postServices from "@/api/services/post.services";
 import UpvoteService from "@/api/services/upvote.services";
+import ActionDialog from "@/components/AuthorityActionDialog/ActionDialog";
+import departmentUpdateServices from "@/api/services/departmentUpdate.services";
+import DepartmentUpdate from "@/components/DepartmentUpdate/DepartmentUpdate";
 
 function Post() {
   const { id } = useParams();
@@ -47,6 +50,7 @@ function Post() {
   const [postComments, setPostComments] = useState([]);
   const [departmentComments, setDepartmentComments] = useState([]);
   const [refreshCommentTrigger, setRefreshCommentTrigger] = useState(false);
+  const [departmentUpdates, setDepartmentUpdates] = useState([])
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -136,7 +140,8 @@ function Post() {
       setPostDetails(response.data.data[0]);
 
       // fetch comments after that
-      fetchComments(response.data.data[0]._id);
+      fetchComments(response.data.data[0]._id)
+      fetchDepartmentUpdates(response.data.data[0]._id)
     } catch (error) {
       console.log(error);
       ToasterNotification({
@@ -151,11 +156,11 @@ function Post() {
     fetchPost();
   }, [id]);
 
-  useEffect(() => {
-    if (postDetails) {
-      fetchComments(postDetails._id);
-    }
-  }, [reloadTrigger]);
+  // useEffect(() => {
+  //   if (postDetails) {
+  //     fetchComments(postDetails._id);
+  //   }
+  // }, [reloadTrigger]);
 
   const fetchComments = async (postId) => {
     try {
@@ -184,6 +189,25 @@ function Post() {
       });
     }
   };
+
+  const fetchDepartmentUpdates = async (postId) => {
+    try {
+      setDepartmentUpdates([])
+
+      const departmentUpdateResponse = await departmentUpdateServices.getDepartmentUpdatesOnPost(postId);
+
+      console.log(departmentUpdateResponse.data.data)
+
+      setDepartmentUpdates(departmentUpdateResponse.data.data)
+    } catch (error) {
+      console.log(error)
+      ToasterNotification({
+        type: "warning",
+        title: "",
+        description: "Error while fetching department updates",
+      });
+    }
+  }
 
   const handleDeletePost = async () => {
     try {
@@ -255,6 +279,60 @@ function Post() {
       });
     }
   };
+
+  const handleDeleteComment = async (comment)  => {
+    const isDepartmentComment = comment.isDepartmentUpdate
+    console.log("deleting..")
+    try {
+      // if the comment is authority comment , remove the comment from there, else remove from the postComments
+      if(isDepartmentComment) {
+        departmentComments.filter(item => item._id === comment._id)
+      } else{
+        postComments.filter(item => item._id === comment._id)
+      }
+
+      await CommentService.removeCommentFromPost({commentId: comment._id})
+      
+      ToasterNotification({
+        type: "success",
+        title: "Comment has been removed successfully"
+      })
+      
+    } catch (error) {
+      console.log(error)
+
+      if(isDepartmentComment) {
+        departmentComments.push(comment)
+      } else{
+        postComments.push(comment)
+      }
+
+      // if any error occurrs, add the comment again
+      ToasterNotification({
+        type: "error",
+        title: "Error Occurred while deleting comment"
+      })
+
+    }
+  }
+
+  const newDepartmentUpdate = async ({remark, docs, updatedStatus, expectedResolutionDate}) => {
+    try{
+      // console.log(remark, docs, updatedStatus, expectedResolutionDate, postDetails._id)
+      await departmentUpdateServices.addNewDepartmentUpdate({postId: postDetails?._id, docs, remark, updatedStatus, expectedResolutionDate})
+
+      ToasterNotification({
+        type: "success",
+        description: "Update done successfully"
+      })
+    } catch(error) {
+      console.log(error)
+      ToasterNotification({
+        type: "warning",
+        description: `${error.message}`
+      })
+    }
+  }
 
   return (
     <>
@@ -383,6 +461,10 @@ function Post() {
               }
             />
           )}
+
+          {postDetails && user && postDetails.departmentId == user?.departmentId && (
+            <ActionDialog triggerUpdate={newDepartmentUpdate} actionTitle={"Take action"}/>
+          )}
           {/* </div> */}
 
           {/* seperator  */}
@@ -431,10 +513,13 @@ function Post() {
           {/* department comment section  */}
           <div className="w-full p-3 flex flex-col gap-1">
             <h2>Department Update</h2>
-            {departmentComments.length !== 0 ? (
+            {departmentComments.length !== 0 || departmentUpdates.length !== 0 ? (
               <div className="w-full flex flex-col gap-2">
-                {departmentComments.map((comment, index) => (
-                  <Comment key={index} commentDetails={comment} isAuthorityComment={true} setReloadTrigger={setReloadTrigger}/>
+                {departmentUpdates.length !== 0 &&  departmentUpdates.map((update, index) => (
+                  <DepartmentUpdate key={index} updateDetails={update} setReloadTrigger={setReloadTrigger}/>
+                ))}
+                {departmentComments.length !== 0 && departmentComments.map((comment, index) => (
+                  <Comment key={index} commentDetails={comment} onDeleteComment={() => handleDeleteComment(comment)} isAuthorityComment={true} setReloadTrigger={setReloadTrigger}/>
                 ))}
               </div>
             ) : (
@@ -464,6 +549,7 @@ function Post() {
                     key={index}
                     commentDetails={comment}
                     isAuthorityComment={false}
+                    onDeleteComment={() => handleDeleteComment(comment)}
                     setReloadTrigger={setReloadTrigger}
                   />
                 ))}

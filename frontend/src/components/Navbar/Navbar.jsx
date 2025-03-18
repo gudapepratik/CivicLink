@@ -26,7 +26,7 @@ function Navbar() {
   // dispatch instance to handle store
   const dispatch = useDispatch();
   // loading state
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
 
   const citizenTabs = [
     {
@@ -93,7 +93,7 @@ function Navbar() {
   // logout handler
   const handleLogout = async () => {
     try {
-      setIsLoading(true)
+      setIsLoading(true);
       // logout user
       await AuthService.logoutUser();
 
@@ -113,8 +113,8 @@ function Navbar() {
         title: "Logout Failed",
         description: `${error.message}`,
       });
-    } finally{
-      setIsLoading(false)
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -122,9 +122,17 @@ function Navbar() {
     setSidebar((prev) => !prev);
   };
 
+  useEffect(() => {
+    if (sidebar == true) {
+      document.body.style.overflowY = "hidden";
+    } else {
+      document.body.style.overflowY = "visible";
+    }
+  }, [sidebar]);
+
   return (
     <>
-      {isLoading && <Loader/>}
+      {isLoading && <Loader />}
       <div className="bg-[#001044] dark:bg-zinc-950 shadow-inner sticky top-0 w-full h-20  z-50 ">
         <div className="flex w-full items-center justify-between h-full px-4">
           {!sidebar && (
@@ -134,7 +142,10 @@ function Navbar() {
               className="text-white"
             />
           )}
-          <NavLink to={'/'} className="font-outfit font-bold text-2xl text-white">
+          <NavLink
+            to={"/"}
+            className="font-outfit font-bold text-2xl text-white"
+          >
             CivicLink
           </NavLink>
           {!user ? (
@@ -144,7 +155,11 @@ function Navbar() {
             />
           ) : (
             <div className="w-12 h-12 rounded-full overflow-hidden">
-              <img src={user.avatar.publicUrl} alt="profile image" className="object-contain"/>
+              <img
+                src={user.avatar.publicUrl}
+                alt="profile image"
+                className="object-contain"
+              />
             </div>
           )}
         </div>
@@ -155,63 +170,63 @@ function Navbar() {
           } duration-200`}
         >
           <div className="flex flex-col w-[80%] bg-white dark:bg-zinc-950 dark:text-white">
-              <div className="w-full h-20 p-4 flex gap-3 items-center bg-[#001044] dark:bg-zinc-950">
-                <RiSidebarFoldFill
-                  onClick={toggleSidebar}
-                  size={28}
-                  className="text-white"
-                />
-                <div className="w-full shadow-inner p-2 rounded-md font-outfit bg-zinc-100 dark:bg-zinc-800">
-                  <h1 className="text-sm text-center text-zinc-600 dark:text-white">
-                    {user ? user.name : "Username"}
-                  </h1>
-                </div>
+            <div className="w-full h-20 p-4 flex gap-3 items-center bg-[#001044] dark:bg-zinc-950">
+              <RiSidebarFoldFill
+                onClick={toggleSidebar}
+                size={28}
+                className="text-white"
+              />
+              <div className="w-full shadow-inner p-2 rounded-md font-outfit bg-zinc-100 dark:bg-zinc-800">
+                <h1 className="text-sm text-center text-zinc-600 dark:text-white">
+                  {user ? user.name : "Username"}
+                </h1>
               </div>
+            </div>
 
-              {/* User location map  */}
-              <div className="w-full p-3 h-36">
-                <div className="flex w-full  rounded-2xl shadow-inner bg-zinc-400 dark:bg-zinc-800 h-full">
-                  {/* <GoogleMapComponent /> */}
-                </div>
+            {/* User location map  */}
+            <div className="w-full p-3 h-36">
+              <div className="flex w-full  rounded-2xl shadow-inner bg-zinc-400 dark:bg-zinc-800 h-full">
+                {/* <GoogleMapComponent /> */}
               </div>
+            </div>
 
-              {/* Tabs suggestions  */}
-              <div className="w-full flex flex-col">
-                <NavbarTabs
-                  tabs={
-                    user
-                      ? user.role === "citizen"
-                        ? citizenTabs
-                        : authorityTabs
-                      : citizenTabs
-                  }
+            {/* Tabs suggestions  */}
+            <div className="w-full flex flex-col">
+              <NavbarTabs
+                tabs={
+                  user
+                    ? user.role === "citizen"
+                      ? citizenTabs
+                      : authorityTabs
+                    : citizenTabs
+                }
+                toggleSidebar={toggleSidebar}
+              />
+            </div>
 
-                  toggleSidebar={toggleSidebar}
-                />
-              </div>
-
-              {/* Login/Logout buttons  */}
-              <div className="flex-1 flex w-full flex-col items-center justify-center">
-                {!user ? (
-                  <NavLink
-                    to={"/login"}
-                    className="px-6 py-3 flex items-center gap-3 rounded-xl text-white dark:text-zinc-900 dark:bg-white font-outfit text-lg  bg-blue-950 "
-                  >
-                    Login <RiArrowRightLine />
-                  </NavLink>
-                ) : (
-                  <button
-                    className="px-6 py-3 flex items-center gap-3 rounded-xl text-white dark:text-zinc-900 dark:bg-white font-outfit text-lg  bg-blue-950  "
-                    onClick={handleLogout}
-                  >
-                    Logout <RiArrowRightLine />
-                  </button>
-                )}
-              </div>
+            {/* Login/Logout buttons  */}
+            <div className="flex-1 flex w-full flex-col items-center justify-center">
+              {!user ? (
+                <NavLink
+                  to={"/login"}
+                  className="px-6 py-3 flex items-center gap-3 rounded-xl text-white dark:text-zinc-900 dark:bg-white font-outfit text-lg  bg-blue-950 "
+                >
+                  Login <RiArrowRightLine />
+                </NavLink>
+              ) : (
+                <button
+                  className="px-6 py-3 flex items-center gap-3 rounded-xl text-white dark:text-zinc-900 dark:bg-white font-outfit text-lg  bg-blue-950  "
+                  onClick={handleLogout}
+                >
+                  Logout <RiArrowRightLine />
+                </button>
+              )}
+            </div>
           </div>
-          <div className="bg-transparent w-[20%] min-h-screen" onClick={toggleSidebar}>
-          </div>
-
+          <div
+            className="bg-transparent w-[20%] min-h-screen"
+            onClick={toggleSidebar}
+          ></div>
         </div>
       </div>
     </>

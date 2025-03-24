@@ -35,7 +35,7 @@ export class departmentUpdateService {
       );
 
       if (!departmentUpdateResponse)
-        throw new Error("Error while creating new user account !!?");
+        throw new Error("Error while creating new department update !!?");
 
       return departmentUpdateResponse;
     } catch (error) {

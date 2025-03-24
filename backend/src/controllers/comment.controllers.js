@@ -28,12 +28,47 @@ const addComment = asyncHandler(async (req,res) => {
 
     if(!newComment) throw new ApiError(500, "error while adding a Comment")
 
+    const document = await getCommentById(newComment._id)
+
     return res
     .status(201)
     .json(
-        new ApiResponse(201, newComment, "Comment added to the Post successfully")
+        new ApiResponse(201,document, "Comment added to the Post successfully")
     )
 })
+
+const getCommentById = async (id) => {
+
+    const aggregate = [
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(id)
+            }
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "userId",
+                foreignField: "_id",
+                as: "userDetails"
+            }
+        },
+        {
+            $project: {
+                "userDetails._id": 0,
+                "userDetails.createdAt": 0,
+                "userDetails.updatedAt": 0,
+                "userDetails.password": 0,
+                "userDetails.refreshToken": 0,
+            }
+        }
+    ]
+    
+    // create a post
+    const response = await Comment.aggregate(aggregate)
+
+    return response
+}
 
 // get all the comments done by the user to posts
 const getCommentsByUser= asyncHandler(async (req,res) => {

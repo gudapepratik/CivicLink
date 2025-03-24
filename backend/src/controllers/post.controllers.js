@@ -63,20 +63,32 @@ const addNewPost = asyncHandler(async (req,res) => {
 // get all posts (by location)
 const getPostsByLocation = asyncHandler(async (req,res) => {
     // get the location coordinates
-    const {latitude, longitude} = req.query
+    const {latitude, longitude, statusFilter} = req.query
     // set search readius (30km from target location)
     const searchRadius = 30 * 1000; // 30km radius
     // aggregate pipeline (perform pagination in future)
     // get all posts near 30km radius of target location
-    const posts = await Post.aggregate([
-        {
-            $geoNear: {
-                near: { type: 'Point', coordinates: [Number(latitude), Number(longitude)] },
-                distanceField: "distance",
-                maxDistance: searchRadius,
-                spherical: true
+
+    let aggregate = [];
+
+    aggregate.push({
+        $geoNear: {
+            near: { type: 'Point', coordinates: [Number(latitude), Number(longitude)] },
+            distanceField: "distance",
+            maxDistance: searchRadius,
+            spherical: true
+        }
+    })
+
+    if(statusFilter && statusFilter !== "") {
+        aggregate.push({
+            $match: {
+                status: statusFilter
             }
-        },
+        })
+    }
+
+    aggregate.push(
         {
             $lookup: {
                 from: "users",
@@ -133,7 +145,11 @@ const getPostsByLocation = asyncHandler(async (req,res) => {
                 "userDetails.refreshToken": 0,
             }
         }
-    ]);
+    )
+
+    console.log(aggregate)
+
+    const posts = await Post.aggregate(aggregate);
 
     if(!posts) throw new ApiError(500, "Error occurred while fetching posts")
 
@@ -235,7 +251,7 @@ const getPostsByUser = asyncHandler(async (req,res) => {
 
 // get posts by department (anyone can access)
 const getPostsByDepartment = asyncHandler(async (req,res) => {
-    const {departmentId, latitude, longitude} = req.query
+    const {departmentId, latitude, longitude, statusFilter} = req.query
 
     if(!mongoose.isValidObjectId(departmentId)) throw new ApiError(400, "The departmentId is Invalid")
     
@@ -255,6 +271,14 @@ const getPostsByDepartment = asyncHandler(async (req,res) => {
                 spherical: true
             }
         });
+    }
+
+    if(statusFilter && statusFilter != "") {
+        aggregate.push({
+            $match: {
+                status: statusFilter
+            }
+        })
     }
 
     aggregate.push(

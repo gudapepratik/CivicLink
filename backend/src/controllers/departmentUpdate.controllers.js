@@ -4,6 +4,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { deleteFromCloudinary, uploadOnCloudinary } from "../utils/Cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { DepartmentUpdate } from "../models/departmentUpdate.models.js";
+import { Post } from "../models/post.models.js";
 
 // add new post
 const newDeptUpdate = asyncHandler(async (req,res) => {
@@ -24,15 +25,18 @@ const newDeptUpdate = asyncHandler(async (req,res) => {
 
     console.log(localDocFiles)
     // upload the images to cloudinary
-    const pdfUploadResponse = await Promise.all(
-        localDocFiles.docs.map(async (localPdf) => {
-            const cloudinaryResponse = await uploadOnCloudinary(localPdf.path)
-            return {
-                publicUrl: cloudinaryResponse.secure_url,
-                public_id: cloudinaryResponse.public_id
-            }
-        })
-    )
+    let pdfUploadResponse;
+    if(localDocFiles.docs) {
+        pdfUploadResponse = await Promise.all(
+            localDocFiles.docs.map(async (localPdf) => {
+                const cloudinaryResponse = await uploadOnCloudinary(localPdf.path)
+                return {
+                    publicUrl: cloudinaryResponse.secure_url,
+                    public_id: cloudinaryResponse.public_id
+                }
+            })
+        )
+    }
 
     if(!pdfUploadResponse) throw new ApiError(500, "An unexpected Error occurred while uploading pdf documents")
 
@@ -43,17 +47,62 @@ const newDeptUpdate = asyncHandler(async (req,res) => {
         updatedStatus,
         expectedResolutionDate,
         remark,
-        docs: pdfUploadResponse
+        docs: pdfUploadResponse || null
     })
 
+    // also update the status of the post
+    await Post.findOneAndUpdate(
+        {
+            _id: postId
+        },
+        {
+            status: updatedStatus
+        }
+    )
+
     if(!response) throw new ApiError(500, "An unexpected error occurred while making update")
+    
+    const document = await getDepartmentUpdateById(response._id)
 
     res
     .status(201)
     .json(
-        new ApiResponse(201, response, "DepartmentUpdate added successfully")
+        new ApiResponse(201, document, "DepartmentUpdate added successfully")
     )
 })
+
+const getDepartmentUpdateById = async (id) => {
+
+    const aggregate = [
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(id)
+            }
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "userId",
+                foreignField: "_id",
+                as: "userDetails"
+            }
+        },
+        {
+            $project: {
+                "userDetails._id": 0,
+                "userDetails.createdAt": 0,
+                "userDetails.updatedAt": 0,
+                "userDetails.password": 0,
+                "userDetails.refreshToken": 0,
+            }
+        }
+    ]
+    
+    // create a post
+    const response = await DepartmentUpdate.aggregate(aggregate)
+
+    return response
+}
 
 // get department updates for post
 const getDepartmentUpdatesOnPost = asyncHandler(async (req,res) => {
@@ -83,6 +132,11 @@ const getDepartmentUpdatesOnPost = asyncHandler(async (req,res) => {
                 "userDetails.updatedAt": 0,
                 "userDetails.password": 0,
                 "userDetails.refreshToken": 0,
+            }
+        },
+        {
+            $sort: {
+                createdAt: -1
             }
         }
     ]

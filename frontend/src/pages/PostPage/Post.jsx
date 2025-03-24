@@ -39,6 +39,7 @@ import UpvoteService from "@/api/services/upvote.services";
 import ActionDialog from "@/components/AuthorityActionDialog/ActionDialog";
 import departmentUpdateServices from "@/api/services/departmentUpdate.services";
 import DepartmentUpdate from "@/components/DepartmentUpdate/DepartmentUpdate";
+import StatusButton from "@/components/StatusButtons/StatusButton";
 
 function Post() {
   const { id } = useParams();
@@ -50,7 +51,7 @@ function Post() {
   const [postComments, setPostComments] = useState([]);
   const [departmentComments, setDepartmentComments] = useState([]);
   const [refreshCommentTrigger, setRefreshCommentTrigger] = useState(false);
-  const [departmentUpdates, setDepartmentUpdates] = useState([])
+  const [departmentUpdates, setDepartmentUpdates] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -140,8 +141,8 @@ function Post() {
       setPostDetails(response.data.data[0]);
 
       // fetch comments after that
-      fetchComments(response.data.data[0]._id)
-      fetchDepartmentUpdates(response.data.data[0]._id)
+      fetchComments(response.data.data[0]._id);
+      fetchDepartmentUpdates(response.data.data[0]._id);
     } catch (error) {
       console.log(error);
       ToasterNotification({
@@ -192,22 +193,23 @@ function Post() {
 
   const fetchDepartmentUpdates = async (postId) => {
     try {
-      setDepartmentUpdates([])
+      setDepartmentUpdates([]);
 
-      const departmentUpdateResponse = await departmentUpdateServices.getDepartmentUpdatesOnPost(postId);
+      const departmentUpdateResponse =
+        await departmentUpdateServices.getDepartmentUpdatesOnPost(postId);
 
-      console.log(departmentUpdateResponse.data.data)
+      console.log(departmentUpdateResponse.data.data);
 
-      setDepartmentUpdates(departmentUpdateResponse.data.data)
+      setDepartmentUpdates(departmentUpdateResponse.data.data);
     } catch (error) {
-      console.log(error)
+      console.log(error);
       ToasterNotification({
         type: "warning",
         title: "",
         description: "Error while fetching department updates",
       });
     }
-  }
+  };
 
   const handleDeletePost = async () => {
     try {
@@ -262,7 +264,7 @@ function Post() {
     } catch (error) {
       console.log(error);
 
-      if(user) {
+      if (user) {
         // Rollback the state changes if an error occurs
         setPostDetails((prev) => ({
           ...prev,
@@ -280,59 +282,102 @@ function Post() {
     }
   };
 
-  const handleDeleteComment = async (comment)  => {
-    const isDepartmentComment = comment.isDepartmentUpdate
-    console.log("deleting..")
+  const handleDeleteComment = async (comment) => {
+    const isDepartmentComment = comment.isDepartmentUpdate;
+    console.log("deleting..");
     try {
       // if the comment is authority comment , remove the comment from there, else remove from the postComments
-      if(isDepartmentComment) {
-        departmentComments.filter(item => item._id === comment._id)
-      } else{
-        postComments.filter(item => item._id === comment._id)
+      console.log(departmentComments);
+      if (isDepartmentComment) {
+        setDepartmentComments((prev) =>
+          prev.filter((item) => item._id !== comment._id)
+        );
+      } else {
+        setPostComments((prev) =>
+          prev.filter((item) => item._id !== comment._id)
+        );
       }
 
-      await CommentService.removeCommentFromPost({commentId: comment._id})
-      
+      await CommentService.removeCommentFromPost({ commentId: comment._id });
+
       ToasterNotification({
         type: "success",
-        title: "Comment has been removed successfully"
-      })
-      
+        title: "Comment has been removed successfully",
+      });
     } catch (error) {
-      console.log(error)
+      console.log(error);
 
-      if(isDepartmentComment) {
-        departmentComments.push(comment)
-      } else{
-        postComments.push(comment)
+      if (isDepartmentComment) {
+        departmentComments.push(comment);
+      } else {
+        postComments.push(comment);
       }
 
       // if any error occurrs, add the comment again
       ToasterNotification({
         type: "error",
-        title: "Error Occurred while deleting comment"
-      })
-
+        title: "Error Occurred while deleting comment",
+      });
     }
-  }
+  };
 
-  const newDepartmentUpdate = async ({remark, docs, updatedStatus, expectedResolutionDate}) => {
-    try{
+  const newDepartmentUpdate = async ({
+    remark,
+    docs,
+    updatedStatus,
+    expectedResolutionDate,
+  }) => {
+    try {
       // console.log(remark, docs, updatedStatus, expectedResolutionDate, postDetails._id)
-      await departmentUpdateServices.addNewDepartmentUpdate({postId: postDetails?._id, docs, remark, updatedStatus, expectedResolutionDate})
-
+      const response = await departmentUpdateServices.addNewDepartmentUpdate({
+        postId: postDetails?._id,
+        docs,
+        remark,
+        updatedStatus,
+        expectedResolutionDate,
+      });
+      console.log(response.data.data);
+      setDepartmentUpdates((prev) => [response.data.data[0], ...prev]);
+      setPostDetails((prev) => ({ ...prev, status: updatedStatus }));
       ToasterNotification({
         type: "success",
-        description: "Update done successfully"
-      })
-    } catch(error) {
-      console.log(error)
+        description: "Update done successfully",
+      });
+    } catch (error) {
+      console.log(error);
       ToasterNotification({
         type: "warning",
-        description: `${error.message}`
-      })
+        description: `${error.message}`,
+      });
     }
-  }
+  };
+
+  const addNewComment = async ({commentInput}) => {
+    if (!user) throw new Error("User must be logged in to comment");
+
+    if (!commentInput || commentInput.length < 10)
+      throw new Error("Comment must be atleast 10 characters long");
+
+    if (
+      user.role === "authority" &&
+      user.departmentId !== postDetails.departmentId
+    )
+      throw new Error("User not authorized to comment on current post");
+
+    const isDepartmentUpdate = user.role === "authority" ? true : false;
+
+    const response = await CommentService.addNewComment({
+      postId: postDetails._id,
+      comment: commentInput,
+      isDepartmentUpdate,
+    });
+
+    if(isDepartmentUpdate) {
+      setDepartmentComments(prev => [response.data.data[0], ...prev])
+    } else{
+      setPostComments(prev => [response.data.data[0], ...prev])
+    }
+  };
 
   return (
     <>
@@ -422,30 +467,7 @@ function Post() {
               </div>
 
               <div className="mr-3">
-                {postDetails.status === "pending" && (
-                  <div className="flex gap-2 text-yellow-500 font-poppins text-xs items-center border bg-yellow-50 border-yellow-500 p-1 rounded-md">
-                    <RiProgress2Line size={15} />
-                    <h2>Pending</h2>
-                  </div>
-                )}
-                {postDetails.status === "inprogress" && (
-                  <div className="flex gap-2 text-orange-500 font-poppins text-xs items-center border bg-orange-50 border-orange-500 p-1 rounded-md">
-                    <RiProgress4Line size={15} />
-                    <h2>In Progress</h2>
-                  </div>
-                )}
-                {postDetails.status === "resolved" && (
-                  <div className="flex gap-2 text-green-500 font-poppins text-xs items-center border bg-green-50 border-green-500-500 p-1 rounded-md">
-                    <RiCheckboxCircleLine size={15} />
-                    <h2>Resolved</h2>
-                  </div>
-                )}
-                {postDetails.status === "rejected" && (
-                  <div className="flex gap-2 text-red-600 font-poppins text-xs items-center border bg-red-50 border-red-600 p-1 rounded-md">
-                    <RiErrorWarningLine size={15} />
-                    <h2>Rejected</h2>
-                  </div>
-                )}
+                <StatusButton status={postDetails.status} />
               </div>
             </div>
           </div>
@@ -462,9 +484,14 @@ function Post() {
             />
           )}
 
-          {postDetails && user && postDetails.departmentId == user?.departmentId && (
-            <ActionDialog triggerUpdate={newDepartmentUpdate} actionTitle={"Take action"}/>
-          )}
+          {postDetails &&
+            user &&
+            postDetails.departmentId == user?.departmentId && (
+              <ActionDialog
+                triggerUpdate={newDepartmentUpdate}
+                actionTitle={"Take action"}
+              />
+            )}
           {/* </div> */}
 
           {/* seperator  */}
@@ -513,14 +540,27 @@ function Post() {
           {/* department comment section  */}
           <div className="w-full p-3 flex flex-col gap-1">
             <h2>Department Update</h2>
-            {departmentComments.length !== 0 || departmentUpdates.length !== 0 ? (
+            {departmentComments.length !== 0 ||
+            departmentUpdates.length !== 0 ? (
               <div className="w-full flex flex-col gap-2">
-                {departmentUpdates.length !== 0 &&  departmentUpdates.map((update, index) => (
-                  <DepartmentUpdate key={index} updateDetails={update} setReloadTrigger={setReloadTrigger}/>
-                ))}
-                {departmentComments.length !== 0 && departmentComments.map((comment, index) => (
-                  <Comment key={index} commentDetails={comment} onDeleteComment={() => handleDeleteComment(comment)} isAuthorityComment={true} setReloadTrigger={setReloadTrigger}/>
-                ))}
+                {departmentUpdates.length !== 0 &&
+                  departmentUpdates.map((update, index) => (
+                    <DepartmentUpdate
+                      key={index}
+                      updateDetails={update}
+                      setReloadTrigger={setReloadTrigger}
+                    />
+                  ))}
+                {departmentComments.length !== 0 &&
+                  departmentComments.map((comment, index) => (
+                    <Comment
+                      key={index}
+                      commentDetails={comment}
+                      onDeleteComment={() => handleDeleteComment(comment)}
+                      isAuthorityComment={true}
+                      setReloadTrigger={setReloadTrigger}
+                    />
+                  ))}
               </div>
             ) : (
               <div className="w-full flex flex-col gap-2">
@@ -539,6 +579,7 @@ function Post() {
             <MakeComment
               postDetails={postDetails}
               setReloadTrigger={setReloadTrigger}
+              addCommentHandler = {addNewComment}
             />
 
             {/* All comments  */}

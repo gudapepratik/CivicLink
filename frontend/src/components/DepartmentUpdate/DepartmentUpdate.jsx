@@ -5,6 +5,7 @@ import { ToasterNotification } from '@/utils/ToastNotification/ToastNotification
 import { useSelector } from 'react-redux'
 import { parseDateToReadableFormat } from '@/utils/DateParsers/DateParser'
 import { useNavigate } from 'react-router'
+import StatusButton from '../StatusButtons/StatusButton'
 
 function DepartmentUpdate({onDeleteComment, updateDetails, setReloadTrigger}) {
     // console.log("asf")
@@ -89,8 +90,8 @@ function DepartmentUpdate({onDeleteComment, updateDetails, setReloadTrigger}) {
                   </h3>
               </div>
 
-              <div  className="flex items-center gap-1">
-                {updateDetails.updatedStatus}
+              <div  className="flex items-center scale-75">
+                <StatusButton status={updateDetails.updatedStatus}/>
             </div>
             </div>
             </div>

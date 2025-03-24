@@ -13,6 +13,8 @@ function ExplorePosts() {
   const { location, setLocation } = useLocationContext();
   const [prevLocation, setPrevLocation] = useState(null);
   const [isLoading, setIsLoading] = useState(false)
+  const [status, setStatus] = useState("")
+  const [fetchTrigger, setFetchTrigger] = useState(false)
 
   const user = useSelector((state) => state.authSlice.user);
   const [posts, setPosts] = useState([]);
@@ -27,6 +29,7 @@ function ExplorePosts() {
       const response = await PostService.getPostsByLocation({
         latitude: location.lat,
         longitude: location.lng,
+        status: status
       });
       // console.log(response.data.data);
       setPosts(response.data.data);
@@ -66,13 +69,14 @@ function ExplorePosts() {
     } else if (!prevLocation) {
       fetchPosts();
     }
-  }, [location]);
+    fetchPosts()
+  }, [location, fetchTrigger]);
 
   return (
     <>
       {isLoading && <Loader/>}
       <div className="h-[calc(100vh-80px)] w-full p-2 flex flex-col gap-5 ">
-        <SearchBar />
+        <SearchBar status={status} setStatus={setStatus} trigger={setFetchTrigger}/>
         {posts ? (
           <div className="w-full flex flex-col gap-5">
             {posts.map((post, index) => (

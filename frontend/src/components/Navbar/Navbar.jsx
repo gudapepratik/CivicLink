@@ -38,6 +38,10 @@ function Navbar() {
       link: "user-posts",
     },
     {
+      title: "Departments",
+      link: "departments"
+    },
+    {
       title: "Notifications",
       link: "notifications",
     },

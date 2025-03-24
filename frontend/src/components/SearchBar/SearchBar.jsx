@@ -1,13 +1,16 @@
 import { useLocationContext } from "@/utils/Context/LocationContext";
 import { fetchSuggestions, getAddressFromCoordinates, getCoordinatesFromAddress } from "@/utils/googleMaps.utilites";
-import { RiSearchLine } from "@remixicon/react";
+import { RiFilter2Line, RiFilter3Line, RiFilterFill, RiFilterLine, RiSearchLine } from "@remixicon/react";
 import { debounce } from "lodash";
 import React, { useCallback, useEffect, useState } from "react";
+import Filter from "../Filter/Filter";
 
-function SearchBar({setCoordinates}) {
+function SearchBar({status, setStatus, trigger}) {
+  console.log(status)
   const [query, setQuery] = useState("");
   const [suggestion, setSuggestions] = useState([]);
   const {location, setLocation} = useLocationContext()
+  const [showFilter, setShowFilter] = useState(false)
 
   const handleSearchInput = async (e) => {
     setQuery(e.target.value)
@@ -51,9 +54,8 @@ function SearchBar({setCoordinates}) {
 
 
   return (
-    <div className="w-full relative font-outfit bg-white dark:bg-zinc-800 rounded-lg flex items-center gap-3 border p-3">
-      <label htmlFor="search">Search:</label>
-      <form onSubmit={handleSearchSubmit} className="flex items-center w-full border dark:border-zinc-500 rounded-lg bg-zinc-50 dark:bg-zinc-700">
+    <div className="w-full relative font-outfit  bg-white dark:bg-zinc-800 rounded-lg flex items-center gap-3 border p-3">
+      <form onSubmit={handleSearchSubmit} className="flex items-center  w-full border dark:border-zinc-500 rounded-lg bg-zinc-50 dark:bg-zinc-700">
         <div className="w-full">
           <input
             type="text"
@@ -77,8 +79,14 @@ function SearchBar({setCoordinates}) {
         >
           <RiSearchLine className=""/>
         </button>
-
       </form>
+
+      <div className="p-2 rounded-lg border" onClick={() => setShowFilter(prev => !prev)}>
+        <RiFilter3Line size={23}/>
+      </div>
+      
+      
+      <Filter status={status} setStatus={setStatus} showFilter={showFilter} trigger={trigger} setShowFilter={setShowFilter}/>
     </div>
   );
 }

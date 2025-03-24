@@ -16,6 +16,8 @@ function NewReports() {
   const [isLoading, setIsLoading] = useState(false);
   const user = useSelector((state) => state.authSlice.user);
   const [posts, setPosts] = useState([]);
+  const [status, setStatus] = useState("")
+  const [trigger, setTrigger] = useState(false)
 
   const fetchPosts = async () => {
     try {
@@ -28,6 +30,7 @@ function NewReports() {
         departmentId: user?.departmentId,
         latitude: location.lat,
         longitude: location.lng,
+        status: status
       });
       console.log(response)
 
@@ -69,7 +72,8 @@ function NewReports() {
     } else if (!prevLocation) {
       fetchPosts();
     }
-  }, [location]);
+    fetchPosts()
+  }, [location, trigger]);
 
   return (
     <>
@@ -82,7 +86,7 @@ function NewReports() {
       )}
       {isLoading && <Loader />}
       <div className="h-[calc(100vh-80px)] w-full p-2 flex flex-col gap-5 ">
-        <SearchBar />
+        <SearchBar status={status} setStatus={setStatus} trigger={setTrigger}/>
         {posts ? (
           <div className="w-full flex flex-col gap-5">
             {posts.map((post, index) => (

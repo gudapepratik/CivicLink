@@ -31,6 +31,29 @@ const addNewDepartment = asyncHandler(async (req,res) => {
     )
 })
 
+// get all departments
+const getDepartments = asyncHandler(async (req,res) => {
+    const response = await Department.find();
+
+    res.status(200)
+    .json(
+        new ApiResponse(200, response, "Departments fetched successfully")
+    )
+})
+
+const getDepartmentById = asyncHandler(async (req,res) => {
+    const {id} = req.query
+    console.log(id)
+
+    if(!mongoose.isValidObjectId(id)) throw new ApiError(400, "The DepartmentId is invalid")
+    const response = await Department.findById(id)
+
+    res.status(200) 
+    .json(
+        new ApiResponse(200, response, "Department Details fetched successfully")
+    )
+})
+
 // remove a department (admin only)
 const removeDepartment = asyncHandler(async (req,res) => {
     // get the departmentID
@@ -58,5 +81,7 @@ const removeDepartment = asyncHandler(async (req,res) => {
 
 export {
     addNewDepartment,
-    removeDepartment
+    removeDepartment,
+    getDepartmentById,
+    getDepartments
 }

@@ -30,6 +30,8 @@ import CommunityGuideline from "./pages/CommunityGuideline/CommunityGuideline.js
 import Account from "./pages/AccountDetails/Account.jsx";
 import Dashboard from "./pages/Authority Pages/DashBoard/Dashboard.jsx";
 import NewReports from "./pages/NewReports/NewReports.jsx";
+import DepartmentTab from "./pages/DepartmentDetails/DepartmentTab.jsx";
+import DepartmentPage from "./pages/DepartmentDetails/DepartmentPage.jsx";
 // import { Toaster } from "@chakra-ui/react";
 // import { io } from "socket.io-client"; // socket io trails
 // import config from "../config/config.js";
@@ -48,6 +50,8 @@ const router = createBrowserRouter(
       <Route path="/account" element={<Account/>} />
       <Route path="/authority-dashboard" element={<Dashboard/>} />
       <Route path="/new-reports" element={<NewReports/>} />
+      <Route path="/departments" element={<DepartmentTab/>} />
+      <Route path="/departments/:id" element={<DepartmentPage/>} />
       {/* <Route path="sellerdashboard/" element={<SellerDashboard />}>
         <Route path="login" element={<SellerLogin />} />
         <Route path="products" element={<Productscomp />} />

@@ -50,7 +50,7 @@ export class PostService {
     }
   }
 
-  async getPostsByLocation({ latitude, longitude }) {
+  async getPostsByLocation({ latitude, longitude, status}) {
     try {
       console.log(latitude, longitude);
       if (!latitude || !longitude) throw new Error("Location is missing");
@@ -61,6 +61,7 @@ export class PostService {
           params: {
             latitude,
             longitude,
+            statusFilter: status
           },
         }
       );
@@ -125,7 +126,7 @@ export class PostService {
   }
 
   // authority functions
-  async getPostsByDepartmentAndLocation({ departmentId, latitude, longitude }) {
+  async getPostsByDepartmentAndLocation({ departmentId, latitude, longitude ,status}) {
     try {
       if (!departmentId || departmentId === "")
         throw new Error("deaprtment ID is missing");
@@ -137,6 +138,7 @@ export class PostService {
             departmentId,
             latitude,
             longitude,
+            statusFilter: status
           },
         }
       );

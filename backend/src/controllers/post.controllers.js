@@ -128,16 +128,27 @@ const getPostsByLocation = asyncHandler(async (req,res) => {
             }
         },
         { // Sort by nearest first
-            $sort: { distance: 1 } 
+            $sort: { distance: 1 },
+            $sort: {createdAt: -1}
         },
         {
             $project: {
                 upvotes: 0, // Exclude upvotes array (we dont want that)
                 comments: 0,  // Exclude comments array (we dont want that)
                 "departmentDetails._id": 0,
+                "departmentDetails.mission": 0,
+                "departmentDetails.description": 0,
+                "departmentDetails.responsibilities": 0,
+                "departmentDetails.services": 0,
+                "departmentDetails.commonIssues": 0,
+                "departmentDetails.heroImage": 0,
+                "departmentDetails.logo": 0,
+                "departmentDetails.hours": 0,
+                "departmentDetails._id": 0,
+                "departmentDetails._id": 0,
+                "departmentDetails._id": 0,
                 "departmentDetails.createdAt": 0,
                 "departmentDetails.updatedAt": 0,
-                "departmentDetails.authorityUsers": 0,
                 "userDetails._id": 0,
                 "userDetails.createdAt": 0,
                 "userDetails.updatedAt": 0,

@@ -6,7 +6,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import Filter from "../Filter/Filter";
 
 function SearchBar({status, setStatus, trigger}) {
-  console.log(status)
   const [query, setQuery] = useState("");
   const [suggestion, setSuggestions] = useState([]);
   const {location, setLocation} = useLocationContext()

@@ -2,35 +2,35 @@
 const departmentInfo = [
   {
     title: "Water & Sanitation Board",
-    departmentId: "67a782b7f799ce4ca8c59e98",
+    departmentId: "67e0d505fb498b6d5f780fc3",
   },
   {
     title: "State Electricity Distribution Board",
-    departmentId: "67a782f2f799ce4ca8c59e9b",
+    departmentId: "67e12e540af9a3cf1056384f",
   },
   {
     title: "Pune Municipal Corporation",
-    departmentId: "67a7834ff799ce4ca8c59e9e",
+    departmentId: "67e12eff0af9a3cf10563850",
   },
   {
     title: "State Public Works Department (PWD)",
-    departmentId: "67a783b2f799ce4ca8c59ea1",
+    departmentId: "67e12f600af9a3cf10563851",
   },
   {
     title: "City Health & Sanitation Authority",
-    departmentId: "67a783e4f799ce4ca8c59ea4",
+    departmentId: "67e12fe20af9a3cf10563853",
   },
   {
     title: "Regional Transport & Traffic Control",
-    departmentId: "67a7842af799ce4ca8c59ea7",
+    departmentId: "67e12f9f0af9a3cf10563852",
   },
   {
     title: "Disaster Response & Emergency Services (DRES)",
-    departmentId: "67a7845ff799ce4ca8c59eaa",
+    departmentId: "67e130110af9a3cf10563854",
   },
   {
     title: "State Pollution Control Board",
-    departmentId: "67a785e63c6406efca3fcb31",
+    departmentId: "67e130340af9a3cf10563855",
   },
 ];
 

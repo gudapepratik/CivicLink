@@ -65,16 +65,8 @@ function Navbar() {
       link: "authority-dashboard",
     },
     {
-      title: "New Reports",
+      title: "Reports",
       link: "new-reports",
-    },
-    {
-      title: "Pending Reports",
-      link: "reports",
-    },
-    {
-      title: "Resolved Reports",
-      link: "reports",
     },
     {
       title: "Account",

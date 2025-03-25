@@ -27,6 +27,7 @@ function PostForm() {
   const userStatus = useSelector((state) => state.authSlice.status);
   const [location, setLocation] = useState(null);
   const [isLoading, setLoading] = useState(false);
+  const [selectedDep, setSelectedDep] = useState(departmentInfo[0].departmentId)
   const navigate = useNavigate();
   const {
     register,
@@ -178,7 +179,9 @@ function PostForm() {
                 required
                 id="department"
                 className="border p-2 w-full rounded-lg bg-zinc-50 dark:bg-zinc-800"
-                // value={}
+                // onChange={(e) => {
+                //   console.log("asf",e)
+                //   setSelectedDep()}}
                 {...register("departmentId", {
                   required: "Department is required",
                 })}
@@ -194,6 +197,10 @@ function PostForm() {
                 ))}
               </select>
             </Field>
+
+            {/* <div className="w-full flex flex-col">
+                <a href={`/departments/${selectedDep}`}>Go to</a>
+            </div> */}
 
             {/* map box  */}
             <div className="flex flex-col gap-2">

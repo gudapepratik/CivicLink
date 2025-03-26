@@ -40,6 +40,7 @@ import ActionDialog from "@/components/AuthorityActionDialog/ActionDialog";
 import departmentUpdateServices from "@/api/services/departmentUpdate.services";
 import DepartmentUpdate from "@/components/DepartmentUpdate/DepartmentUpdate";
 import StatusButton from "@/components/StatusButtons/StatusButton";
+import { Button } from "@chakra-ui/react";
 
 function Post() {
   const { id } = useParams();
@@ -328,6 +329,7 @@ function Post() {
     expectedResolutionDate,
   }) => {
     try {
+      setIsLoading(true)
       // console.log(remark, docs, updatedStatus, expectedResolutionDate, postDetails._id)
       const response = await departmentUpdateServices.addNewDepartmentUpdate({
         postId: postDetails?._id,
@@ -349,6 +351,8 @@ function Post() {
         type: "warning",
         description: `${error.message}`,
       });
+    } finally{
+      setIsLoading(false)
     }
   };
 
@@ -378,6 +382,8 @@ function Post() {
       setPostComments(prev => [response.data.data[0], ...prev])
     }
   };
+
+  const [expandDesc, setExpandDesc] = useState(false)
 
   return (
     <>
@@ -424,9 +430,13 @@ function Post() {
             </h1>
 
             {/* description  */}
-            <h2 className="text-zinc-800 dark:text-zinc-500 leading-5">
-              {postDetails.description || "No description available"}
-            </h2>
+            <div className="flex flex-col items-end">
+              <h2 className={`text-zinc-800 dark:text-zinc-500 ${!expandDesc ? "h-40" : ""}  overflow-hidden leading-5`}>
+                {postDetails.description || "No description available"}
+              </h2>
+              {!expandDesc && <button className="dark:text-zinc-400" onClick={() => setExpandDesc(true)}>...read more</button>}
+              {expandDesc && <button className="dark:text-zinc-400" onClick={() => setExpandDesc(false)}>...read less</button>}
+            </div>
 
             {/* calender and location  */}
             <div className="w-full flex gap-4 items-center">

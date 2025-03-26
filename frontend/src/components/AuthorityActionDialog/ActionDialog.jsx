@@ -100,7 +100,7 @@ function ActionDialog({triggerUpdate, actionTitle}) {
 
                 <div className="w-full flex flex-col items-start p-3 border-b-[1px] border-b-zinc-300 dark:border-b-zinc-700 ">
                     <label htmlFor="remarks" className="text-zinc-500 dark:text-zinc-400">Remarks</label>
-                    <textarea id="remarks" onChange={(e) => handleFieldInput("remark", e.target.value)} className="focus:outline-zinc-200 text-zinc-800 w-full p-2 bg-zinc-100 dark:bg-zinc-800 min-h-12 max-h-40" placeholder="Enter remarks"></textarea>
+                    <textarea id="remarks" onChange={(e) => handleFieldInput("remark", e.target.value)} className="focus:outline-zinc-200 dark:text-white text-zinc-800 w-full p-2 bg-zinc-100 dark:bg-zinc-800 min-h-12 max-h-40" placeholder="Enter remarks"></textarea>
                 </div>
 
                 <div className="w-full flex justify-between p-3 border-b-[1px] border-b-zinc-200 dark:border-b-zinc-700 items-center">
@@ -108,11 +108,11 @@ function ActionDialog({triggerUpdate, actionTitle}) {
                     <input type="date" id="expectedDate" onChange={(e) => handleFieldInput("expectedResolutionDate", e.target.valueAsDate)} className="bg-zinc-100 dark:bg-zinc-800 p-2" />
                 </div>
 
-                <div className="w-full flex flex-col items-start p-3  dark:border-b-zinc-700 ">
+                <div className="w-full flex flex-col items-start p-3  dark:border-b-zinc-700">
                     <label htmlFor="attachments" className="text-zinc-500 dark:text-zinc-400">Attachments <span className="text-xs">(optional)</span></label>
                     {/* <h1 className="w-1/3 text-left">pending</h1> */}
                     <input type="file" accept="application/pdf" multiple onChange={handleFileChange} id="attachments" className="hidden"/>
-                    <label htmlFor="attachments"  className="w-full text-center p-4 bg-zinc-100 rounded-lg text-zinc-800">Upload documents (pdf)</label>
+                    <label htmlFor="attachments"  className="w-full dark:bg-zinc-700 dark:text-zinc-400 text-center p-4 bg-zinc-100 rounded-lg text-zinc-800">Upload documents (pdf)</label>
                     {files.length > 0 && (
                 <div className="mt-2 w-full">
                     {files.map((file, index) => (

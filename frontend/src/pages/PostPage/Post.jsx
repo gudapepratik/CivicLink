@@ -496,7 +496,7 @@ function Post() {
 
           {postDetails &&
             user &&
-            postDetails.departmentId == user?.departmentId && (
+            postDetails.departmentId == user?.departmentId && (postDetails.status !== "resolved" && postDetails.status !== "rejected") &&  (
               <ActionDialog
                 triggerUpdate={newDepartmentUpdate}
                 actionTitle={"Take action"}

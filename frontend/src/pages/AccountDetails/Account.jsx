@@ -52,6 +52,7 @@ function Account() {
       });
       setAddress(response);
     } catch (error) {
+      console.log(error)
       ToasterNotification({
         type: "warning",
         title: "Error Occurred",
@@ -61,9 +62,11 @@ function Account() {
   };
 
   useEffect(() => {
-    getAddress();
-    if(user.role === "authority") {
-      fetchDepartment();
+    if(user) {
+      getAddress();
+      if(user?.role === "authority") {
+        fetchDepartment();
+      }
     }
   }, [user]);
 

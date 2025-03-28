@@ -3,7 +3,7 @@ import { Button, Input, HStack } from "@chakra-ui/react";
 import { Field } from "@/components/ui/field";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Controller, useForm } from "react-hook-form";
-import { LoginPageImg } from "@/assets/assets.config";
+import { LoginPageImg, LoginPageImg2, LoginPageImg3 } from "@/assets/assets.config";
 import AuthService from "@/api/services/auth.services";
 import { useDispatch } from "react-redux";
 import { login } from "@/store/authSlice";
@@ -184,7 +184,7 @@ function Login() {
       {isLoading && <Loader />}
       {/* background image  */}
       <img
-        src={LoginPageImg}
+        src={LoginPageImg3}
         alt=""
         className="w-full h-screen absolute object-cover"
       />
@@ -192,7 +192,7 @@ function Login() {
         <div className="w-full p-2 duration-100">
           <form
             onSubmit={onSubmit}
-            className="font-outfit gap-4 p-5 rounded-lg flex items-center dark:bg-zinc-800 flex-col bg-white "
+            className="font-outfit gap-4 p-5 rounded-md border border-zinc-300 flex items-center dark:bg-zinc-800 flex-col bg-white "
           >
             <h1 className="font-bold text-xl text-blue-800 dark:text-white">CivicLink</h1>
             {toRegister && (

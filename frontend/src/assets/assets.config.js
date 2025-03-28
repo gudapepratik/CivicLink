@@ -9,6 +9,8 @@ import HomeCardimg1 from './HomeCardImg1.svg'
 import HomeCardimg2 from './Winter city park with bench.jpg'
 import NotLoginImg1 from './notloginimage.svg'
 import NotResultImg1 from './NoResultsimage.svg'
+import HeroImg2 from './HeroImage2.jpg'
+import LoginPageImg3 from './LoginPageImg.png'
 
 export {
     electricityDeptimg,
@@ -21,5 +23,7 @@ export {
     HomeCardimg1,
     HomeCardimg2,
     NotLoginImg1,
-    NotResultImg1
+    NotResultImg1,
+    HeroImg2,
+    LoginPageImg3
 }

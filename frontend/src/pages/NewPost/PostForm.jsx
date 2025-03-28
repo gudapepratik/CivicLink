@@ -128,7 +128,7 @@ function PostForm() {
     <>
       {isLoading && <Loader />}
       {!userStatus ? (
-        <Error image={NotLoginImg1} title={'User Not Logged in'} message={'Log in to your account to Create a post'}/>
+        <Error image={NotLoginImg1} hoffset={100} title={'User Not Logged in'} message={'Log in to your account to Create a post'}/>
       ) : (
         <div className="w-full font-outfit p-3">
           <h1 className="text-zinc-800 text-2xl font-extrabold text-center dark:text-white">

@@ -163,3 +163,22 @@
   font-weight: normal;
   font-style: normal;
 }
+
+@font-face {
+  font-family: 'Outfit-Bold';
+  src: url('/fonts/Outfit-Bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Outfit-ExtraBold';
+  src: url('/fonts/Outfit-ExtraBold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Outfit-SemiBold';
+  src: url('/fonts/Outfit-SemiBold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}

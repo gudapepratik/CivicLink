@@ -71,7 +71,10 @@ module.exports = {
 			ProtestStrike: ['Protest Strike'],
 			SpicyRice: ['Spicy Rice'],
 			powerGrotesk: ['PowerGrotesk-Regular', 'sans-serif'],
-			outfit: ['Outfit-VariableFont_wght', 'sans-serif']
+			outfit: ['Outfit-VariableFont_wght', 'sans-serif'],
+			outfitBold: ['Outfit-Bold', 'sans-serif'],
+			outfitExtraBold: ['Outfit-ExtraBold', 'sans-serif'],
+			outfitSemiBold: ['Outfit-SemiBold', 'sans-serif'],
 				   // Add more custom font families as needed
 		  },
 		  spacing: {

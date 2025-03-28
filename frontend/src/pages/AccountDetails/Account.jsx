@@ -158,6 +158,7 @@ function Account() {
       {!user ? (
         <Error
           image={NotLoginImg1}
+          hoffset={100}
           title={"User Not Logged in"}
           message={"Login or Create your account first"}
         />

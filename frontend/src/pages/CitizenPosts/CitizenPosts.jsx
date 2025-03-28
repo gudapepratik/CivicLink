@@ -58,7 +58,7 @@ function CitizenPosts() {
     <>
         {isLoading && <Loader/>}
         {!user ?
-            <Error image={NotLoginImg1} title={'User Not Logged in'} message={"Log in to your account to Create a post"}/>
+            <Error image={NotLoginImg1} hoffset={100} title={'User Not Logged in'} message={"Log in to your account to Create a post"}/>
         :
         <div className='w-full h-[calc(100vh-80px)] flex flex-col gap-2 p-2'>
             {/* filter section  */}

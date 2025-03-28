@@ -15,6 +15,7 @@ import AuthService from "@/api/services/auth.services";
 import { ToasterNotification } from "@/utils/ToastNotification/ToastNotification";
 import { logout } from "@/store/authSlice";
 import Loader from "../Loader/Loader";
+import { HeroImg2, HomeCardimg2 } from "@/assets/assets.config";
 
 function Navbar() {
   const { toggleColorMode } = useColorMode();
@@ -181,8 +182,9 @@ function Navbar() {
 
             {/* User location map  */}
             <div className="w-full p-3 h-36">
-              <div className="flex w-full  rounded-2xl shadow-inner bg-zinc-400 dark:bg-zinc-800 h-full">
+              <div className="flex w-full  rounded-2xl shadow-inner overflow-hidden relative bg-zinc-400 dark:bg-zinc-800 h-full">
                 {/* <GoogleMapComponent /> */}
+                <img src={HeroImg2} alt="" className="w-full object-cover absolute -top-5"/>
               </div>
             </div>
 

@@ -28,44 +28,44 @@ function Home() {
   
   return (
     <>
-      <div className="w-full font-outfit bg-zinc-50">
-        <div className="w-full p-8  border-b relative z-10 pb-20  border-zinc-300 flex flex-col justify-center  items-center gap-3">
-          <h1 className="text-3xl  font-outfitBold text-center text-zinc-800">Connect with your community</h1>
-          <h1 className="text-base text-center text-zinc-400">Report local issues, explore community posts, and make your neighborhood better together.</h1>
+      <div className="w-full font-outfit bg-zinc-50 dark:bg-zinc-950">
+        <div className="w-full p-8 dark:border-b-zinc-700  border-b pt-10 relative z-10 pb-20  border-zinc-300 flex flex-col justify-center  items-center gap-3">
+          <h1 className="text-[2rem] leading-8 font-outfitBold text-center text-zinc-800 dark:text-white ">Connect with your community</h1>
+          <h1 className="text-base text-center text-zinc-400 dark:text-zinc-500">Report local issues, explore community posts, and make your neighborhood better together.</h1>
           
           <div className="flex gap-2 flex-col">
-            <NavLink to={"/explore-posts"} className={`flex items-center py-3 px-5 bg-zinc-800 hover:bg-white hover:border-zinc-500 hover:border hover:text-zinc-800 text-white duration-300 rounded-lg`}>
+            <NavLink to={"/explore-posts"} className={`flex items-center py-3 px-5 dark:bg-white dark:text-zinc-800 dark:hover:bg-zinc-800 dark:hover:text-white bg-zinc-800 hover:bg-white hover:border-zinc-500 hover:border hover:text-zinc-800 text-white duration-300 rounded-lg`}>
               <span className="font-medium">Explore posts</span>
               <RiArrowRightSLine/>
             </NavLink>
 
-            <NavLink to={"/new-post"} className={`flex items-center gap-1 py-3 px-5 bg-white text-zinc-800 border border-zinc-500 hover:bg-zinc-800 hover:text-white duration-300  rounded-lg`}>
+            <NavLink to={"/new-post"} className={`flex items-center gap-1 py-3 px-5 bg-white dark:bg-zinc-700 dark:hover:bg-white dark:hover:text-zinc-800 dark:text-white text-zinc-800 border border-zinc-500 hover:bg-zinc-800 hover:text-white duration-300  rounded-lg`}>
               <RiErrorWarningLine size={20}/>
               <span className="font-medium">Make a Report</span>
             </NavLink>
           </div>
         </div>
 
-        <div className="flex flex-col p-5 gap-2 items-center">
+        <div className="flex flex-col p-5 gap-4 items-center">
           {HomeCardData.map((item,index) => (
             <HomeCard key={index} title={item.title} icon={item.icon} description={item.description}/>
           ))}
         </div>
 
 
-        <div className="w-full p-6 h-fit border-b bg-white relative z-10  border-zinc-300 flex flex-col items-center gap-3">
-          <h1 className="text-3xl  font-outfitBold text-center text-zinc-800">Join thousands of active citizens</h1>
-          <h1 className="text-base  text-center text-zinc-400">CivikLink is helping communities across the country become safer, cleaner, and more connected.</h1>
+        <div className="w-full p-6 h-fit border-b bg-white relative z-10  border-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 flex flex-col items-center gap-3">
+          <h1 className="text-3xl  font-outfitBold text-center text-zinc-800 dark:text-white">Join thousands of active citizens</h1>
+          <h1 className="text-base  text-center text-zinc-400 dark:text-zinc-500">CivikLink is helping communities across the country become safer, cleaner, and more connected.</h1>
           
-          <div className="w-full flex flex-col justify-center gap-2 bg-white ">
-            <NavLink to={'/login'} className={`flex items-center justify-center py-2 px-5 bg-zinc-800 hover:bg-white hover:border-zinc-500 hover:border hover:text-zinc-800 text-white duration-300 rounded-lg`}>
+          <div className="w-full flex flex-col justify-center gap-2 bg-white dark:bg-zinc-900">
+            <NavLink to={'/login'} className={`flex items-center dark:bg-white dark:text-zinc-800 dark:hover:bg-zinc-800 dark:hover:text-white justify-center py-2 px-5 bg-zinc-800 hover:bg-white hover:border-zinc-500 hover:border hover:text-zinc-800 text-white duration-300 rounded-lg`}>
               <span className="font-medium">Sign Up</span>
               <RiArrowRightSLine/>
             </NavLink>
           </div>
         </div>
 
-        <div className="w-full p-6 h-fit border-b bg-white relative z-10  border-zinc-800 flex flex-col justify-center  items-center gap-5">
+        <div className="w-full p-6 h-fit border-b bg-white relative z-10  border-zinc-800 dark:bg-zinc-900 flex flex-col justify-center  items-center gap-5">
           <p className="text-sm text-zinc-500">© 2024 CivikLink. All rights reserved.</p>
           <div className="w-[50%] flex items-center justify-between text-sm underline-offset-2 underline text-zinc-500">
             <a href="#">Terms</a>

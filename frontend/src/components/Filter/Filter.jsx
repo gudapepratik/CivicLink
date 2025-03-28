@@ -43,7 +43,7 @@ function Filter({status, setStatus, showFilter, setShowFilter , trigger}) {
   ];
   return (
     <div
-      className={`w-[calc(93%)] rounded-md transition-all duration-700 shadow-lg p-5 absolute font-outfit bg-white dark:bg-zinc-800 top-14 flex-col gap-3 justify-center ${
+      className={`w-[calc(93%)] rounded-md transition-all z-10 duration-700 shadow-lg p-5 bg-white absolute font-outfit dark:bg-zinc-800 top-14 flex-col gap-3 justify-center ${
         showFilter ? "flex" : "hidden"
       }`}
     >

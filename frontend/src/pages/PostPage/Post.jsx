@@ -8,6 +8,7 @@ import {
   RiCalendarLine,
   RiCheckboxCircleLine,
   RiErrorWarningLine,
+  RiLoaderLine,
   RiMapPin2Line,
   RiMessage2Line,
   RiMoreFill,
@@ -613,7 +614,7 @@ function Post() {
           </div>
         </div>
       ) : (
-        <div>loading....</div>
+        <div className='w-full h-[calc(100vh-15vh)]  flex items-center justify-center'><RiLoaderLine size={30} className='animate-spin duration-5000'/></div>
       )}
     </>
   );

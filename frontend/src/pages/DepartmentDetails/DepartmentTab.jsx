@@ -1,6 +1,8 @@
 import departmentService  from '@/api/services/department.services'
+import { NotResultImg1 } from '@/assets/assets.config'
 import DepartmentList from '@/components/DepartmentComponents/DepartmentList'
 import DepartmentSearchbar from '@/components/DepartmentComponents/DepartmentSearchbar'
+import Error from '@/components/Error/Error'
 import { ToasterNotification } from '@/utils/ToastNotification/ToastNotification'
 import React, { useEffect, useState } from 'react'
 
@@ -39,7 +41,17 @@ function DepartmentTab() {
         <DepartmentSearchbar departmentsCopy={departmentsCopy} setDepartments={setDepartments}/>
 
         {/* Department Listing  */}
-        <DepartmentList departments={departments}/>
+        {departments && departments.length > 0 && (
+          <DepartmentList departments={departments}/>
+        )}
+        {departments && departments.length === 0 && (
+          <Error 
+            image={NotResultImg1} 
+            hoffset={300}
+            title={"No Departments Available !"} 
+            message={"There are no departments available for this query at the moment."} 
+          />
+        )}
       </div>
     </>
   )

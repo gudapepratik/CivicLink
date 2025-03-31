@@ -67,13 +67,12 @@ app.use('/api/v1/department',departmentRouter)
 import departmentUpdateRouter from './routes/departmentUpdate.routes.js'
 app.use('/api/v1/departmentUpdate', departmentUpdateRouter)
 
-// // order router
-// import orderRouter from './routes/order.routes.js'
-// app.use('/api/v1/order',orderRouter)
-
 // commnet router
 import commentRouter from './routes/comment.routes.js'
 app.use('/api/v1/comment',commentRouter)
+
+import adminRouter from './routes/admin.routes.js'
+app.use('/api/v1/admin',adminRouter)
 
 app.use((err, req, res, next) => {
     if (err instanceof ApiError) {

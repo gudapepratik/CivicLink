@@ -42,6 +42,11 @@ import departmentUpdateServices from "@/api/services/departmentUpdate.services";
 import DepartmentUpdate from "@/components/DepartmentUpdate/DepartmentUpdate";
 import StatusButton from "@/components/StatusButtons/StatusButton";
 import { Button } from "@chakra-ui/react";
+import PostTabs from "@/components/Post/PostTabs";
+import PostTabDetails from "@/components/Post/PostTabDetails";
+import adminServices, { adminService}  from "@/api/services/admin.services.js";
+
+const tabs = ["Details", "Updates", "Comments", "Location"]
 
 function Post() {
   const { id } = useParams();
@@ -384,7 +389,67 @@ function Post() {
     }
   };
 
+  const handleRejectPost = async () => {
+    try {
+      if(!user) throw new Error("Admin not logged in !")
+      const response = await adminServices.rejectReport({
+        postId: postDetails._id,
+        recipient_email: postDetails.userDetails[0].email,
+        recipient_name: postDetails.userDetails[0].name,
+        rejectionReason: "This is the reason for rejection"
+      })
+
+      // update the postdetails
+      setPostDetails(prev => ({
+        ...prev,
+        rejectedBy: user._id
+      }))
+
+      ToasterNotification({
+        type: "success",
+        description: "Report has been rejected succesfully"
+      })
+    } catch (error) {
+      console.log(error)
+      ToasterNotification({
+        type: "warning",
+        description: `${error.message}`
+      })
+    }
+  }
+
+  const handleApprovePost = async () => {
+    try {
+      console.log("asf")
+      if(!user) throw new Error("Admin not logged in !")
+      const response = await adminServices.approveReport({
+        postId: postDetails._id,
+        recipient_email: postDetails.userDetails[0].email,
+        recipient_name: postDetails.userDetails[0].name,
+      })
+
+      // update the postdetails
+      setPostDetails(prev => ({
+        ...prev,
+        isApproved: true,
+        approvedBy: user._id
+      }))
+
+      ToasterNotification({
+        type: "success",
+        description: "Report has been approved succesfully"
+      })
+    } catch (error) {
+      console.log(error)
+      ToasterNotification({
+        type: "warning",
+        description: `${error.message}`
+      })
+    }
+  }
+
   const [expandDesc, setExpandDesc] = useState(false)
+  const [activeTab, setActiveTab] = useState("Details")
 
   return (
     <>
@@ -424,194 +489,88 @@ function Post() {
           </div>
 
           {/* Post title  */}
-          <div className="w-full p-3 flex flex-col gap-5">
+          <div className="w-full p-3 flex flex-col gap-4">
             {/* title  */}
-            <h1 className="text-pretty font-outfit font-bold text-lg">
+            <h1 className="font-outfit font-bold leading-6 text-xl">
               {postDetails.title || "No title"}
             </h1>
 
-            {/* description  */}
-            <div className="flex flex-col items-end">
-              <h2 className={`text-zinc-800 dark:text-zinc-500 ${!expandDesc ? "h-40" : ""}  overflow-hidden leading-5`}>
-                {postDetails.description || "No description available"}
-              </h2>
-              {!expandDesc && <button className="dark:text-zinc-400" onClick={() => setExpandDesc(true)}>...read more</button>}
-              {expandDesc && <button className="dark:text-zinc-400" onClick={() => setExpandDesc(false)}>...read less</button>}
+            {/* Status, comment and upvote counts  */}
+            <div className="w-full flex justify-between items-center">
+              <div className="mr-3">
+                <StatusButton status={postDetails.status} />
+              </div>
+              <div className="flex gap-3 items-center">
+
+                <div className="flex items-center gap-2" onClick={handleUpvote}>
+                  {postDetails.isUserVoted ? (
+                    <RiThumbUpFill size={20} className="text-red-500 " />
+                  ) : (
+                    <RiThumbUpLine size={20} className="text-red-500" />
+                  )}
+                  <h4 className="text-sm text-red-500">
+                    {postDetails.upvoteCount}
+                  </h4>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <RiMessage2Line size={20} className="text-blue-600" />
+                  <h4 className="text-sm text-blue-600">
+                    {postDetails.commentCount}
+                  </h4>
+                </div>
+
+              </div>
             </div>
 
             {/* calender and location  */}
-            <div className="w-full flex gap-4 items-center">
-              <div className="flex gap-2 items-center">
-                <RiCalendarLine size={20} />
+            <div className="w-full flex flex-col px-2">
+              <div className="flex gap-2 mx-1 items-center">
+                <RiCalendarLine size={20} className="text-zinc-600"/>
                 <p className="text-xs text-zinc-600 dark:text-zinc-500 text-nowrap">
                   {parseDateToReadableFormat(postDetails.createdAt)}
                 </p>
               </div>
               <div className="flex gap-2 items-center">
-                <RiMapPin2Line size={30} />
+                <RiMapPin2Line size={28} className="text-zinc-600"/>
                 <p className="text-xs text-zinc-600 dark:text-zinc-500">
                   {postDetails.address}
                 </p>
               </div>
             </div>
-
-            {/* comment and upvote counts  */}
-            <div className="w-full flex justify-between">
-              <div className="flex gap-3 items-center">
-                <div className="flex items-center gap-2">
-                  <RiMessage2Line size={18} className="text-blue-600" />
-                  <h4 className="text-xs text-blue-600">
-                    {postDetails.commentCount} <span>Comments</span>
-                  </h4>
-                </div>
-
-                <div className="flex items-center gap-2" onClick={handleUpvote}>
-                  {postDetails.isUserVoted ? (
-                    <RiThumbUpFill size={18} className="text-red-500 " />
-                  ) : (
-                    <RiThumbUpLine size={18} className="text-red-500" />
-                  )}
-                  <h4 className="text-xs text-red-500">
-                    {postDetails.upvoteCount} <span>Upvotes</span>
-                  </h4>
-                </div>
-              </div>
-
-              <div className="mr-3">
-                <StatusButton status={postDetails.status} />
-              </div>
-            </div>
           </div>
 
-          {/* <div className="w-full flex justify-center items-center"> */}
-          {postDetails && postDetails.userId === user?._id && (
-            <Dialog
-              ToDelete={handleDeletePost}
-              actionTitle={"Delete Post"}
-              title={"Are you sure?"}
-              message={
-                "This post will be permanently deleted. Do you want to proceed?"
-              }
-            />
+          {user && postDetails && user.role === "admin" && !postDetails.isApproved ? (
+            <div className="w-full px-4">
+              {!postDetails.rejectedBy ? (
+                <div className="w-full flex gap-1">
+                  <button onClick={handleRejectPost} className={`flex items-center w-1/2 gap-1 py-2 justify-center  dark:bg-red-800 dark:bg-opacity-25 dark:hover:bg-red-500 dark:hover:text-white dark:text-red-500 text-red-500 border border-red-500 hover:bg-red-500 hover:text-white duration-300  rounded-lg`}>
+                      Reject
+                  </button>
+                  <button onClick={handleApprovePost} className={`flex items-center w-1/2 gap-1 py-2 justify-center bg-green-500 dark:bg-green-500 dark:bg-opacity-25 dark:border-green-500 dark:border dark:text-green-500 dark:hover:bg-green-500 dark:hover:text-white text-white  hover:bg-white hover:text-green-500 hover:border hover:border-green-500 duration-300  rounded-lg`}>
+                      Approve
+                  </button>
+                </div>
+              ): (
+                <div className="w-full px-4">
+                  <div className={`w-full flex justify-center items-center py-2  bg-red-500 dark:bg-red-800 dark:bg-opacity-25 dark:border-red-500 dark:border dark:text-red-500  text-white  duration-300  rounded-lg`}>
+                    Rejected
+                  </div>
+                </div>
+              )}  
+            </div>
+          ):(
+            <div className="w-full px-4">
+              <div className={`w-full flex justify-center items-center py-2  bg-green-500 dark:bg-green-500 dark:bg-opacity-25 dark:border-green-500 dark:border dark:text-green-500  text-white  duration-300  rounded-lg`}>
+                Approved
+              </div>
+            </div>
           )}
 
-          {postDetails &&
-            user &&
-            postDetails.departmentId == user?.departmentId && (postDetails.status !== "resolved" && postDetails.status !== "rejected") &&  (
-              <ActionDialog
-                triggerUpdate={newDepartmentUpdate}
-                actionTitle={"Take action"}
-              />
-            )}
-          {/* </div> */}
+          <PostTabs tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} />
 
-          {/* seperator  */}
-          <div className="w-[calc(100vw-14px)] flex justify-center h-[1px] border-t-[1px] dark:border-zinc-500"></div>
-          {/* User details (post owner) */}
-          <div className="w-full flex gap-2 items-center justify-between rounded-lg p-3">
-            {/* avatar  */}
-            <div className="w-full flex gap-5">
-              <div className="h-12 w-12 overflow-hidden rounded-full">
-                <img
-                  src={postDetails.userDetails[0].avatar.publicUrl}
-                  alt=""
-                  className="object-contain"
-                />
-              </div>
-              <div className="h-12 flex items-start flex-col">
-                <h2 className="font-semibold text-zinc-800 dark:text-white">
-                  {postDetails.userDetails[0].name}
-                </h2>
-                <h3 className="text-xs text-zinc-500">
-                  {postDetails.userDetails[0].email}
-                </h3>
-              </div>
-            </div>
-          </div>
+          <PostTabDetails setReloadTrigger={setReloadTrigger} addCommentHandler={addNewComment} postComments={postComments} handleDeleteComment={handleDeleteComment} departmentComments={departmentComments} departmentUpdates={departmentUpdates} activeTab={activeTab} postDetails={postDetails}/>
 
-          {/* seperator  */}
-          <div className="w-[calc(100vw-14px)] flex justify-center h-[1px] border-t-[1px] dark:border-zinc-500"></div>
-
-          {/* department details  */}
-          <div className="w-[calc(100vw-10vw)] bg-zinc-100 dark:bg-zinc-800 rounded-lg flex flex-col gap-1 p-2">
-            <h3 className="">Department details</h3>
-            <h4>{postDetails.departmentDetails[0].name}</h4>
-            <h3 className="text-zinc-500 text-xs">
-              {postDetails.departmentDetails[0].description}
-            </h3>
-            <h4 className="text-zinc-500 text-xs flex items-start gap-2">
-              <RiMapPin2Line size={12} />
-              {postDetails.departmentDetails[0].address}
-            </h4>
-          </div>
-
-          {/* seperator  */}
-          <div className="w-[calc(100vw-14px)] flex justify-center h-[1px] border-t-[1px] dark:border-zinc-500"></div>
-
-          {/* department comment section  */}
-          <div className="w-full p-3 flex flex-col gap-1">
-            <h2>Department Update</h2>
-            {departmentComments.length !== 0 ||
-            departmentUpdates.length !== 0 ? (
-              <div className="w-full flex flex-col gap-2">
-                {departmentUpdates.length !== 0 &&
-                  departmentUpdates.map((update, index) => (
-                    <DepartmentUpdate
-                      key={index}
-                      updateDetails={update}
-                      setReloadTrigger={setReloadTrigger}
-                    />
-                  ))}
-                {departmentComments.length !== 0 &&
-                  departmentComments.map((comment, index) => (
-                    <Comment
-                      key={index}
-                      commentDetails={comment}
-                      onDeleteComment={() => handleDeleteComment(comment)}
-                      isAuthorityComment={true}
-                      setReloadTrigger={setReloadTrigger}
-                    />
-                  ))}
-              </div>
-            ) : (
-              <div className="w-full flex flex-col gap-2">
-                <h4 className="text-sm text-zinc-500">No Updates</h4>
-              </div>
-            )}
-          </div>
-
-          {/* seperator  */}
-          <div className="w-[calc(100vw-14px)] flex justify-center h-[1px] border-t-[1px]"></div>
-
-          <div className="w-full p-3 flex flex-col gap-2 dark:bg-zinc-950">
-            <h2>Comments</h2>
-
-            {/* make comment section  */}
-            <MakeComment
-              postDetails={postDetails}
-              setReloadTrigger={setReloadTrigger}
-              addCommentHandler = {addNewComment}
-            />
-
-            {/* All comments  */}
-            {postComments ? (
-              <div className="w-full flex flex-col gap-2">
-                {postComments.map((comment, index) => (
-                  <Comment
-                    key={index}
-                    commentDetails={comment}
-                    isAuthorityComment={false}
-                    onDeleteComment={() => handleDeleteComment(comment)}
-                    setReloadTrigger={setReloadTrigger}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="w-full flex flex-col gap-2">
-                <h4>No Updates</h4>
-              </div>
-            )}
-          </div>
         </div>
       ) : (
         <div className='w-full h-[calc(100vh-15vh)]  flex items-center justify-center'><RiLoaderLine size={30} className='animate-spin duration-5000'/></div>

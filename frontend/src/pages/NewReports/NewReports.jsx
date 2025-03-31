@@ -1,13 +1,15 @@
 import PostService from "@/api/services/post.services";
-import { NotLoginImg1 } from "@/assets/assets.config";
+import { NotLoginImg1, NotResultImg1 } from "@/assets/assets.config";
 import Error from "@/components/Error/Error";
 import PostCard from "@/components/Post/PostCard";
+import PostCardSkeleton from "@/components/Post/PostCardSkeleton";
 import SearchBar from "@/components/SearchBar/SearchBar";
 import { useLocationContext } from "@/utils/Context/LocationContext";
 import { ToasterNotification } from "@/utils/ToastNotification/ToastNotification";
 import { Loader } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import ReportMap from "../ReportMap/ReportMap";
 
 function NewReports() {
   const defaultCoordinates = [18.521432806997094, 73.85769665098046];
@@ -15,9 +17,20 @@ function NewReports() {
   const [prevLocation, setPrevLocation] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const user = useSelector((state) => state.authSlice.user);
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState(null);
   const [status, setStatus] = useState("")
   const [trigger, setTrigger] = useState(false)
+  const [fetchTrigger, setFetchTrigger] = useState(false)
+  const [markers, setMarkers] = useState([])
+
+    const [filterData, setFilterData] = useState({
+      status: ["all"],
+      category: "all",
+      distance: 10, // 30 km default
+      sortBy: "nearestfirst"
+    })
+  
+    const [viewType, setViewType] = useState("list") // list / map
 
   const fetchPosts = async () => {
     try {
@@ -30,9 +43,8 @@ function NewReports() {
         departmentId: user?.departmentId,
         latitude: location.lat,
         longitude: location.lng,
-        status: status
+        ...filterData
       });
-      console.log(response)
 
       // console.log(response.data.data);
       setPosts(response.data.data);
@@ -63,7 +75,7 @@ function NewReports() {
   }, [user]);
 
   useEffect(() => {
-    console.log(location, defaultCoordinates, prevLocation);
+    // console.log(location, defaultCoordinates, prevLocation);
     if (
       prevLocation &&
       (prevLocation.lat !== location.lat || prevLocation.lng !== location.lng)
@@ -73,7 +85,7 @@ function NewReports() {
       fetchPosts();
     }
     fetchPosts()
-  }, [location, trigger]);
+  }, [location, fetchTrigger]);
 
   return (
     <>
@@ -84,18 +96,41 @@ function NewReports() {
           message={"Please Login first"}
         />
       )}
-      {isLoading && <Loader />}
+      {/* {isLoading && <Loader />} */}
       <div className="h-[calc(100vh-80px)] w-full p-2 flex flex-col gap-5 ">
-        <SearchBar status={status} setStatus={setStatus} trigger={setTrigger}/>
-        {posts ? (
-          <div className="w-full flex flex-col gap-5">
-            {posts.map((post, index) => (
-              <PostCard key={index} postDetails={post} />
-            ))}
+        <SearchBar viewType={viewType} setViewType={setViewType} filterData={filterData} setFilterData={setFilterData} trigger={setFetchTrigger}/>
+        
+        {viewType === "list" && (
+          <div className="w-full">
+              {posts && posts.length > 0 && (
+                <div className="w-full flex flex-col gap-5">
+                  {posts.map((post, index) => (
+                    <PostCard key={index} postDetails={post} />
+                  ))}
+                </div>
+              )}
+              {isLoading && !posts && (
+                <>
+                  <PostCardSkeleton/>
+                  <PostCardSkeleton/>
+                  <PostCardSkeleton/>
+                </>
+              )}
+              {posts && posts.length === 0 && (
+                <Error 
+                  image={NotResultImg1} 
+                  hoffset={300}
+                  title={"No Posts Available !"} 
+                  message={"There are no posts available for this query at the moment."} 
+                />
+              )}
           </div>
-        ) : (
-          <p>loading...</p>
         )}
+
+        {viewType === "map" && (
+          <ReportMap markers={markers}/>
+        )}
+        
       </div>
     </>
   );

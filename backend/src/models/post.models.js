@@ -48,6 +48,18 @@ const postSchema = mongoose.Schema(
       type: String,
       required: true
     },
+    isApproved: {
+      type: Boolean,
+      default: false
+    },
+    approvedBy: {
+      type: String,
+      default: null
+    },
+    rejectedBy: {
+      type: String,
+      default: null
+    },
     imageUrls: [imageSchema],
     status: {
       type: String,

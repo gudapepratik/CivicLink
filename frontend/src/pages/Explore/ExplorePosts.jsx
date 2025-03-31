@@ -10,6 +10,8 @@ import Loader from "@/components/Loader/Loader";
 import { RiLoaderLine } from "@remixicon/react";
 import Error from "@/components/Error/Error";
 import { NotResultImg1 } from "@/assets/assets.config";
+import ReportMap from "../ReportMap/ReportMap";
+import PostCardSkeleton from "@/components/Post/PostCardSkeleton";
 
 function ExplorePosts() {
   const defaultCoordinates = [18.521432806997094, 73.85769665098046];
@@ -20,7 +22,7 @@ function ExplorePosts() {
   const [fetchTrigger, setFetchTrigger] = useState(false)
 
   const user = useSelector((state) => state.authSlice.user);
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState(null);
 
   const fetchPosts = async () => {
     try {
@@ -32,7 +34,8 @@ function ExplorePosts() {
       const response = await PostService.getPostsByLocation({
         latitude: location.lat,
         longitude: location.lng,
-        status: status
+        isAdminFetch: (user && user.role === "admin") ? true: false,
+        ...filterData
       });
       // console.log(response.data.data);
       setPosts(response.data.data);
@@ -55,7 +58,7 @@ function ExplorePosts() {
       (location.lat === defaultCoordinates[0] ||
         location.lng === defaultCoordinates[1])
     ) {
-      setLocation({
+      setLocation({ 
         lat: user.location.coordinates[1],
         lng: user.location.coordinates[0],
       });
@@ -75,23 +78,53 @@ function ExplorePosts() {
     fetchPosts()
   }, [location, fetchTrigger]);
 
+  const [filterData, setFilterData] = useState({
+    status: ["all"],
+    category: "all",
+    distance: 10, // 30 km default
+    sortBy: "nearestfirst",
+    approvalStatus: ["pending"]
+  })
+
+  const [viewType, setViewType] = useState("list") // list / map
+  const [markers, setMarkers] = useState([])
+
   return (
     <>
-      {isLoading && <Loader/>}
+      {/* {isLoading && <Loader/>} */}
       <div className="h-[calc(100vh-80px)] w-full p-2 flex flex-col gap-5 ">
-        <SearchBar status={status} setStatus={setStatus} trigger={setFetchTrigger}/>
-        {posts && posts.length > 0 && (
-          <div className="w-full flex flex-col gap-5">
-            {posts.map((post, index) => (
-              <PostCard key={index} postDetails={post} />
-            ))}
+        <SearchBar viewType={viewType} setViewType={setViewType} filterData={filterData} setFilterData={setFilterData} trigger={setFetchTrigger}/>
+        {viewType === "list" && (
+          <div className="w-full pb-4">
+
+          {posts && posts.length > 0 && (
+            <div className="w-full flex flex-col gap-5">
+                {posts.map((post, index) => (
+                  <PostCard key={index} postDetails={post} />
+                ))}
+            </div>
+          )}
+
+          {posts && posts.length === 0 && (
+            <Error
+              image={NotResultImg1}
+              hoffset={200}
+              title={"No More Reports !"}
+              message={"There are no further reports available to show."}
+            />
+          )}
+            
+          {isLoading && !posts && (
+            <div className="w-full flex flex-col gap-3">
+              <PostCardSkeleton/>
+              <PostCardSkeleton/>
+              <PostCardSkeleton/>
+            </div>
+          )}
           </div>
         )}
-        {!posts && (
-          <div className='w-full h-[calc(100vh-15vh)]  flex items-center justify-center'><RiLoaderLine size={30} className='animate-spin duration-5000'/></div>
-        )}
-        {posts && posts.length === 0 && (
-          <Error image={NotResultImg1} hoffset={200} title={"No More Reports !"} message={"There are no further reports available to show."}/>
+        {viewType === "map" && (
+          <ReportMap markers={markers}/>
         )}
       </div>
     </>

@@ -5,4 +5,5 @@ export const API_ENDPOINTS = {
     UPVOTE: '/api/v1/upvote',
     COMMENT: '/api/v1/comment',
     DEPARTMENTUPDATE: '/api/v1/departmentUpdate',
+    ADMIN: '/api/v1/admin',
 }

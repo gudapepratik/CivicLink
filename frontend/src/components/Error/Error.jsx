@@ -2,7 +2,6 @@
 import React from "react";
 
 function Error({image, title, message, hoffset}) {
-  console.log(hoffset)
   return (
     <div className={`flex relative flex-col items-center justify-center max-w-full `} style={{ height: `calc(100vh - ${hoffset}px)` }}>
         <div className="w-full flex flex-col items-center">

@@ -1,8 +1,8 @@
 import { RiCloseLine } from "@remixicon/react";
 import React, { useEffect, useState } from "react";
 
-function ActionDialog({triggerUpdate, actionTitle}) {
-    const [toOpen, setToOpen] = useState(false);
+function ActionDialog({triggerUpdate, actionTitle, open, setOpen}) {
+    // const [toOpen, setToOpen] = useState(open || false);
 
     const [data, setData] = useState({
       updatedStatus: "",
@@ -59,26 +59,26 @@ function ActionDialog({triggerUpdate, actionTitle}) {
     }
 
     useEffect(() => {
-        if(toOpen == true) {
+        if(open == true) {
             document.body.style.overflowY = 'hidden';
         } else{
             document.body.style.overflowY = 'visible';
         }
-    },[toOpen])
+    },[open])
 
   return (
     <>
       <div className="">
-        <button onClick={() => setToOpen(prev => !prev)} className="bg-red-100 dark:bg-zinc-800 px-4 py-1 text-red-600 rounded-md">{actionTitle}</button>
+        {/* <button onClick={() => setToOpen(prev => !prev)} className="bg-red-100 dark:bg-zinc-800 px-4 py-1 text-red-600 rounded-md">{actionTitle}</button> */}
         <div
         className={`fixed inset-0 flex items-center z-10 justify-center p-2 bg-black bg-opacity-50 
-        transition-opacity duration-300 ${toOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
-        onClick={() => setToOpen(false)}
+        transition-opacity duration-300 ${open ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+        onClick={() => setOpen(false)}
       >
         {/* Dialog Box */}
         <div
           className={`bg-white flex flex-col gap-1 p-4 rounded-lg shadow-lg w-96 dark:bg-zinc-900 dark:border dark:border-zinc-800 dark:text-white 
-          transform transition-all duration-300 ${toOpen ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 translate-y-5"}`}
+          transform transition-all duration-300 ${open ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 translate-y-5"}`}
           onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
         >
             <h2 className="text-center font-bold p-3 text-xl text-zinc-800 dark:text-white">Update Report Status</h2>
@@ -131,7 +131,7 @@ function ActionDialog({triggerUpdate, actionTitle}) {
           {/* Buttons */}
           <div className="mt-4 flex justify-end space-x-2">
             <button
-              onClick={() => setToOpen(false)}
+              onClick={() => setOpen(false)}
               className="px-4 py-2 bg-gray-300 rounded-md dark:bg-zinc-800 hover:bg-gray-400 dark:hover:bg-zinc-700 transition"
             >
               Cancel
@@ -139,7 +139,7 @@ function ActionDialog({triggerUpdate, actionTitle}) {
             <button
               onClick={() => {
                 triggerUpdate({...data, docs: files})
-                setToOpen(false);
+                setOpen(false);
               }}
               className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition"
             >

@@ -31,7 +31,7 @@ function Comment({isAuthorityComment,onDeleteComment, commentDetails, setReloadT
   ]
 
   return (
-    <div  className={`w-full flex flex-col gap-2 p-2 items-end border ${isAuthorityComment? "bg-zinc-100 border-zinc-200 dark:border-zinc-400" : "bg-zinc-50 border-zinc-100 dark:border-zinc-500"}  dark:bg-zinc-900 rounded-lg`}>
+    <div  className={`w-full flex flex-col gap-2 p-2 items-end border ${isAuthorityComment? "bg-zinc-100 border-zinc-200 dark:border-zinc-400" : "bg-white border-zinc-400 dark:border-zinc-500"}  dark:bg-zinc-900 rounded-lg`}>
         {/* user details  */}
             <div className="w-full flex items-center justify-between rounded-lg">
             {/* avatar  */}
@@ -49,7 +49,7 @@ function Comment({isAuthorityComment,onDeleteComment, commentDetails, setReloadT
                   <h2 className="font-semibold text-xs text-zinc-800 dark:text-white">
                   {commentDetails.userDetails[0].name}
                   </h2>
-                  <h3 className="text-xs text-zinc-500">
+                  <h3 className="text-xs text-zinc-500 dark:text-zinc-400">
                   {commentDetails.userDetails[0].email}
                   </h3>
               </div>

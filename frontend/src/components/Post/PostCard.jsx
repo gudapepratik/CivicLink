@@ -4,6 +4,7 @@ import PostCardSkeleton from "./PostCardSkeleton";
 import { useNavigate } from "react-router";
 import { getTimeAgo, parseDateToReadableFormat } from "@/utils/DateParsers/DateParser";
 import { useLocationContext } from "@/utils/Context/LocationContext";
+import StatusButton from "../StatusButtons/StatusButton";
 
 function PostCard({ postDetails , CurrentLocation}) {
   // const dummy = {
@@ -91,7 +92,7 @@ function PostCard({ postDetails , CurrentLocation}) {
       {!postDetails ? (
         <PostCardSkeleton />
       ) : (
-        <div className="w-full p-3 flex flex-col gap-2 border bg-zinc-50 dark:bg-zinc-900 dark:text-white  shadow-inner rounded-xl font-outfit">
+        <div className="w-full p-3 flex flex-col gap-2 border bg-white dark:bg-zinc-900 dark:text-white hover:shadow-sm rounded-xl font-outfit">
           {/* profile section  */}
           <div className="w-full mb-1 flex gap-2 items-center justify-between rounded-lg">
             {/* avatar  */}
@@ -160,32 +161,7 @@ function PostCard({ postDetails , CurrentLocation}) {
             </div>
 
             {/* status  */}
-            <div>
-              {postDetails.status === 'pending' && (
-                <div className="flex gap-2 text-yellow-500 font-poppins text-xs items-center border bg-yellow-50 border-yellow-500 p-1 rounded-md">
-                  <RiProgress2Fill size={15}/>
-                  <h2>Pending</h2>
-                </div>
-              )}
-              {postDetails.status === 'inprogress' && (
-                <div className="flex gap-2 text-orange-500 font-poppins text-xs items-center border bg-orange-50 border-orange-500 p-1 rounded-md">
-                  <RiProgress4Fill size={15}/>
-                  <h2>In Progress</h2>
-                </div>
-              )}
-              {postDetails.status === 'resolved' && (
-                <div className="flex gap-2 text-green-500 font-poppins text-xs items-center border bg-green-50 border-green-500-500 p-1 rounded-md">
-                  <RiCheckboxCircleFill size={15}/>
-                  <h2>Resolved</h2>
-                </div>
-              )}
-              {postDetails.status === 'rejected' && (
-                <div className="flex gap-2 text-red-600 font-poppins text-xs items-center border bg-red-50 border-red-600 p-1 rounded-md">
-                  <RiErrorWarningFill size={15}/>
-                  <h2>Rejected</h2>
-                </div>
-              )}
-            </div>
+              <StatusButton status={postDetails.status}/>
           </div>
         </div>
       )}

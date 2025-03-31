@@ -7,8 +7,6 @@ import {
 import { useState } from "react";
 import config from "../../../config/config";
 
-
-
 const mapContainerStyle = {
   width: "100%",
   height: "200px",
@@ -36,6 +34,13 @@ const GoogleMapComponent = ({ onLocationSelect }) => {
     setMarkerPosition(newPosition);
     onLocationSelect(newPosition); // Send location to parent form
   };
+
+  const pois = [
+    { key: "1", location: { lat: -31.56391, lng: 147.154312 } },
+    { key: "2", location: { lat: -33.718234, lng: 150.363181 } },
+    { key: "3", location: { lat: -33.727111, lng: 150.371124 } },
+    { key: "4", location: { lat: -33.848588, lng: 151.209834 } },
+  ];
 
   
 
@@ -128,10 +133,10 @@ const GoogleMapComponent = ({ onLocationSelect }) => {
       center={markerPosition}
       options={{disableDefaultUI: true, cameraControl: true, fullscreenControl: true, draggableCursor: true,gestureHandling: "greedy" } }
       zoom={12}
-      
-      onClick={handleMapClick}
     >
-      <Marker position={markerPosition} />
+      {pois.map((item, index) => (
+        <Marker key={item.key} position={{lat: item.location.lat, lng: item.location.lng}} />
+      ))}
     </GoogleMap>
   );
 };

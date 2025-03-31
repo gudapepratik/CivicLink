@@ -60,6 +60,37 @@ function Navbar() {
     },
   ];
 
+  const adminTabs = [
+    {
+      title: "Home",
+      link: "",
+    },
+    {
+      title: "Reports Management",
+      link: "explore-posts",
+    },
+    {
+      title: "User Management",
+      link: "departments"
+    },
+    {
+      title: "Notifications",
+      link: "notifications",
+    },
+    {
+      title: "Account",
+      link: "account",
+    },
+    {
+      title: "Help & Support",
+      link: "help-and-support",
+    },
+    {
+      title: "Community Guidelines",
+      link: "community-guidelines",
+    },
+  ];
+
   const authorityTabs = [
     {
       title: "Dashboard",
@@ -130,7 +161,7 @@ function Navbar() {
   return (
     <>
       {isLoading && <Loader />}
-      <div className="bg-[#001044] dark:bg-zinc-950 shadow-inner sticky top-0 w-full h-20  z-50 ">
+      <div className="bg-[#001044] dark:bg-zinc-950 shadow-inner sticky top-0 w-full h-20  z-[400] ">
         <div className="flex w-full items-center justify-between h-full px-4">
           {!sidebar && (
             <RiSidebarUnfoldFill
@@ -140,7 +171,7 @@ function Navbar() {
             />
           )}
           <NavLink
-            to={"/"}
+            to={user && (user.role === "citizen" ? "/" : "/authority-dashboard")}
             className="font-outfit font-bold text-2xl text-white"
           >
             CivicLink
@@ -183,14 +214,13 @@ function Navbar() {
             {/* User location map  */}
             <div className="w-full p-3 h-36">
               <div className="flex w-full  rounded-2xl shadow-inner overflow-hidden relative bg-zinc-400 dark:bg-zinc-800 h-full">
-                {/* <GoogleMapComponent /> */}
                 <img src={HeroImg2} alt="" className="w-full object-cover absolute -top-5"/>
               </div>
             </div>
 
             {/* Tabs suggestions  */}
             <div className="w-full flex flex-col">
-              <NavbarTabs
+              {/* <NavbarTabs
                 tabs={
                   user
                     ? user.role === "citizen"
@@ -198,6 +228,10 @@ function Navbar() {
                       : authorityTabs
                     : citizenTabs
                 }
+                toggleSidebar={toggleSidebar}
+              /> */}
+              <NavbarTabs
+                tabs={user ? (user.role === "citizen" ? (user.role === "authority" ? authorityTabs : adminTabs) : (user.role === "admin" ? adminTabs : authorityTabs)): citizenTabs}
                 toggleSidebar={toggleSidebar}
               />
             </div>

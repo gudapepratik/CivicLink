@@ -8,6 +8,7 @@ import {
 import { Post } from "../models/post.models.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Comment } from "../models/comment.models.js";
+import { sendReportPendingApprovalEmail, sendReportStatusUpdateEmail } from "../utils/BrevoMailService.js";
 
 // add new post
 const addNewPost = asyncHandler(async (req, res) => {
@@ -64,6 +65,8 @@ const addNewPost = asyncHandler(async (req, res) => {
     address,
   });
 
+  await sendReportPendingApprovalEmail(user.email, user.name, response.title, response._id.toString())
+
   if (!response)
     throw new ApiError(
       500,
@@ -72,7 +75,7 @@ const addNewPost = asyncHandler(async (req, res) => {
 
   res
     .status(201)
-    .json(new ApiResponse(201, response, "Post added successfully"));
+    .json(new ApiResponse(201, response, "Your report has been submitted successfully! You will receive an email once it has been reviewed by an admin."));
 });
 
 // get all posts (by location)
@@ -596,7 +599,7 @@ const deletePost = asyncHandler(async (req, res) => {
 // update post status (admin, authority, citizen)
 const updatePostStatus = asyncHandler(async (req, res) => {
   // get the new status and message
-  const { postId, updatedStatus, comment } = req.body;
+  const { postId, updatedStatus, comment, recipient_email, recipient_name } = req.body;
   // get user details
   const user = req.user;
 
@@ -654,6 +657,8 @@ const updatePostStatus = asyncHandler(async (req, res) => {
     },
     { new: true, runValidators: true }
   );
+
+  // await sendReportStatusUpdateEmail(recipient_email, recipient_name, updateResponse.title, postId, updatedStatus)
 
   res
     .status(200)

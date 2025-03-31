@@ -5,11 +5,12 @@ import { deleteFromCloudinary, uploadOnCloudinary } from "../utils/Cloudinary.js
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { DepartmentUpdate } from "../models/departmentUpdate.models.js";
 import { Post } from "../models/post.models.js";
+import { sendReportRejectedEmail, sendReportResolvedEmail, sendReportStatusUpdateEmail } from "../utils/BrevoMailService.js";
 
 // add new post
 const newDeptUpdate = asyncHandler(async (req,res) => {
     // get the data
-    const {postId, updatedStatus, remark, expectedResolutionDate} = req.body
+    const {postId, updatedStatus, remark, expectedResolutionDate, recipient_email, recipient_name, report_title} = req.body
     // get the user (only citizen and admin roles can create a post)
     const user = req.user
     // get the local File paths of the documents (pdf) (handled by multer)
@@ -47,7 +48,10 @@ const newDeptUpdate = asyncHandler(async (req,res) => {
         updatedStatus,
         expectedResolutionDate,
         remark,
-        docs: pdfUploadResponse || null
+        docs: pdfUploadResponse || null,
+        recipient_email,
+        recipient_name,
+        report_title
     })
 
     // also update the status of the post
@@ -63,6 +67,15 @@ const newDeptUpdate = asyncHandler(async (req,res) => {
     if(!response) throw new ApiError(500, "An unexpected error occurred while making update")
     
     const document = await getDepartmentUpdateById(response._id)
+
+    if(updatedStatus.toLowerCase() === "resolved") {
+        await sendReportResolvedEmail(recipient_email, recipient_name,report_title, postId.toString())
+    } else if(updatedStatus.toLowerCase() === "rejected") {
+        await sendReportRejectedEmail(recipient_email, recipient_name,report_title,  postId.toString(), "Not allowed to disclose")
+    } else{
+        await sendReportStatusUpdateEmail(recipient_email, recipient_name, report_title,  postId.toString(), updatedStatus)
+    }
+
 
     res
     .status(201)

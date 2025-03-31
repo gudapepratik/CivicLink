@@ -4,7 +4,7 @@ import ErrorHandler from "../../utils/ErrorHandler.utils.js";
 
 export class CommentService {
 
-  async addNewComment({postId, comment, isDepartmentUpdate}) {
+  async addNewComment({postId, comment, isDepartmentUpdate, recipient_email, recipient_name, report_title}) {
     try {
         if (!postId || !comment) throw new Error("Insufficient details to make comment");
 
@@ -12,7 +12,10 @@ export class CommentService {
       const commentResponse = await httpClient.post(`${API_ENDPOINTS.COMMENT}/add-commment-to-post`,{
         postId,
         comment,
-        isDepartmentUpdate
+        isDepartmentUpdate,
+        recipient_email,
+        recipient_name,
+        report_title
       });
 
       if (!commentResponse)

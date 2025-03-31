@@ -343,6 +343,9 @@ function Post() {
         remark,
         updatedStatus,
         expectedResolutionDate,
+        recipient_email: postDetails.userDetails[0].email,
+        recipient_name: postDetails.userDetails[0].name, 
+        report_title: postDetails.title
       });
       console.log(response.data.data);
       setDepartmentUpdates((prev) => [response.data.data[0], ...prev]);
@@ -380,6 +383,9 @@ function Post() {
       postId: postDetails._id,
       comment: commentInput,
       isDepartmentUpdate,
+      recipient_email: postDetails.userDetails[0].email,
+      recipient_name: postDetails.userDetails[0].name, 
+      report_title: postDetails.title
     });
 
     if(isDepartmentUpdate) {
@@ -391,6 +397,7 @@ function Post() {
 
   const handleRejectPost = async () => {
     try {
+      setIsLoading(true)
       if(!user) throw new Error("Admin not logged in !")
       const response = await adminServices.rejectReport({
         postId: postDetails._id,
@@ -415,12 +422,14 @@ function Post() {
         type: "warning",
         description: `${error.message}`
       })
+    } finally {
+      setIsLoading(false)
     }
   }
 
   const handleApprovePost = async () => {
     try {
-      console.log("asf")
+      setIsLoading(true)
       if(!user) throw new Error("Admin not logged in !")
       const response = await adminServices.approveReport({
         postId: postDetails._id,
@@ -445,6 +454,8 @@ function Post() {
         type: "warning",
         description: `${error.message}`
       })
+    } finally{ 
+      setIsLoading(false)
     }
   }
 
@@ -548,7 +559,7 @@ function Post() {
                       Reject
                   </button>
                   <button onClick={handleApprovePost} className={`flex items-center w-1/2 gap-1 py-2 justify-center bg-green-500 dark:bg-green-500 dark:bg-opacity-25 dark:border-green-500 dark:border dark:text-green-500 dark:hover:bg-green-500 dark:hover:text-white text-white  hover:bg-white hover:text-green-500 hover:border hover:border-green-500 duration-300  rounded-lg`}>
-                      Approve
+                      Approve Report
                   </button>
                 </div>
               ): (
@@ -559,17 +570,17 @@ function Post() {
                 </div>
               )}  
             </div>
-          ):(
+          ): user && user.role === "admin" ? (
             <div className="w-full px-4">
-              <div className={`w-full flex justify-center items-center py-2  bg-green-500 dark:bg-green-500 dark:bg-opacity-25 dark:border-green-500 dark:border dark:text-green-500  text-white  duration-300  rounded-lg`}>
+              <div className="w-full flex justify-center items-center py-2 bg-green-500 dark:bg-green-500 dark:bg-opacity-25 dark:border-green-500 dark:border dark:text-green-500 text-white duration-300 rounded-lg">
                 Approved
               </div>
             </div>
-          )}
+          ) : null}
 
           <PostTabs tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} />
 
-          <PostTabDetails setReloadTrigger={setReloadTrigger} addCommentHandler={addNewComment} postComments={postComments} handleDeleteComment={handleDeleteComment} departmentComments={departmentComments} departmentUpdates={departmentUpdates} activeTab={activeTab} postDetails={postDetails}/>
+          <PostTabDetails triggerUpdate={newDepartmentUpdate} setReloadTrigger={setReloadTrigger} addCommentHandler={addNewComment} postComments={postComments} handleDeleteComment={handleDeleteComment} departmentComments={departmentComments} departmentUpdates={departmentUpdates} activeTab={activeTab} postDetails={postDetails}/>
 
         </div>
       ) : (

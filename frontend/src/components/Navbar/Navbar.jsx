@@ -220,18 +220,12 @@ function Navbar() {
 
             {/* Tabs suggestions  */}
             <div className="w-full flex flex-col">
-              {/* <NavbarTabs
-                tabs={
-                  user
-                    ? user.role === "citizen"
-                      ? citizenTabs
-                      : authorityTabs
-                    : citizenTabs
-                }
-                toggleSidebar={toggleSidebar}
-              /> */}
               <NavbarTabs
-                tabs={user ? (user.role === "citizen" ? (user.role === "authority" ? authorityTabs : adminTabs) : (user.role === "admin" ? adminTabs : authorityTabs)): citizenTabs}
+                tabs= {user ? (user.role === "citizen" 
+                    ? (citizenTabs) 
+                    : (user.role === "admin" ? adminTabs : authorityTabs)
+                  ) 
+                : citizenTabs }
                 toggleSidebar={toggleSidebar}
               />
             </div>

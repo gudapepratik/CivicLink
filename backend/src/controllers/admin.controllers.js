@@ -36,9 +36,7 @@ const ApproveReport = asyncHandler(async (req, res) => {
     );
 });
 
-
 const RejectReport = asyncHandler(async (req, res) => {
-    console.log("asf")
     // Get the report ID and rejection reason (optional)
     const { postId,recipient_email,recipient_name, rejectionReason } = req.body;
     const user = req.user; // Admin rejecting the report

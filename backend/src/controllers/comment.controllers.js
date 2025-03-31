@@ -3,11 +3,12 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Comment } from '../models/comment.models.js';
+import { sendNewCommentEmail } from '../utils/BrevoMailService.js';
 
 // add comment to a post
 const addComment = asyncHandler(async (req,res) => {
     // get the data
-    const {postId, comment, isDepartmentUpdate} = req.body
+    const {postId, comment, isDepartmentUpdate, recipient_email, recipient_name, report_title} = req.body
     // get the user id
     const user = req.user
 
@@ -29,6 +30,8 @@ const addComment = asyncHandler(async (req,res) => {
     if(!newComment) throw new ApiError(500, "error while adding a Comment")
 
     const document = await getCommentById(newComment._id)
+
+    await sendNewCommentEmail(recipient_email, recipient_name, report_title, postId.toString(),user.name)
 
     return res
     .status(201)

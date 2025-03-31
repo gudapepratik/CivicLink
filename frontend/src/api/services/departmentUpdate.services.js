@@ -9,6 +9,9 @@ export class departmentUpdateService {
     remark,
     updatedStatus,
     expectedResolutionDate,
+    recipient_email,
+    recipient_name,
+    report_title
   }) {
     try {
       const formData = new FormData();
@@ -17,6 +20,9 @@ export class departmentUpdateService {
       formData.append("postId", postId);
       formData.append("remark", remark);
       formData.append("updatedStatus", updatedStatus);
+      formData.append("recipient_email", recipient_email);
+      formData.append("recipient_name", recipient_name);
+      formData.append("report_title", report_title);
       formData.append("expectedResolutionDate", expectedResolutionDate);
       console.log(docs);
       docs.forEach((pdf, index) => {

@@ -9,7 +9,7 @@ import GoogleMapsViewLocation from '../GoogleMap/GoogleMapsViewLocation';
 import ActionDialog from '../AuthorityActionDialog/ActionDialog';
 
 
-function PostTabDetails({postDetails, activeTab, departmentComments, departmentUpdates, postComments, handleDeleteComment, setReloadTrigger, addCommentHandler}) {
+function PostTabDetails({postDetails, activeTab,newDepartmentUpdate, departmentComments, departmentUpdates,triggerUpdate, postComments, handleDeleteComment, setReloadTrigger, addCommentHandler}) {
     const [expandDesc, setExpandDesc] = useState(false)
     const user = useSelector(state => state.authSlice.user)
     const [openUpdateDialog, setOpenUpdateDialog] = useState(false)
@@ -97,7 +97,7 @@ function PostTabDetails({postDetails, activeTab, departmentComments, departmentU
                             <RiAddLine size={20}/> 
                             <p>Add Department Update</p>
                         </button>
-                        <ActionDialog open={openUpdateDialog} setOpen={setOpenUpdateDialog}/>
+                        <ActionDialog triggerUpdate={triggerUpdate} open={openUpdateDialog} setOpen={setOpenUpdateDialog}/>
                         </>
                     )}
                 {departmentUpdates.length !== 0 || departmentComments.length !== 0 ? (

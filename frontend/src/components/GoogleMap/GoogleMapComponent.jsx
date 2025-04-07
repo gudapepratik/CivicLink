@@ -18,22 +18,13 @@ const defaultCenter = {
   lng: 73.8567,
 };
 
-const GoogleMapComponent = ({ onLocationSelect }) => {
+const GoogleMapComponent = () => {
   // const [mapCenter, setMapCenter] = useState({ lat: 18.5204, lng: 73.8567 }); // Default: Pune
   const [markerPosition, setMarkerPosition] = useState(defaultCenter);
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: config.googleMapsApiKey,
   });
-
-  const handleMapClick = (event) => {
-    const newPosition = {
-      lat: event.latLng.lat(),
-      lng: event.latLng.lng(),
-    };
-    setMarkerPosition(newPosition);
-    onLocationSelect(newPosition); // Send location to parent form
-  };
 
   const pois = [
     { key: "1", location: { lat: -31.56391, lng: 147.154312 } },

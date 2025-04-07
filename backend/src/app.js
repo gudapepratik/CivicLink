@@ -48,6 +48,10 @@ app.use(express.urlencoded({
 
 app.use(express.static("public"))
 
+app.get('/', (req, res) => {
+    res.send("Server is alive!");
+});
+
 // // user router
 import userRouter from './routes/user.routes.js'
 app.use('/api/v1/users',userRouter)

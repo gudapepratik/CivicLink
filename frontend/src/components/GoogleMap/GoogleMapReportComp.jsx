@@ -1,104 +1,122 @@
-"use client";
-
+import React, { useState } from "react";
 import {
-  APIProvider,
-  Map,
-  AdvancedMarker,
+  GoogleMap,
+  Marker,
   InfoWindow,
-} from "@vis.gl/react-google-maps";
-import { useState, useRef, useCallback } from "react";
+  useLoadScript,
+} from "@react-google-maps/api";
 import config from "../../../config/config";
 
-const reports = [
-  { id: 1, lat: 18.5204, lng: 73.8567, name: "Shivajinagar" },
-  { id: 2, lat: 18.5314, lng: 73.8446, name: "Deccan Gymkhana" },
-  { id: 3, lat: 18.5105, lng: 73.8561, name: "Swargate" },
-  { id: 4, lat: 18.5669, lng: 73.9161, name: "Viman Nagar" },
-  { id: 5, lat: 18.5018, lng: 73.8215, name: "Kothrud" },
-];
+const containerStyle = {
+  width: "100%",
+  height: "550px",
+  borderRadius: "3%"
+};
 
-export default function GoogleMapClusterComp() {
-  // Prevent touch event propagation
-  const containerStyle = {
-    height: "500px", 
-    width: "100%",  
-    touchAction: "none" // Prevent browser from handling touch events
-  };
+const defaultCenter = {
+  lat: 20.5937,
+  lng: 78.9629,
+};
 
+const InfoComponent = ({ loc, markerDetails, setActiveMarkerIndex }) => {
   return (
-    <div style={containerStyle} className="map-container">
-      <APIProvider apiKey={config.googleMapsApiKey}>
-        <Map
-          defaultCenter={{ lat: 18.5204, lng: 73.8567 }}
-          defaultZoom={12}
-          mapId={config.googleMapsClusterMapId}
-          gestureHandling="auto"
-          disableDefaultUI={false}
-          options={{
-            fullscreenControl: false,
-            streetViewControl: false,
-            gestureHandling: "greedy",
-            scrollwheel: true,
-            clickableIcons: false,
-          }}
+    <InfoWindow
+      position={{ lat: loc.lat, lng: loc.lng }}
+      onCloseClick={() => setActiveMarkerIndex(null)}
+    >
+      <div className="flex flex-col gap-1 items-center">
+        <img
+          src={markerDetails.avatar}
+          alt="avatar"
+          style={{ width: 50, height: 50, borderRadius: "50%" }}
+        />
+        <h4 className="font-outfit text-zinc-800 text-xs w-32 text-wrap">
+          {markerDetails.title.length > 30
+            ? markerDetails.title.slice(0, 30) + "..."
+            : markerDetails.title}
+        </h4>
+        <button
+          onClick={() => (window.location.href = markerDetails.link)}
+          className="w-full bg-zinc-800 dark:bg-zinc-800 dark:bg-opacity-75 dark:hover:bg-opacity-100 hover:bg-zinc-950 text-white font-outfit font-bold p-2 rounded-sm"
         >
-          <MapMarkers />
-        </Map>
-      </APIProvider>
-    </div>
-  );
-}
-
-// Separate component for markers to prevent re-renders
-const MapMarkers = () => {
-  const [selectedReportId, setSelectedReportId] = useState(null);
-  const markersRef = useRef({});
-  
-  // Memoize handlers to prevent recreation on each render
-  const handleMarkerClick = useCallback((id) => {
-    setSelectedReportId(id);
-  }, []);
-  
-  const handleInfoWindowClose = useCallback(() => {
-    setSelectedReportId(null);
-  }, []);
-  
-  // Register marker ref through callback rather than JSX ref
-  const registerMarkerRef = useCallback((id, marker) => {
-    if (marker) {
-      markersRef.current[id] = marker;
-    }
-  }, []);
-
-  return (
-    <>
-      {reports.map((report) => (
-        <AdvancedMarker
-          key={report.id}
-          position={{ lat: report.lat, lng: report.lng }}
-          onClick={() => handleMarkerClick(report.id)}
-          ref={(marker) => registerMarkerRef(report.id, marker)}
-        >
-          <span role="img" aria-label="pin">📍</span>
-        </AdvancedMarker>
-      ))}
-
-      {selectedReportId && markersRef.current[selectedReportId] && (
-        <InfoWindow
-          anchor={markersRef.current[selectedReportId]}
-          onCloseClick={handleInfoWindowClose}
-          options={{ pixelOffset: { width: 0, height: -35 } }}
-        >
-          <div style={{ padding: "5px" }}>
-            {reports.find((r) => r.id === selectedReportId)?.name}
-          </div>
-        </InfoWindow>
-      )}
-    </>
+          View Post
+        </button>
+      </div>
+    </InfoWindow>
   );
 };
 
+const GoogleMapReportComp = ({ locations, markerDetails }) => {
+  const [activeMarkerIndex, setActiveMarkerIndex] = useState(null);
+  const [mapRef, setMapRef] = useState(null);
 
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: config.googleMapsApiKey, // replace with your API key
+  });
+
+  const handleMarkerClick = (position, index) => {
+    if (mapRef) {
+      mapRef.panTo(position);
+      mapRef.setZoom(15);
+    }
+    setActiveMarkerIndex(index);
+  };
+
+  if (!isLoaded) return <div>Loading...</div>;
+
+  return (
+    <div className="relative z-[100] rounded-lg">
+      <GoogleMap
+        mapContainerStyle={containerStyle}
+        center={defaultCenter}
+        zoom={5}
+        onLoad={(map) => setMapRef(map)}
+      >
+        {locations &&
+          locations.map((loc, index) => (
+            <Marker
+              key={index}
+              position={{ lat: loc.lat, lng: loc.lng }}
+              onClick={() =>
+                handleMarkerClick({ lat: loc.lat, lng: loc.lng }, index)
+              }
+            >
+              {activeMarkerIndex === index && (
+                <InfoWindow
+                  position={{ lat: loc.lat, lng: loc.lng }}
+                  onCloseClick={() => setActiveMarkerIndex(null)}
+                >
+                  <div className="flex flex-col gap-1 items-center">
+                    <img
+                      src={markerDetails[index].avatar}
+                      alt="avatar"
+                      style={{ width: 50, height: 50, borderRadius: "50%" }}
+                    />
+                    <h4 className="font-outfit text-zinc-800 text-xs w-32 text-wrap">
+                      {markerDetails[index].title.length > 30
+                        ? markerDetails[index].title.slice(0, 30) + "..."
+                        : markerDetails[index].title}
+                    </h4>
+                    <button
+                      onClick={() =>
+                        (window.location.href = markerDetails[index].link)
+                      }
+                      className="w-full bg-zinc-800 dark:bg-zinc-800 dark:bg-opacity-75 dark:hover:bg-opacity-100 hover:bg-zinc-950 text-white font-outfit font-bold p-2 rounded-sm"
+                    >
+                      View Post
+                    </button>
+                  </div>
+                </InfoWindow>
+              )}
+            </Marker>
+          ))}
+      </GoogleMap>
+
+    </div>
+  );
+};
+
+export default GoogleMapReportComp;
 
 // "use client";
 

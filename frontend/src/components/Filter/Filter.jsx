@@ -1,3 +1,4 @@
+import { useSearchFilterContext } from "@/utils/Context/SearchFilterContext";
 import { useSelect } from "@chakra-ui/react";
 import {
   RiCheckboxCircleFill,
@@ -10,146 +11,18 @@ import {
 } from "@remixicon/react";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { useLocation } from "react-router";
 
-function Filter({status, setStatus, showFilter,filterData, setFilterData, setShowFilter , trigger}) {
+// status, setStatus, showFilter,filterData, setFilterData, setShowFilter , trigger
+function Filter({showFilter, setShowFilter}) {
 
   const user = useSelector(state => state.authSlice.user)
-
-  const statusFilters = [
-    {
-      label: (
-        <>
-          <div className="flex gap-2 items-center "><RiCircleFill size={12} className="text-yellow-400" /> <p>Pending</p></div>
-        </>
-      ),
-      value: "pending",
-    },
-    {
-      label: (
-        <>
-          <div className="flex gap-2 items-center "><RiCircleFill size={12} className="text-orange-500" /> <p>In progress</p></div>
-        </>
-      ),
-      value: "inprogress",
-    },
-    {
-      label: (
-        <>
-          <div className="flex gap-2 items-center "><RiCircleFill size={12} className="text-green-500" /> <p>Resolved</p></div>
-        </>
-      ),
-      value: "resolved",
-    },
-    {
-      label: (
-        <>
-          <div className="flex gap-2 items-center "><RiCircleFill size={12} className="text-red-600" /> <p>Rejected</p></div>
-        </>
-      ),
-      value: "rejected",
-    },
-  ];
-
-  const categories = [
-    { id: "all", name: "All Categories" },
-    { id: "roads", name: "Roads & Sidewalks" },
-    { id: "lighting", name: "Street Lighting" },
-    { id: "sanitation", name: "Sanitation & Waste" },
-    { id: "vandalism", name: "Vandalism & Graffiti" },
-    { id: "parks", name: "Parks & Recreation" },
-    { id: "water", name: "Water & Sewage" },
-    { id: "other", name: "Other Issues" },
-  ]
-
-  const approvalOptions = [
-    {
-      label: (
-        <>
-          <div className="flex gap-2 items-center "><RiCircleFill size={12} className="text-orange-400" /> <p>Pending</p></div>
-        </>
-      ),
-      value: "pending",
-    },
-    {
-      label: (
-        <>
-          <div className="flex gap-2 items-center "><RiCircleFill size={12} className="text-red-600" /> <p>Rejected</p></div>
-        </>
-      ),
-      value: "rejected",
-    },
-    {
-      label: (
-        <>
-          <div className="flex gap-2 items-center "><RiCircleFill size={12} className="text-green-500" /> <p>Approved</p></div>
-        </>
-      ),
-      value: "approved",
-    },
-  ]
-
-  const [filter, setFilter] = useState(["all"])
-
-  const handleStatusInput = (item,value) => {
-    if (filter.includes(value)) {
-      // Remove the value
-      const newStatus = filter.filter(item => item !== value);
-      setFilter(newStatus.length === 0 ? ["all"] : newStatus);
-    } else {
-      // Remove "all" if present and add the new value
-      const newStatus = filter.filter(item => item !== "all");
-      setFilter([...newStatus, value]);
-    }
-  };
-
-  const handleFiledInput = (key, value) => {
-    if(key === "status") {
-      if (filterData.status.includes(value)) {
-        // Remove the value
-        const newStatus = filterData.status.filter(item => item !== value);
-        setFilterData(prev => ({...prev,status: newStatus.length === 0 ? ["all"] : newStatus}));
-      } else {
-        // Remove "all" if present and add the new value
-        const newStatus = filterData.status.filter(item => item !== "all");
-        setFilterData(prev => ({...prev, status: [...newStatus, value]}));
-      }
-    }
-
-    if(key === "approvalStatus") {
-      if (filterData.approvalStatus.includes(value)) {
-        // Remove the value
-        const newStatus = filterData.approvalStatus.filter(item => item !== value)
-        setFilterData(prev => ({...prev,approvalStatus: newStatus.length === 0 ? ["pending"] : newStatus}));
-      } else {
-        // Remove "all" if present and add the new value
-        // const newStatus = filterData.status.filter(item => item !== "all");
-        setFilterData(prev => ({...prev, approvalStatus: [...prev.approvalStatus, value]}));
-      }
-    }
-
-    if(key === "category") {
-      // just replace with the new one 
-      setFilterData(prev => ({...prev, category: value}))
-    }
-    
-    if(key === "distance") {
-      // just replace with the new one
-      setFilterData(prev => ({...prev, distance: value}))
-    }
-  }
-
-  const handleResetFilterData = () => {
-    setFilterData(prev => ({
-      ...prev,
-      status: ["all"],
-      category: "all",
-      distance: 10
-    }))
-  }
+  const location = useLocation()
+  const {statusFilters, categories, approvalOptions, filterData, handleFilterDataInput, ResetFilterData, triggerApplyFilter} = useSearchFilterContext()
 
   const handleApplyFilter = () => {
     setShowFilter(prev => !prev)
-    trigger(prev => !prev)
+    triggerApplyFilter()
   }
 
   useEffect(() => {
@@ -165,7 +38,7 @@ function Filter({status, setStatus, showFilter,filterData, setFilterData, setSho
     <>
       <div  className={`w-full fixed font-outfit inset-0 items-end bg-black opacity-100 bg-opacity-35 duration-400 transition-opacity ease-in-out bottom-0   bg-scroll h-screen z-[200] left-0 shadow-black flex ${showFilter ? "opacity-100 visible": "opacity-0 invisible"}`}>
           <div onClick={() => setShowFilter(false)} className={`${showFilter? "flex": "hidden"} top-0 absolute w-full h-[38%]`}></div>
-          <div className={`${showFilter? "translate-y-0": "translate-y-[100%]"} flex flex-col gap-4 p-5 items-center absolute duration-300 w-full bg-white dark:bg-zinc-900 dark:border-t dark:border-zinc-700 ease-in-out h-[62%] `}>
+          <div className={`${showFilter? "translate-y-0": "translate-y-[100%]"} flex flex-col gap-4 p-5 items-center absolute duration-300 w-full bg-white dark:bg-zinc-900 dark:border-t dark:border-zinc-700 ease-in-out ${location.pathname === "/user-posts"? "h-[75%]": "h-[62%]"} ${user && user?.role === "authority" &&  "h-[48%]"} `}>
             <RiCloseLine onClick={() => setShowFilter(false)} size={20} className="absolute text-zinc-500 top-0 right-0 m-5"/>
             
             <div className="w-full flex flex-col gap-2 items-center">
@@ -185,7 +58,7 @@ function Filter({status, setStatus, showFilter,filterData, setFilterData, setSho
                         value={item.value}
                         id={item.value}
                         checked={filterData.status.includes(item.value)}
-                        onClick={() => handleFiledInput("status",item.value)}
+                        onClick={() => handleFilterDataInput("status",item.value)}
                       />
                       <label htmlFor={item.value} className="flex items-center">
                         {item.label}
@@ -197,7 +70,7 @@ function Filter({status, setStatus, showFilter,filterData, setFilterData, setSho
             )}
 
             {/* Approval filter options  */}
-            {user && user.role === "admin" && (
+            {user && (user.role === "admin" || location.pathname === "/user-posts") && (
               <div className="w-full flex flex-col border-b border-zinc-300 pb-4 items-start gap-4 ">
               <h3 className="font-outfitSemiBold">Approval Status</h3>
               <div className="w-full grid grid-cols-2  gap-2">
@@ -208,7 +81,7 @@ function Filter({status, setStatus, showFilter,filterData, setFilterData, setSho
                       value={item.value}
                       id={item.value}
                       checked={filterData.approvalStatus.includes(item.value)}
-                      onClick={() => handleFiledInput("approvalStatus",item.value)}
+                      onClick={() => handleFilterDataInput("approvalStatus",item.value)}
                     />
                     <label htmlFor={item.value} className="flex items-center">
                       {item.label}
@@ -221,20 +94,22 @@ function Filter({status, setStatus, showFilter,filterData, setFilterData, setSho
 
 
             {/* Categories section  */}
-            <div className="w-full flex flex-col border-b border-zinc-300 pb-4 items-start gap-4 ">
-              <h3 className="font-outfitSemiBold">Category</h3>
-              <select value={filterData.category} onChange={(e) => handleFiledInput("category",e.target.value)} name="category" className="w-full p-2  border border-zinc-300 dark:bg-zinc-800 dark:border-zinc-600 rounded-lg focus:ring-2 focus:ring-zinc-500 ">
-                  {categories.map((item, key) => (
-                    <option  key={key} value={item.id}>{item.name}</option>
-                  ))}
-              </select>
-            </div>
+            {user && user.role !== "authority" && (
+              <div className="w-full flex flex-col border-b border-zinc-300 pb-4 items-start gap-4 ">
+                <h3 className="font-outfitSemiBold">Category</h3>
+                <select value={filterData.category} onChange={(e) => handleFilterDataInput("category",e.target.value)} name="category" className="w-full p-2  border border-zinc-300 dark:bg-zinc-800 dark:border-zinc-600 rounded-lg focus:ring-2 focus:ring-zinc-500 ">
+                    {categories.map((item, key) => (
+                      <option  key={key} value={item.id}>{item.name}</option>
+                    ))}
+                </select>
+              </div>
+            )}  
 
             {/* Distance  */}
             <div className="w-full flex flex-col  pb-4 items-start gap-4 ">
               <h3 className="font-outfitSemiBold">Distance</h3>
               <div className="w-full flex flex-col gap-2">
-                <input value={filterData.distance} onChange={(e) => handleFiledInput("distance",e.target.value)} className="w-full" type="range"  name="distance" min={1} max={30} id="" />
+                <input value={filterData.distance} onChange={(e) => handleFilterDataInput("distance",e.target.value)} className="w-full" type="range"  name="distance" min={1} max={30} id="" />
                 <div className="w-full text-xs flex items-center justify-between">
                   <h1>1 Km</h1>
                   <h1>30 Km</h1>
@@ -244,7 +119,7 @@ function Filter({status, setStatus, showFilter,filterData, setFilterData, setSho
 
             {/* Buttons  */}
             <div className="w-full flex justify-center gap-2 pb-4">
-              <button onClick={handleResetFilterData} className={`flex items-center w-1/2 justify-center gap-1 py-2 px-5 bg-white dark:bg-zinc-700 dark:hover:bg-white dark:hover:text-zinc-800 dark:text-white text-zinc-800 border border-zinc-500 hover:bg-zinc-800 hover:text-white duration-300  rounded-lg`}>Reset All</button>
+              <button onClick={ResetFilterData} className={`flex items-center w-1/2 justify-center gap-1 py-2 px-5 bg-white dark:bg-zinc-700 dark:hover:bg-white dark:hover:text-zinc-800 dark:text-white text-zinc-800 border border-zinc-500 hover:bg-zinc-800 hover:text-white duration-300  rounded-lg`}>Reset All</button>
               <button onClick={handleApplyFilter} className={`flex items-center justify-center w-1/2 py-2 px-5 dark:bg-white dark:text-zinc-800 dark:hover:bg-zinc-800 dark:hover:text-white bg-zinc-800 hover:bg-white hover:border-zinc-500 hover:border hover:text-zinc-800 text-white duration-300 rounded-lg`}>Apply filters</button>
             </div>
           </div>

@@ -161,7 +161,7 @@ function PostCard({ postDetails , CurrentLocation}) {
             </div>
 
             {/* status  */}
-              <StatusButton status={postDetails.status}/>
+              <StatusButton status={postDetails.status} isApproved={postDetails.isApproved} approvedBy={postDetails.approvedBy} rejectedBy={postDetails.rejectedBy}/>
           </div>
         </div>
       )}

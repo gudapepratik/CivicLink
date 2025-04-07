@@ -56,10 +56,10 @@ export class AuthService {
         }
     }
 
-    async loginUser({email,password}) {
+    async loginUser({email,password, verificationCode}) {
         try{
             // login the current user
-            const reponse = await httpClient.post(`${API_ENDPOINTS.AUTH}/login`, {email,password})
+            const reponse = await httpClient.post(`${API_ENDPOINTS.AUTH}/login`, {email,password, verificationCode})
             
             // return the response // the tokens will be stored in cookies
             return reponse
@@ -123,17 +123,18 @@ export class AuthService {
         }
     }
 
-    async updateUserPassword({oldPassword, newPassword}) {
+    async updateUserPassword({email, newPassword, isCodeSent}) {
         try{
             if(
-                [oldPassword, newPassword].some(fields => fields === '')
+                isCodeSent && (email === "" || newPassword === "")
             ) {
                 throw new Error("All fields are required !!")
             }
 
             const updatedDetailsResponse = await httpClient.post(`${API_ENDPOINTS.AUTH}/update-user-password`, {
-                oldPassword,
-                newPassword
+                email,
+                newPassword,
+                isCodeSent
             })
             
             return updatedDetailsResponse;
@@ -142,12 +143,78 @@ export class AuthService {
         }
     }
 
-
     async deleteUser() {
         try {
             await httpClient.delete(`${API_ENDPOINTS.AUTH}/remove-user`)
             return true
         } catch (error) {
+            ErrorHandler(error)
+        }
+    }
+
+    async getUsers({getAllUsers}) {
+        try{
+            const userResponse = await httpClient.get(`${API_ENDPOINTS.AUTH}/get-users`, {
+                params: {
+                    getAllUsers
+                }
+            })
+            
+            return userResponse.data.data
+        }catch(error) {
+            ErrorHandler(error)
+        }
+    }
+    
+    async verifyAccountByAdmin({userId}) {
+        try{
+            const userResponse = await httpClient.post(`${API_ENDPOINTS.AUTH}/admin-verify`, {
+                userId
+            })
+            
+            return userResponse.data.data
+        }catch(error) {
+            ErrorHandler(error)
+        }
+    }
+
+
+    async rejectAccountByAdmin({userId}) {
+        try{
+            const userResponse = await httpClient.post(`${API_ENDPOINTS.AUTH}/admin-reject`, {
+                userId
+            })
+            
+            return userResponse.data.data
+        }catch(error) {
+            ErrorHandler(error)
+        }
+    }
+    
+    
+    async generateNewVerificationCode({email}) {
+        try{
+            const userResponse = await httpClient.post(`${API_ENDPOINTS.AUTH}/generate-user-verification`, {
+                email
+            })
+            
+            return userResponse.data.data
+        }catch(error) {
+            ErrorHandler(error)
+        }
+    }
+    
+    async verifyUser({userId, verificationCode}) {
+        try{
+            const userResponse = await httpClient.post(`${API_ENDPOINTS.AUTH}/verify-user`, {
+                params: {
+                    userId,
+                    verificationCode
+                }
+            })
+            
+            return userResponse.data.data
+        }catch(error) {
             ErrorHandler(error)
         }
     }

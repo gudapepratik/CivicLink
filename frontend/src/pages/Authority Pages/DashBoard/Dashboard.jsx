@@ -1,109 +1,147 @@
+import React, { useEffect, useState } from "react";
+import { NavLink, useNavigate } from "react-router";
 import DashboardReportItem from "@/components/DashboardReportItem/DashboardReportItem";
 import { EngagementStats } from "@/components/EngagementStats/EngagementStats";
 import MetricsCard from "@/components/MetricsCard/MetricsCard";
 import ProgressBar from "@/components/Progress-bar/Progress-bar";
-import React from "react";
-import { NavLink } from "react-router";
+import  PostService  from "@/api/services/post.services";
+import { useSelector } from "react-redux";
+import { useLocationContext } from "@/utils/Context/LocationContext";
 
 function Dashboard() {
-  const engagementStats = [
-    { value: "1.2k", label: "Active Users" },
-    { value: "4.8k", label: "Interactions" },
-    { value: "87%", label: "Satisfaction" },
-  ]
+  const [dashboardData, setDashboardData] = useState(null);
+  const [recentReports, setRecentReports] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const user = useSelector(state => state.authSlice.user)
+  const { location, setLocation } = useLocationContext();
+  const navigate = useNavigate()
+
+  // console.log(user)
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true)
+        const response = await PostService.getAuthorityDashboardData({departmentId: user?.departmentId}); // 👈 Make sure this function returns resolvedData[0]
+        setDashboardData(response?.data?.data);
+      } catch (error) {
+        
+        console.error("Error fetching dashboard data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+    fetchRecentReports()
+  }, [user]);
+
+  const fetchRecentReports = async () => {
+    try {
+      setLoading(true)
+      const response = await PostService.getPostsByDepartmentAndLocation({departmentId: user?.departmentId, latitude: location.lat, longitude: location.lng, distance: 30, sortBy: ["recent"]});
+      setRecentReports(response?.data?.data);
+    } catch (error) {
+      
+      console.error("Error fetching dashboard data:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (loading) {
+    return <div className="p-4 text-center text-lg">Loading dashboard...</div>;
+  }
+
+  if (!dashboardData) {
+    return <div className="p-4 text-center text-red-500">Failed to load dashboard data</div>;
+  }
+
+  const {
+    totalReports,
+    resolvedReports,
+    pendingReports,
+    avgResponseInHours,
+    resolutionRate,
+    activeUsers,
+  } = dashboardData;
 
   const metricsCardData = [
     {
       title: "Total Reports",
-      value: "248",
+      value: totalReports,
       change: {
         isPositive: true,
-        value: "+12% from last week"
-      }
+        value: "+12% from last week", // You can make this dynamic too later
+      },
     },
     {
       title: "Resolved",
-      value: "180",
+      value: resolvedReports,
       change: {
         isPositive: true,
-        value: "+8% from last week"
-      }
+        value: "+8% from last week",
+      },
     },
     {
       title: "Pending",
-      value: "68",
+      value: pendingReports,
       change: {
         isPositive: false,
-        value: "+3% from last week"
-      }
+        value: "+3% from last week",
+      },
     },
     {
       title: "Avg. Response",
-      value: "4.2h",
+      value: `${avgResponseInHours?.toFixed(1)}h`,
       change: {
         isPositive: true,
-        value: "-0.8% from last week"
-      }
+        value: "-0.8% from last week",
+      },
     },
-  ]
+  ];
 
-  const recentReports = [
-    {
-      id: 1,
-      title: "Street light outage",
-      location: "Main St & 5th Ave",
-      status: "Resolved",
-      time: "2h ago",
-    },
-    { id: 2, title: "Pothole reported", location: "Oak Lane", status: "In Progress", time: "5h ago" },
-    { id: 3, title: "Graffiti on wall", location: "Central Park", status: "Pending", time: "1d ago" },
-    {
-      id: 4,
-      title: "Fallen tree branch",
-      location: "Riverside Dr",
-      status: "Resolved",
-      time: "1d ago",
-    },
-  ]
+  const engagementStats = [
+    { value: `${activeUsers}`, label: "Active Users" },
+    { value: "4.8k", label: "Interactions" }, // static
+    { value: "87%", label: "Satisfaction" }, // static
+  ];
 
   return (
-    <>
-      <div className="w-full p-4 flex flex-col bg-zinc-100 dark:bg-zinc-950 min-h-screen font-outfit items-center">
-        <h1 className="w-full text-xl font-medium text-left mb-4">Dashboard Overview</h1>
-        <div className="w-full grid grid-cols-2 gap-4 mb-6">
-            {metricsCardData.map((card,key) => (
-              <MetricsCard key={key} title={card.title} value={card.value} change={card.change}/>
-            ))}
-        </div>
+    <div className="w-full p-4 flex flex-col bg-zinc-100 dark:bg-zinc-950 min-h-screen font-outfit items-center">
+      <h1 className="w-full text-xl font-medium text-left mb-4">Dashboard Overview</h1>
 
-        {/* Resolution Rate */}
-        <div className="w-full mb-6">
-          <ProgressBar title="Resolution Rate" value={75} target={80} additionalInfo="+5% from last month" />
-        </div>
+      <div className="w-full grid grid-cols-2 gap-4 mb-6">
+        {metricsCardData && metricsCardData.map((card, key) => (
+          <MetricsCard key={key} title={card.title} value={card.value} change={card.change} />
+        ))}
+      </div>
 
-        {/* Community Engagement */}
-        <div className="mb-6 w-full">
-          <EngagementStats title="Community Engagement" stats={engagementStats} />
-        </div>
+      {/* Resolution Rate */}
+      <div className="w-full mb-6">
+        <ProgressBar
+          title="Resolution Rate"
+          value={resolutionRate}
+          target={80}
+          additionalInfo="+5% from last month"
+        />
+      </div>
 
-        {/* Reports list  */}
-        <div className="w-full bg-white dark:bg-zinc-800  rounded-lg shadow-sm">
-          <div className="p-4 border-b">
-            <p className="font-medium text-gray-800 dark:text-white">Recent Reports</p>
-          </div>
-          <div className="divide-y">
-            {recentReports.map((report) => (
-              <DashboardReportItem key={report.id} {...report}  />
-            ))}
-          </div>
-            <div className="p-3 border-t text-center">
-              <NavLink className="text-sm text-blue-600 font-medium">
-                View All Reports
-              </NavLink>
-            </div>
+      {/* Reports list */}
+      <div className="w-full bg-white dark:bg-zinc-800 rounded-lg shadow-sm">
+        <div className="p-4 border-b">
+          <p className="font-medium text-gray-800 dark:text-white">Recent Reports</p>
+        </div>
+        <div className="divide-y">
+          {recentReports && recentReports.map((report) => (
+            <DashboardReportItem key={report._id} {...report} onClick={() => navigate(`/explore-posts/${report._id}`)} />
+          ))}
+        </div>
+        <div className="p-3 border-t text-center">
+          <NavLink to={'/new-reports'} className="text-sm text-blue-600 font-medium">View All Reports</NavLink>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

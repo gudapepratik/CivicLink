@@ -12,6 +12,7 @@ export class PostService {
     longitude,
     images,
     address,
+    category
   }) {
     try {
       if (!images) throw new Error("Atleast one Image is required");
@@ -25,7 +26,7 @@ export class PostService {
       formData.append("longitude", longitude);
       formData.append("departmentId", departmentId);
       formData.append("address", address);
-      console.log(images);
+      formData.append("category", category);
       images.forEach((image, index) => {
         formData.append("images", image); // Field name matches your multer configuration
       });
@@ -50,7 +51,7 @@ export class PostService {
     }
   }
 
-  async getPostsByLocation({ latitude, longitude, status, distance, category, sortBy,approvalStatus, isAdminFetch}) {
+  async getPostsByLocation({ latitude, longitude, status, distance, category, sortBy,approvalStatus, isAdminFetch, isSpecificFetch, userId}) {
     try {
       console.log(latitude, longitude);
       if (!latitude || !longitude) throw new Error("Location is missing");
@@ -66,7 +67,9 @@ export class PostService {
             category,
             sortBy,
             approvalStatus,
-            isAdminFetch
+            isAdminFetch,
+            isSpecificFetch,
+            userId
           },
         }
       );
@@ -87,6 +90,24 @@ export class PostService {
           params: {
             postId,
             userId,
+          },
+        }
+      );
+
+      return response;
+    } catch (error) {
+      ErrorHandler(error);
+    }
+  }
+  async getAuthorityDashboardData({ departmentId }) {
+    try {
+      if (!departmentId) throw new Error("Department Id is required");
+
+      const response = await httpClient.get(
+        `${API_ENDPOINTS.POST}/get-authority-dashboard-data`,
+        {
+          params: {
+            departmentId
           },
         }
       );
@@ -147,8 +168,6 @@ export class PostService {
             distance,
             category,
             sortBy,
-            approvalStatus,
-            isAdminFetch
           },
         }
       );

@@ -60,6 +60,10 @@ const postSchema = mongoose.Schema(
       type: String,
       default: null
     },
+    category: {
+      type: String,
+      required: true
+    },
     imageUrls: [imageSchema],
     status: {
       type: String,
@@ -73,6 +77,7 @@ const postSchema = mongoose.Schema(
 
 // index the location as a 2dsphere index
 postSchema.index({ location: "2dsphere" })
+postSchema.index({ category: 1 });
 // postSchema.createIndex({location},"2dsphere")
 // aggregate paginate plugin
 postSchema.plugin(aggregatePaginate);

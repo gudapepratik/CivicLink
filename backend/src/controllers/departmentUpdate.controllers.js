@@ -76,7 +76,6 @@ const newDeptUpdate = asyncHandler(async (req,res) => {
         await sendReportStatusUpdateEmail(recipient_email, recipient_name, report_title,  postId.toString(), updatedStatus)
     }
 
-
     res
     .status(201)
     .json(

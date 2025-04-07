@@ -3,6 +3,7 @@ import { NotLoginImg1, NotResultImg1 } from '@/assets/assets.config'
 import Error from '@/components/Error/Error'
 import Loader from '@/components/Loader/Loader'
 import PostCard from '@/components/Post/PostCard'
+import SearchBar from '@/components/SearchBar/SearchBar'
 import { ToasterNotification } from '@/utils/ToastNotification/ToastNotification'
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -54,6 +55,11 @@ function CitizenPosts() {
         }
     },[statusFilter])
 
+    const [status, setStatus] = useState()
+    const [viewType, setViewType] = useState()
+    const [filterData, setFilterData] = useState()
+    const [trigger, setTrigger] = useState()
+
   return (
     <>
         {isLoading && <Loader/>}
@@ -62,7 +68,7 @@ function CitizenPosts() {
         :
         <div className='w-full h-[calc(100vh-80px)] flex flex-col gap-2 p-2'>
             {/* filter section  */}
-            <div className='w-full min-h-12 flex items-center p-2 bg-zinc-100 border shadow-inner dark:bg-zinc-900 rounded-lg'>
+            {/* <div className='w-full min-h-12 flex items-center p-2 bg-zinc-100 border shadow-inner dark:bg-zinc-900 rounded-lg'>
                 <div className='w-full flex font-outfit items-center gap-2'>
                     <label htmlFor="status" className=''>Status</label> 
                     <select id="status" className='rounded-lg p-1 dark:bg-zinc-700' value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
@@ -71,7 +77,8 @@ function CitizenPosts() {
                         ))}
                     </select>   
                 </div>
-            </div>
+            </div> */}
+            <SearchBar status={status} filterData={filterData} setFilterData={setFilterData} setStatus={setStatus} viewType={viewType} setViewType={setViewType}/>
             {posts && posts.length === 0 ? 
                 <div className='w-full flex flex-col gap-2'>
                 <Error image={NotResultImg1} title={"No Results"} message={"Sorry, we couldn’t find any results matching your query."}/>

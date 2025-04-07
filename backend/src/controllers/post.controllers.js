@@ -13,7 +13,7 @@ import { sendReportPendingApprovalEmail, sendReportStatusUpdateEmail } from "../
 // add new post
 const addNewPost = asyncHandler(async (req, res) => {
   // get the data
-  const { departmentId, title, description, latitude, longitude, address } =
+  const { departmentId, title, description, latitude, longitude, address, category } =
     req.body;
   // get the user (only citizen and admin roles can create a post)
   const user = req.user;
@@ -27,12 +27,12 @@ const addNewPost = asyncHandler(async (req, res) => {
     throw new ApiError("Invalid department ID");
 
   if (
-    [title, description, address].some((field) => field === "") ||
+    [title, description, address, category].some((field) => field === "") ||
     !latitude ||
     !longitude
   )
     throw new ApiError(400, "Insufficient data");
-  console.log(localImageFiles);
+  // console.log(localImageFiles);
   // upload the images to cloudinary
   const imageUploadResponse = await Promise.all(
     localImageFiles.images.map(async (localImage) => {
@@ -63,6 +63,7 @@ const addNewPost = asyncHandler(async (req, res) => {
     status: "pending",
     imageUrls: imageUploadResponse,
     address,
+    category
   });
 
   await sendReportPendingApprovalEmail(user.email, user.name, response.title, response._id.toString())
@@ -81,11 +82,12 @@ const addNewPost = asyncHandler(async (req, res) => {
 // get all posts (by location)
 const getPostsByLocation = asyncHandler(async (req, res) => {
   // get the location coordinates
-  const { latitude, longitude, status, distance, category, sortBy, approvalStatus, isAdminFetch } = req.query;
+  const { latitude, longitude, status, distance, category, sortBy, approvalStatus, isAdminFetch, userId, isSpecificFetch } = req.query;
   // set search readius (30km from target location)
-  const searchRadius = Number(distance) * 1000 || 30 * 1000; // 30km radius
+  const searchRadius = Number(distance) * 1000 || 10 * 1000; // 30km radius
   // aggregate pipeline (perform pagination in future)
   // get all posts near 30km radius of target location
+
 
   let sort = {
     field: "distance",
@@ -103,13 +105,13 @@ const getPostsByLocation = asyncHandler(async (req, res) => {
   }
 
   let approvalConditions = [];
-  if (approvalStatus.includes("pending")) {
+  if (approvalStatus.includes("awaiting")) {
     approvalConditions.push({ isApproved: false, approvedBy: null, rejectedBy: null });
   }
   if (approvalStatus.includes("approved")) {
     approvalConditions.push({ isApproved: true, approvedBy: { $ne: null } });
   }
-  if (approvalStatus.includes("rejected")) {
+  if (approvalStatus.includes("dismissed")) {
     approvalConditions.push({ isApproved: false, rejectedBy: { $ne: null } });
   }
 
@@ -137,12 +139,25 @@ const getPostsByLocation = asyncHandler(async (req, res) => {
     });
   }
 
+  // $match: {
+  //   ...(isAdminFetch === "false" && { isApproved: true }), // If not admin, only approved posts
+  //   ...(isAdminFetch === "true" && approvalConditions.length > 0 && { $or: approvalConditions })
+  // }
 
   aggregate.push(
     {
       $match: {
-        ...(isAdminFetch === "false" && { isApproved: true }), // If not admin, only approved posts
-        ...(isAdminFetch === "true" && approvalConditions.length > 0 && { $or: approvalConditions })
+        $and: [
+          ...(category !== "all"? [{category: category}]: []),
+          {
+            $or: [
+              ...(isSpecificFetch ==="false" && isAdminFetch === "false" ? [{ isApproved: true }] : []), // Only approved posts for non-admins
+              ...(isAdminFetch === "true" && approvalConditions.length > 0 ? [{ $or: approvalConditions }] : []), // Admin-specific conditions
+              // ...(!isSpecificFetch && userId ? [{ $and: [{ userId: new mongoose.Types.ObjectId(userId) }, { isApproved: false }] }] : []) ,// Include user's unapproved posts if userId exists
+              ...(isAdminFetch === "false" && isSpecificFetch === "true" && userId ? [{ $and: [{ userId: new mongoose.Types.ObjectId(userId) }, { $or: approvalConditions }] }] : []) // If fetching specific user’s posts
+            ]
+          }
+        ]
       }
     },
     {
@@ -308,36 +323,175 @@ const getPostsByUser = asyncHandler(async (req, res) => {
 });
 
 // get posts by department (anyone can access)
+// const getPostsByDepartment = asyncHandler(async (req, res) => {
+//   const { departmentId, latitude, longitude, status, distance, category, sortBy, approvalStatus, isAdminFetch  } = req.query;
+
+//   if (!mongoose.isValidObjectId(departmentId))
+//     throw new ApiError(400, "The departmentId is Invalid");
+
+//   let sort = {
+//     field: "distance",
+//     sortIn: 1,
+//   };
+
+//   if (sortBy === "recent") {
+//     sort = { field: "createdAt", sortIn: -1 }; // Newest first
+//   } else if (sortBy === "oldestfirst") {
+//     sort = { field: "createdAt", sortIn: 1 }; // Oldest first
+//   } else if (sortBy === "mostupvoted") {
+//     sort = { field: "upvoteCount", sortIn: -1 }; // Most upvoted first
+//   } else if (sortBy === "mostcommented") {
+//     sort = { field: "commentCount", sortIn: -1 }; // Most commented first
+//   }
+
+//   console.log(isAdminFetch, approvalStatus)
+
+//   // const posts = await Post.find({
+//   //     departmentId
+//   // }).populate("userId", "avatar name email"); // not finalized
+//   const searchRadius = Number(distance) * 1000 || 30 * 1000; // 30 km
+
+//   const aggregate = [];
+
+//   aggregate.push({
+//     $geoNear: {
+//       near: {
+//         type: "Point",
+//         coordinates: [Number(latitude), Number(longitude)],
+//       },
+//       distanceField: "distance",
+//       maxDistance: searchRadius,
+//       spherical: true,
+//     },
+//   });
+
+//   if (status && status[0] !== "all") {
+//     aggregate.push({
+//       $match: {
+//         status: {
+//           $in: status,
+//         },
+//       },
+//     });
+//   }
+
+//   aggregate.push(
+//     {
+//       $match: {
+//         departmentId: new mongoose.Types.ObjectId(departmentId),
+//         ...(isAdminFetch
+//           ? {
+//               $or: [
+//                 approvalStatus.includes("pending") ? { isApproved: false, approvedBy: null, rejectedBy: null } : null,
+//                 approvalStatus.includes("approved") ? { isApproved: true, approvedBy: { $ne: null } } : null,
+//                 approvalStatus.includes("rejected") ? { isApproved: false, rejectedBy: { $ne: null } } : null,
+//               ].filter(Boolean),
+//             }
+//           : { isApproved: true } // If not admin, show only approved reports
+//         ),
+//       },
+//     },
+//     {
+//       $lookup: {
+//         from: "users",
+//         localField: "userId",
+//         foreignField: "_id",
+//         as: "userDetails",
+//       },
+//     },
+//     {
+//       $lookup: {
+//         from: "departments",
+//         localField: "departmentId",
+//         foreignField: "_id",
+//         as: "departmentDetails",
+//       },
+//     },
+//     {
+//       $lookup: {
+//         from: "upvotes",
+//         localField: "_id",
+//         foreignField: "postId",
+//         as: "upvotes",
+//       },
+//     },
+//     {
+//       $lookup: {
+//         from: "comments",
+//         localField: "_id",
+//         foreignField: "postId",
+//         as: "comments",
+//       },
+//     },
+//     {
+//       $addFields: {
+//         upvoteCount: { $size: "$upvotes" }, // Count upvotes
+//         commentCount: { $size: "$comments" }, // Count comments
+//       },
+//     },
+//     {
+//       // Sort by nearest first
+//       $sort: { [sort.field]: sort.sortIn },
+//     },
+//     {
+//       $project: {
+//         upvotes: 0, // Exclude upvotes array (we dont want that)
+//         comments: 0, // Exclude comments array (we dont want that)
+//         "departmentDetails.authorityUsers": 0,
+//         "departmentDetails._id": 0,
+//         "departmentDetails.mission": 0,
+//         "departmentDetails.description": 0,
+//         "departmentDetails.responsibilities": 0,
+//         "departmentDetails.services": 0,
+//         "departmentDetails.commonIssues": 0,
+//         "departmentDetails.heroImage": 0,
+//         "departmentDetails.logo": 0,
+//         "departmentDetails.hours": 0,
+//         "departmentDetails.createdAt": 0,
+//         "departmentDetails.updatedAt": 0,
+//         "userDetails._id": 0,
+//         "userDetails.createdAt": 0,
+//         "userDetails.updatedAt": 0,
+//         "userDetails.password": 0,
+//         "userDetails.refreshToken": 0,
+//       },
+//     }
+//   );
+
+//   const posts = await Post.aggregate(aggregate);
+
+//   if (!posts)
+//     throw new ApiError(500, "Unexpected error occurred while fetching posts");
+
+//   res
+//     .status(200)
+//     .json(new ApiResponse(200, posts, "Posts fethced successfully"));
+// });
+
 const getPostsByDepartment = asyncHandler(async (req, res) => {
-  const { departmentId, latitude, longitude, status, distance, category, sortBy, approvalStatus, isAdminFetch  } = req.query;
+  const { departmentId, latitude, longitude, status, distance, sortBy } = req.query;
 
-  if (!mongoose.isValidObjectId(departmentId))
+  if (!mongoose.isValidObjectId(departmentId)) {
     throw new ApiError(400, "The departmentId is Invalid");
-
-  let sort = {
-    field: "distance",
-    sortIn: 1,
-  };
-
-  if (sortBy === "recent") {
-    sort = { field: "createdAt", sortIn: -1 }; // Newest first
-  } else if (sortBy === "oldestfirst") {
-    sort = { field: "createdAt", sortIn: 1 }; // Oldest first
-  } else if (sortBy === "mostupvoted") {
-    sort = { field: "upvoteCount", sortIn: -1 }; // Most upvoted first
-  } else if (sortBy === "mostcommented") {
-    sort = { field: "commentCount", sortIn: -1 }; // Most commented first
   }
 
-  console.log(isAdminFetch, approvalStatus)
+  const searchRadius = Number(distance) * 1000 || 10 * 1000; // default 30km
 
-  // const posts = await Post.find({
-  //     departmentId
-  // }).populate("userId", "avatar name email"); // not finalized
-  const searchRadius = Number(distance) * 1000 || 30 * 1000; // 30 km
+  // sorting logic
+  let sort = { field: "distance", sortIn: 1 };
+  if (sortBy === "recent") {
+    sort = { field: "createdAt", sortIn: -1 };
+  } else if (sortBy === "oldestfirst") {
+    sort = { field: "createdAt", sortIn: 1 };
+  } else if (sortBy === "mostupvoted") {
+    sort = { field: "upvoteCount", sortIn: -1 };
+  } else if (sortBy === "mostcommented") {
+    sort = { field: "commentCount", sortIn: -1 };
+  }
 
   const aggregate = [];
 
+  // Location-based search
   aggregate.push({
     $geoNear: {
       near: {
@@ -350,32 +504,25 @@ const getPostsByDepartment = asyncHandler(async (req, res) => {
     },
   });
 
+  // Filter by status
   if (status && status[0] !== "all") {
     aggregate.push({
       $match: {
-        status: {
-          $in: status,
-        },
+        status: { $in: status },
       },
     });
   }
 
-  aggregate.push(
-    {
-      $match: {
-        departmentId: new mongoose.Types.ObjectId(departmentId),
-        ...(isAdminFetch
-          ? {
-              $or: [
-                approvalStatus.includes("pending") ? { isApproved: false, approvedBy: null, rejectedBy: null } : null,
-                approvalStatus.includes("approved") ? { isApproved: true, approvedBy: { $ne: null } } : null,
-                approvalStatus.includes("rejected") ? { isApproved: false, rejectedBy: { $ne: null } } : null,
-              ].filter(Boolean),
-            }
-          : { isApproved: true } // If not admin, show only approved reports
-        ),
-      },
+  // Main filter: department + only approved
+  aggregate.push({
+    $match: {
+      departmentId: new mongoose.Types.ObjectId(departmentId),
+      isApproved: true,
     },
+  });
+
+  // Lookups and enrichment
+  aggregate.push(
     {
       $lookup: {
         from: "users",
@@ -410,18 +557,17 @@ const getPostsByDepartment = asyncHandler(async (req, res) => {
     },
     {
       $addFields: {
-        upvoteCount: { $size: "$upvotes" }, // Count upvotes
-        commentCount: { $size: "$comments" }, // Count comments
+        upvoteCount: { $size: "$upvotes" },
+        commentCount: { $size: "$comments" },
       },
     },
     {
-      // Sort by nearest first
       $sort: { [sort.field]: sort.sortIn },
     },
     {
       $project: {
-        upvotes: 0, // Exclude upvotes array (we dont want that)
-        comments: 0, // Exclude comments array (we dont want that)
+        upvotes: 0,
+        comments: 0,
         "departmentDetails.authorityUsers": 0,
         "departmentDetails._id": 0,
         "departmentDetails.mission": 0,
@@ -444,14 +590,11 @@ const getPostsByDepartment = asyncHandler(async (req, res) => {
   );
 
   const posts = await Post.aggregate(aggregate);
+  if (!posts) throw new ApiError(500, "Unexpected error occurred while fetching posts");
 
-  if (!posts)
-    throw new ApiError(500, "Unexpected error occurred while fetching posts");
-
-  res
-    .status(200)
-    .json(new ApiResponse(200, posts, "Posts fethced successfully"));
+  res.status(200).json(new ApiResponse(200, posts, "Posts fetched successfully"));
 });
+
 
 // get a post by id
 const getPostById = asyncHandler(async (req, res) => {
@@ -667,6 +810,125 @@ const updatePostStatus = asyncHandler(async (req, res) => {
     );
 });
 
+const getAuthorityDashboardOverview = asyncHandler(async (req, res) => {
+  const { departmentId } = req.query;
+
+  if (!mongoose.Types.ObjectId.isValid(departmentId)) {
+    throw new ApiError(400, "Invalid department ID");
+  }
+
+  const deptObjectId = new mongoose.Types.ObjectId(departmentId);
+
+  const result = await Post.aggregate([
+    {
+      $match: {
+        departmentId: deptObjectId,
+      },
+    },
+    {
+      $facet: {
+        stats: [
+          {
+            $group: {
+              _id: null,
+              totalReports: { $sum: 1 },
+              resolvedReports: {
+                $sum: {
+                  $cond: [{ $eq: ["$status", "resolved"] }, 1, 0],
+                },
+              },
+              pendingReports: {
+                $sum: {
+                  $cond: [{ $eq: ["$status", "pending"] }, 1, 0],
+                },
+              },
+              totalResolutionTimeInMs: {
+                $sum: {
+                  $cond: [
+                    { $eq: ["$status", "resolved"] },
+                    { $subtract: ["$updatedAt", "$createdAt"] },
+                    0,
+                  ],
+                },
+              },
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              totalReports: 1,
+              resolvedReports: 1,
+              pendingReports: 1,
+              avgResponseInHours: {
+                $cond: [
+                  { $eq: ["$resolvedReports", 0] },
+                  0,
+                  {
+                    $divide: [
+                      { $divide: ["$totalResolutionTimeInMs", 1000 * 60 * 60] },
+                      "$resolvedReports",
+                    ],
+                  },
+                ],
+              },
+              resolutionRate: {
+                $cond: [
+                  { $eq: ["$totalReports", 0] },
+                  0,
+                  {
+                    $multiply: [
+                      { $divide: ["$resolvedReports", "$totalReports"] },
+                      100,
+                    ],
+                  },
+                ],
+              },
+            },
+          },
+        ],
+        activeUsers: [
+          {
+            $match: {
+              createdAt: {
+                $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // last 30 days
+              },
+            },
+          },
+          {
+            $group: {
+              _id: "$userId",
+            },
+          },
+          {
+            $count: "activeUsers",
+          },
+        ],
+      },
+    },
+    {
+      $project: {
+        totalReports: { $arrayElemAt: ["$stats.totalReports", 0] },
+        resolvedReports: { $arrayElemAt: ["$stats.resolvedReports", 0] },
+        pendingReports: { $arrayElemAt: ["$stats.pendingReports", 0] },
+        avgResponseInHours: { $arrayElemAt: ["$stats.avgResponseInHours", 0] },
+        resolutionRate: { $arrayElemAt: ["$stats.resolutionRate", 0] },
+        activeUsers: {
+          $ifNull: [{ $arrayElemAt: ["$activeUsers.activeUsers", 0] }, 0],
+        },
+      },
+    },
+  ]);
+
+  if (!result || !result.length) {
+    throw new ApiError(500, "Failed to fetch dashboard data");
+  }
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, result[0], "Dashboard data fetched successfully"));
+});
+
+
 export {
   addNewPost,
   getPostsByLocation,
@@ -675,6 +937,7 @@ export {
   getPostById,
   deletePost,
   updatePostStatus,
+  getAuthorityDashboardOverview
 };
 
 // refer this for pagination

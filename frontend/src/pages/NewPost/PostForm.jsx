@@ -1,4 +1,4 @@
-import Error from "@/components/Error/Error";
+import Error2 from "@/components/Error/Error2";
 import { useSelector } from "react-redux";
 import { Textarea } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
@@ -11,7 +11,7 @@ import { ToasterNotification } from "../../utils/ToastNotification/ToastNotifica
 import Loader from "@/components/Loader/Loader";
 import { useNavigate } from "react-router";
 import GoogleMapComponent from "@/components/GoogleMap/GoogleMapComponent";
-import { RiMapPinLine } from "@remixicon/react";
+import { RiInformationLine, RiLoader2Line, RiMapPinLine, RiUpload2Fill } from "@remixicon/react";
 import {
   FileUploadList,
   FileUploadRoot,
@@ -20,6 +20,8 @@ import {
 import departmentInfo from "@/utils/departmentInfo";
 import { getAddressFromCoordinates } from "@/utils/googleMaps.utilites";
 import { NotLoginImg1 } from "@/assets/assets.config";
+import GoogleMapReportComponent from "@/components/GoogleMap/GoogleMapReportComponent";
+import ReportSuccess from "./ReportSuccess";
 // import { error } from "console";
 
 function PostForm() {
@@ -29,6 +31,8 @@ function PostForm() {
   const [isLoading, setLoading] = useState(false);
   const [selectedDep, setSelectedDep] = useState(departmentInfo[0].departmentId)
   const navigate = useNavigate();
+  const [isSubmitted, setIsSubmitted] = useState(false)
+
   const {
     register,
     handleSubmit,
@@ -37,15 +41,32 @@ function PostForm() {
     control,
     setError,
     clearErrors,
+    setValue
   } = useForm();
+  const [wordCount, setWordCount] = useState(0);
+  const maxWords = 1000;
+  const categories = [
+    { id: "roads", name: "Roads & Sidewalks" },
+    { id: "lighting", name: "Street Lighting" },
+    { id: "sanitation", name: "Sanitation & Waste" },
+    { id: "vandalism", name: "Vandalism & Graffiti" },
+    { id: "parks", name: "Parks & Recreation" },
+    { id: "water", name: "Water & Sewage" },
+    { id: "other", name: "Other Issues" },
+  ]
 
   const onSubmit = handleSubmit(async (data) => {
     try {
       setLoading(true);
-      console.log(data, location, images);
+      setIsSubmitted(false);
+
+      console.log(data, location,locationAddress, images);
       console.log("asf");
-      if (!locationAddress) throw new Error("Please select location");
+
+      if (!locationAddress || !location) throw new Error("Please select location")
+
       if (!images) throw new Error("Select at least 1 image");
+
       const response = await PostService.addNewPost({
         departmentId: data.departmentId,
         title: data.title,
@@ -54,6 +75,7 @@ function PostForm() {
         longitude: location.lng,
         images: images,
         address: locationAddress,
+        category: data.category
       });
 
       ToasterNotification({
@@ -61,9 +83,12 @@ function PostForm() {
         title: "Success",
         description: "Post uploaded successfully",
       });
-      setTimeout(() => {
-        navigate("/");
-      }, 2000);
+
+      setIsSubmitted(true)
+
+      // setTimeout(() => {
+      //   navigate("/");
+      // }, 2000);
     } catch (error) {
       console.log(error);
       ToasterNotification({
@@ -112,6 +137,7 @@ function PostForm() {
     clearErrors("files");
     return true;
   };
+
   const [locationAddress, setLocationAddress] = useState("");
   useEffect(() => {
     const fetchAddress = async () => {
@@ -126,159 +152,219 @@ function PostForm() {
 
   return (
     <>
-      {isLoading && <Loader />}
+      {/* {isLoading && <Loader />} */}
       {!userStatus ? (
-        <Error image={NotLoginImg1} hoffset={100} title={'User Not Logged in'} message={'Log in to your account to Create a post'}/>
+        <Error2 image={NotLoginImg1} hoffset={100} title={'User Not Logged in'} message={'Log in to your account to Create a post'}/>
       ) : (
-        <div className="w-full font-outfit p-3">
-          <h1 className="text-zinc-800 text-2xl font-extrabold text-center dark:text-white">
-            Report an Issue
-          </h1>
-          {/* <GoogleMapComponent/> */}
-          <form onSubmit={onSubmit} className="w-full flex flex-col gap-6 mt-4">
-            <Field
-              label="title"
-              required
-              invalid={!!errors.title}
-              errorText={errors.title?.message}
-            >
-              <Input
-                variant={"subtle"}
-                className="p-2"
-                placeholder="Enter title"
-                {...register("title", {
-                  required: "title is required",
-                })}
-              />
-            </Field>
-
-            <Field
-              label="Description"
-              required
-              helperText="Max 500 characters."
-              invalid={!!errors.description}
-              errorText={errors.description?.message}
-            >
-              <Textarea
-                placeholder="Explain your issue...."
-                variant={"subtle"}
-                size={"md"}
-                className="p-2 max-h-[40]"
-                {...register("description", {
-                  required: "description is required",
-                })}
-                resize={"vertical"}
-                autoresize
-                maxHeight={"300px"}
-                minHeight={"100px"}
-              />
-            </Field>
-
-            <Field label="department">
-              <select
+        isSubmitted ? (
+          <ReportSuccess/>
+        ) :(
+          <>
+          
+          <div className="w-full font-outfit p-3">
+            <h1 className="text-zinc-800 text-2xl font-extrabold text-center dark:text-white">
+              Report an Issue
+            </h1>
+            {/* <GoogleMapComponent/> */}
+            <form onSubmit={onSubmit} className="w-full flex flex-col gap-6 mt-4">
+              <Field
+                label="title"
                 required
-                id="department"
-                className="border p-2 w-full rounded-lg bg-zinc-50 dark:bg-zinc-800"
-                // onChange={(e) => {
-                //   console.log("asf",e)
-                //   setSelectedDep()}}
-                {...register("departmentId", {
-                  required: "Department is required",
-                })}
+                invalid={!!errors.title}
+                errorText={errors.title?.message}
               >
-                {departmentInfo.map((department, index) => (
-                  <option
-                    className="duration-100 bg-zinc-700 font-outfit text-white"
-                    key={index}
-                    value={department.departmentId}
-                  >
-                    {department.title}
-                  </option>
-                ))}
-              </select>
-            </Field>
+                <Input
+                  variant={"subtle"}
+                  className="p-2"
+                  placeholder="Enter a title.."
+                  {...register("title", {
+                    required: "title is required",
+                  })}
+                  minLength={"10"}
+                />
+              </Field>
 
-            {/* <div className="w-full flex flex-col">
-                <a href={`/departments/${selectedDep}`}>Go to</a>
-            </div> */}
+              <Field
+                label="Description"
+                required
+                helperText={`Maximum ${maxWords} characters`}
+                invalid={!!errors.description}
+                errorText={errors.description?.message}
+              >
+                <Textarea
+                  placeholder="Describe your issue in detail...."
+                  variant={"subtle"}
+                  size={"md"}
+                  className="p-2 max-h-[40]"
+                  {...register("description", {
+                    required: "description is required",
+                  })}
+                  resize={"vertical"}
+                  autoresize
+                  minLength={"50"}
+                  maxLength={"1000"}
+                  maxHeight={"300px"}
+                  minHeight={"100px"}
+                />
+              </Field>
 
-            {/* map box  */}
-            <div className="flex flex-col gap-2">
-              <div className="flex items-end">
-                <RiMapPinLine /> <Field label="Location"></Field>
-              </div>
-              <div className="w-full h-[200px] bg-zinc-300 dark:bg-zinc-800 rounded-3xl">
-                <GoogleMapComponent onLocationSelect={setLocation} />
-              </div>
-              {location && (
-                <p className="font-outfit text-xs w-full p-2 text-blue-400 bg-zinc-50 dark:bg-zinc-800">
-                  {locationAddress}
-                </p>
-              )}
-            </div>
+              <Field 
+                required 
+                label="category"
+                invalid={!!errors.category}
+                errorText={errors.category?.message}
+              >
+                <select
+                  required
+                  id="category"
+                  className="border p-2 w-full rounded-lg bg-zinc-50 dark:bg-zinc-800"
+                  {...register("category", {
+                    required: "Category is required",
+                  })}
+                >
+                  {categories.map((category, index) => (
+                    <option
+                      className="duration-100 bg-zinc-700 font-outfit text-white"
+                      key={index}
+                      value={category.id}
+                    >
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+              </Field>
 
-            {/* images  */}
-            <input
-              type="file"
-              id="fileUpload"
-              required
-              multiple
-              accept="image/*"
-              className="hidden"
-              placeholder="Add images"
-              {...register("files", {
-                onChange: (e) => handleFileChange(e.target.files),
-                required: "image is required",
-              })}
-            />
-            {/* <label
-                htmlFor="fileUpload"
-                className="cursor-pointer px-4 py-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 transition"
-            >
-                Upload Images
-            </label> */}
-            <div>
-              <div className="flex items-end gap-3">
-                <label htmlFor="fileUpload">Images</label>
-                {errors.files && (
-                  <p className="font-outfit text-xs text-red-500">
-                    *{errors.files.message}
+
+              <Field 
+                required 
+                label="department"
+                invalid={!!errors.department}
+                errorText={errors.department?.message}
+              >
+                <select
+                  required
+                  id="department"
+                  className="border p-2 w-full rounded-lg bg-zinc-50 dark:bg-zinc-800"
+                  {...register("departmentId", {
+                    required: "Department is required",
+                  })}
+                >
+                  {departmentInfo.map((department, index) => (
+                    <option
+                      className="duration-100 bg-zinc-700 font-outfit text-white"
+                      key={index}
+                      value={department.departmentId}
+                    >
+                      {department.title}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+
+              {/* <div className="w-full flex flex-col">
+                  <a href={`/departments/${selectedDep}`}>Go to</a>
+              </div> */}
+
+              {/* map box  */}
+              <div className="flex flex-col gap-2">
+                <div className="flex items-end">
+                  <RiMapPinLine/> <Field label="Location"></Field>
+                </div>
+                <div className="w-full h-[200px] bg-zinc-300 dark:bg-zinc-800 rounded-3xl">
+                  <GoogleMapReportComponent onLocationSelect={setLocation} />
+                </div>
+                {location && (
+                  <p className="font-outfit text-xs w-full p-2 text-blue-400 bg-zinc-50 dark:bg-zinc-800">
+                    {locationAddress}
                   </p>
                 )}
               </div>
-              {previewImgs.length > 0 ? (
-                <label
-                  htmlFor="fileUpload"
-                  className="w-full flex grid-cols-3 flex-wrap justify-start gap-4 border rounded-lg p-2"
-                >
-                  {previewImgs.map((img, index) => (
-                    <img
-                      key={index}
-                      src={img}
-                      alt="preview"
-                      className="w-24 h-24 object-cover rounded-md"
-                    />
-                  ))}
-                </label>
-              ) : (
-                <label
-                  htmlFor="fileUpload"
-                  className="w-full flex border rounded-lg justify-center items-center h-52 "
-                >
-                  <h2 className="font-outfit">Your images here</h2>
-                </label>
-              )}
-            </div>
+              
+              <div className="w-full flex flex-col gap-2">
+                {/* images  */}
+                <Field 
+                  required 
+                  label="Images" 
+                  invalid={!!errors.files}
+                  errorText={errors.files?.message}>
+                  <Input
+                    type="file"
+                    id="fileUpload"
+                    required
+                    multiple
+                    accept="image/*"
+                    className="hidden"
+                    placeholder="Add images"
+                    {...register("files", {
+                      onChange: (e) => handleFileChange(e.target.files),
+                      required: "image is required",
+                      minLength: 1
+                    })}
+                  />
+                </Field>
+                <div>
+                  {/* <div className="flex items-end pb-1 gap-3">
+                    <Field required label="Images"></Field>
+                    {errors.files && (
+                      <p className="font-outfit text-xs text-red-500">
+                        *{errors.files.message}
+                      </p>
+                    )}
+                  </div> */}
+                  {previewImgs.length > 0 ? (
+                    <div className="w-full p-2 flex justify-center items-center border rounded-lg">
+                      <label
+                        htmlFor="fileUpload"
+                        className="w-full justify-evenly flex grid-cols-3 flex-wrap  gap-4"
+                      >
+                        {previewImgs.map((img, index) => (
+                          <img
+                            key={index}
+                            src={img}
+                            alt="preview"
+                            className="w-24 h-24 object-cover rounded-md"
+                          />
+                        ))}
+                      </label>
+                    </div>
+                  ) : (
+                    <label
+                      htmlFor="fileUpload"
+                      className="w-full flex border-dashed border-zinc-300 dark:border-zinc-700 border-2 rounded-lg justify-center items-center h-52 "
+                    >
+                      <div className="flex flex-col text-zinc-400 dark:text-zinc-500 font-outfit items-center">
+                          <RiUpload2Fill size={40}/>
+                          <h2 className="text-[16px]">Click to upload images</h2>
+                          <h2 className="text-[13px]">(maximum 6 images)</h2>
+                      </div>
+                    </label>
+                  )}
+                </div>
 
-            <button
-              type="submit"
-              className="bg-blue-600 w-full py-3 text-white font-outfit"
-            >
-              Upload Post
-            </button>
-          </form>
-        </div>
-      )}
+
+                <div className="p-4 bg-blue-50 my-2 dark:bg-zinc-600 dark:bg-opacity-20 rounded-lg flex items-start">
+                    <RiInformationLine className="text-blue-500 mr-3 mt-0.5 flex-shrink-0" size={20} />
+                    <div className="text-sm text-blue-700 dark:text-zinc-400">
+                      <p className="font-medium">Important:</p>
+                      <p>
+                        Your report will be reviewed by an admin before being assigned to the relevant department. You
+                        will receive a notification once your report is approved.
+                      </p>
+                    </div>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className="bg-blue-600  border-blue-500 border flex justify-center gap-2 mb-4 dark:hover:bg-opacity-100 dark:bg-blue-800 dark:bg-opacity-50 dark:border dark:border-blue-700 hover:bg-blue-800 rounded-lg duration-300 w-full py-3 text-white font-outfit"
+              >
+                {isLoading && <RiLoader2Line className="duration-[4000] animate-spin"/>} {isLoading ?  "Uploading..": "Upload Report"}
+              </button>
+            </form>
+          </div>
+          </>
+        ))
+      }
     </>
   );
 }

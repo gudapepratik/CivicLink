@@ -43,10 +43,6 @@ function Navbar() {
       link: "departments"
     },
     {
-      title: "Notifications",
-      link: "notifications",
-    },
-    {
       title: "Account",
       link: "account",
     },
@@ -71,11 +67,7 @@ function Navbar() {
     },
     {
       title: "User Management",
-      link: "departments"
-    },
-    {
-      title: "Notifications",
-      link: "notifications",
+      link: "user-management"
     },
     {
       title: "Account",
@@ -105,10 +97,6 @@ function Navbar() {
       link: "account",
     },
     {
-      title: "Setting",
-      link: "setting",
-    },
-    {
       title: "Help & Support",
       link: "help-and-support",
     },
@@ -122,6 +110,7 @@ function Navbar() {
   const handleLogout = async () => {
     try {
       setIsLoading(true);
+      setSidebar(false)
       // logout user
       await AuthService.logoutUser();
 
@@ -171,7 +160,7 @@ function Navbar() {
             />
           )}
           <NavLink
-            to={user && (user.role === "citizen" ? "/" : "/authority-dashboard")}
+            to={user && ((user.role === "citizen" || user.role === "admin" ) ? "/" : "/authority-dashboard")}
             className="font-outfit font-bold text-2xl text-white"
           >
             CivicLink
@@ -235,6 +224,9 @@ function Navbar() {
               {!user ? (
                 <NavLink
                   to={"/login"}
+                  onClick={() => {
+                    setSidebar(false)
+                  }}
                   className="px-6 py-3 flex items-center gap-3 rounded-xl text-white dark:text-zinc-900 dark:bg-white font-outfit text-lg  bg-blue-950 "
                 >
                   Login <RiArrowRightLine />

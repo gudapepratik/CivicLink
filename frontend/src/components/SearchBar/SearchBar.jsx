@@ -4,35 +4,17 @@ import { RiFilter2Line, RiFilter3Line, RiFilterFill, RiFilterLine, RiListUnorder
 import { debounce } from "lodash";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Filter from "../Filter/Filter";
+import { useSearchFilterContext } from "@/utils/Context/SearchFilterContext";
 
-function SearchBar({status,viewType, setViewType, setStatus,filterData, setFilterData, trigger}) {
+// status,viewType, setViewType, setStatus,filterData, setFilterData, trigger
+function SearchBar() {
   const [query, setQuery] = useState("");
   const [suggestion, setSuggestions] = useState([]);
   const {location, setLocation} = useLocationContext()
   const [showFilter, setShowFilter] = useState(false)
   const [showSortOptions, setShowSortOptions] = useState(false)
-  const sortOptions = [
-    {
-      label: "Most Recent",
-      value: "recent"
-    },
-    {
-      label: "Oldest first",
-      value: "oldestfirst"
-    },
-    {
-      label: "Most Upvoted",
-      value: "mostupvoted"
-    },
-    {
-      label: "Most Commented",
-      value: "mostcommented"
-    },
-    {
-      label: "Nearest first",
-      value: "nearestfirst"
-    },
-  ]
+  
+  const {sortOptions, setFilterData, setViewType, triggerApplyFilter, viewType} = useSearchFilterContext()
 
   const handleSearchInput = async (e) => {
     setQuery(e.target.value)
@@ -75,11 +57,11 @@ function SearchBar({status,viewType, setViewType, setStatus,filterData, setFilte
   }
 
   const handleSortInput = (value) => {
-    console.log(value)  
+    // console.log(value)  
     setShowSortOptions(false)
     setFilterData(prev => ({...prev, sortBy: value}))
     if(showSortOptions)
-      trigger(prev => !prev)
+      triggerApplyFilter()
   }
 
   useEffect(() => {
@@ -124,7 +106,8 @@ function SearchBar({status,viewType, setViewType, setStatus,filterData, setFilte
           <RiFilter3Line size={23}/>
         </div>
   
-        <Filter status={status} setStatus={setStatus} filterData={filterData} setFilterData={setFilterData} showFilter={showFilter} trigger={trigger} setShowFilter={setShowFilter}/>
+        {/* <Filter status={status} setStatus={setStatus} filterData={filterData} setFilterData={setFilterData} showFilter={showFilter} trigger={trigger} setShowFilter={setShowFilter}/> */}
+        <Filter showFilter={showFilter} setShowFilter={setShowFilter}/>
       </div>
       <div className="flex items-center gap-3">
         
@@ -134,7 +117,7 @@ function SearchBar({status,viewType, setViewType, setStatus,filterData, setFilte
         </button>
 
         {showSortOptions && (
-          <div onClick={() => setShowSortOptions(false)} className="w-full fixed inset-0 bg-black bg-opacity-35 transition-opacity duration-300 ease-in-out"></div>
+          <div onClick={() => setShowSortOptions(false)} className="w-full fixed inset-0 bg-black bg-opacity-35 transition-opacity z-[200]  duration-300 ease-in-out"></div>
         )}
         
           <div className={`${showSortOptions ? "flex opacity-100 visible" : "opacity-0 invisible"} left-6 top-[23%]  text-zinc-800 z-[200] dark:border-zinc-700 rounded-lg shadow-md border bg-white dark:bg-zinc-800 dark:text-white duration-200 ease-out p-3  flex-col gap-2  absolute`}>

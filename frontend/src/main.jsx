@@ -32,6 +32,8 @@ import Dashboard from "./pages/Authority Pages/DashBoard/Dashboard.jsx";
 import NewReports from "./pages/NewReports/NewReports.jsx";
 import DepartmentTab from "./pages/DepartmentDetails/DepartmentTab.jsx";
 import DepartmentPage from "./pages/DepartmentDetails/DepartmentPage.jsx";
+import { SearchFilterProvider } from "./utils/Context/SearchFilterContext.jsx";
+import UserManagement from "./pages/UserManagement/UserManagement.jsx";
 // import { Toaster } from "@chakra-ui/react";
 // import { io } from "socket.io-client"; // socket io trails
 // import config from "../config/config.js";
@@ -40,17 +42,20 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Layout />}>
       <Route index element={<Home />} />
+      {/* <Route path="/login" element={<Login />} /> */}
       <Route path="/login" element={<Login />} />
+
       <Route path="/new-post" element={<PostForm />} />
       <Route path="/explore-posts" element={<ExplorePosts />} />
       <Route path="/explore-posts/:id" element={<Post />} />
-      <Route path="/user-posts" element={<CitizenPosts />} />
+      <Route path="/user-posts" element={<ExplorePosts />} />
       <Route path="/help-and-support" element={<HelpnSupport/>} />
       <Route path="/community-guidelines" element={<CommunityGuideline/>} />
       <Route path="/account" element={<Account/>} />
       <Route path="/authority-dashboard" element={<Dashboard/>} />
       <Route path="/new-reports" element={<NewReports/>} />
       <Route path="/departments" element={<DepartmentTab/>} />
+      <Route path="/user-management" element={<UserManagement/>} />
       <Route path="/departments/:id" element={<DepartmentPage/>} />
       {/* <Route path="sellerdashboard/" element={<SellerDashboard />}>
         <Route path="login" element={<SellerLogin />} />
@@ -112,13 +117,15 @@ createRoot(document.getElementById("root")).render(
     <ChakraProvider>
       <Provider store={store}>
         {/* <SocketProvider> */}
-        <LocationProvider>
-          <CheckAuth>
-            <RouterProvider router={router} />
-            <Analytics />
-          </CheckAuth>
-        </LocationProvider>
-        {/* </SocketProvider> */}
+        <SearchFilterProvider>
+          <LocationProvider>
+            <CheckAuth>
+              <RouterProvider router={router} />
+              <Analytics />
+            </CheckAuth>
+          </LocationProvider>
+          {/* </SocketProvider> */}
+        </SearchFilterProvider>
         {/* <App /> */}
       </Provider>
     </ChakraProvider>

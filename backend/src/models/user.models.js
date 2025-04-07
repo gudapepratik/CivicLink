@@ -63,6 +63,22 @@ const userSchema = mongoose.Schema(
         required: true,
       },
     },
+    isAdminVerified: {
+      type: Boolean,
+      default: false
+    },
+    isVerified: {
+      type: Boolean,
+      default: false
+    },
+    verificationCode: {
+      type: String,
+      default: null
+    },
+    verificationCodeExpiresAt: {
+      type: Date,
+      default: null // Correct: function reference
+    }
   },
   { timestamps: true }
 );

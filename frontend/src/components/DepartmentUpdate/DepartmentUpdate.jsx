@@ -91,7 +91,7 @@ function DepartmentUpdate({onDeleteComment, updateDetails, setReloadTrigger}) {
               </div>
 
               <div  className="flex items-center scale-75">
-                <StatusButton status={updateDetails.updatedStatus}/>
+                <StatusButton status={updateDetails.updatedStatus} isApproved={true}/>
             </div>
             </div>
             </div>

@@ -112,27 +112,6 @@ export const sendReportStatusUpdateEmail = (email, name, reportTitle, reportId, 
   return sendTemplateEmail(email, subject, htmlContent);
 };
 
-/**
- * Sends an email when an authority user's account is approved.
- * @param {string} email - Recipient's email.
- * @param {string} name - Recipient's name.
- */
-export const sendAccountApprovedEmail = (email, name) => {
-  const subject = "Your Authority Account Has Been Approved!";
-  const htmlContent = `
-    <body>
-      <style> ... </style>
-      <div class="container">
-        <h2>Welcome to CivicLink!</h2>
-        <p>Hello ${name},</p>
-        <p>Your authority account has been reviewed and approved. You can now manage reports and take action.</p>
-        <a href="https://civic-link.vercel.app/login" class="btn">Login Now</a>
-        <p>Thank you for joining CivicLink!</p>
-      </div>
-    </body>
-  `;
-  return sendTemplateEmail(email, subject, htmlContent);
-};
 
 /**
  * Sends an email when an authority user's account is pending approval.
@@ -245,7 +224,6 @@ export const sendReportRejectedEmail = (email, name, reportTitle, reportId, reas
         <h2>Your Report Has Been Rejected</h2>
         <p>Hello ${name},</p>
         <p>Your report <strong>"${reportTitle}"</strong> has been reviewed by our team but unfortunately, it has been rejected.</p>
-        <p><strong>Reason:</strong> ${reason}</p>
         <p>If you believe this decision was made in error, you may submit a new report with accurate details.</p>
         <a href="https://civic-link.vercel.app/new-post" class="btn">Submit New Report</a>
       </div>
@@ -275,5 +253,219 @@ export const sendReportPendingApprovalEmail = (email, name, reportTitle, reportI
       </div>
     </body>
   `;
+  return sendTemplateEmail(email, subject, htmlContent);
+};
+
+/**
+ * Sends an email to the user with their verification code.
+ * @param {string} email - Recipient's email.
+ * @param {string} name - Recipient's name.
+ * @param {string} verificationCode - The verification code.
+ */
+export const sendVerificationCodeEmail = (email, name, verificationCode) => {
+  const subject = "Your CivicLink Verification Code";
+  const htmlContent = `
+    <body>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          padding: 20px;
+          text-align: center;
+        }
+        .container {
+          max-width: 600px;
+          margin: auto;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          padding: 20px;
+          background-color: #f9f9f9;
+        }
+        .code {
+          font-size: 24px;
+          font-weight: bold;
+          background-color: #003994;
+          color: #ffffff;
+          padding: 10px 20px;
+          border-radius: 6px;
+          display: inline-block;
+          margin: 20px 0;
+        }
+      </style>
+
+      <div class="container">
+        <h2>Email Verification for Password Change</h2>
+        <p>Hello ${name},</p>
+        <p>Use the verification code below to verify your CivicLink account:</p>
+        <div class="code">${verificationCode}</div>
+        <p>This code will expire in 2 days. If you did not request this, please ignore the email.</p>
+      </div>
+    </body>
+  `;
+
+  return sendTemplateEmail(email, subject, htmlContent);
+};
+
+/**
+ * Sends an email to notify the citizen that their CivicLink account has been successfully created.
+ * @param {string} email - Recipient's email.
+ * @param {string} name - Recipient's name.
+ */
+export const sendCitizenAccountCreatedEmail = (email, name) => {
+  const subject = "Welcome to CivicLink - Your Account is Ready!";
+  const htmlContent = `
+    <body>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          padding: 20px;
+          text-align: center;
+        }
+        .container {
+          max-width: 600px;
+          margin: auto;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          padding: 20px;
+          background-color: #f9f9f9;
+        }
+        .btn {
+          display: inline-block;
+          padding: 10px 20px;
+          background-color: #003994;
+          color: #ffffff;
+          text-decoration: none;
+          border-radius: 5px;
+        }
+      </style>
+
+      <div class="container">
+        <h2>Welcome to CivicLink!</h2>
+        <p>Hello ${name},</p>
+        <p>
+          Your Citizen account has been successfully created on CivicLink. You can now log in and start reporting issues in your community.
+        </p>
+        <a href="https://civic-link.vercel.app/login" class="btn">
+          Login Now
+        </a>
+        <p>We're excited to have you on board!</p>
+      </div>
+    </body>
+  `;
+
+  return sendTemplateEmail(email, subject, htmlContent);
+};
+
+
+/**
+ * Sends an email to notify the authority/admin that their CivicLink account has been created and is pending verification.
+ * @param {string} email - Recipient's email.
+ * @param {string} name - Recipient's name.
+ * @param {string} role - User's role (Authority or Admin).
+ */
+export const sendAuthorityAccountCreatedEmail = (email, name, role) => {
+  const subject = "CivicLink Account Created - Pending Verification";
+  const htmlContent = `
+    <body>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          padding: 20px;
+          text-align: center;
+        }
+        .container {
+          max-width: 600px;
+          margin: auto;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          padding: 20px;
+          background-color: #f9f9f9;
+        }
+        .btn {
+          display: inline-block;
+          padding: 10px 20px;
+          background-color: #003994;
+          color: #ffffff;
+          text-decoration: none;
+          border-radius: 5px;
+        }
+      </style>
+
+      <div class="container">
+        <h2>Account Created Successfully!</h2>
+        <p>Hello ${name},</p>
+        <p>
+          Your ${role} account has been created on CivicLink. Our admin team will review your application shortly.
+        </p>
+        <p>
+          Once verified, you'll receive another email confirming access to the platform.
+        </p>
+        <p>Thank you for supporting your community through CivicLink!</p>
+      </div>
+    </body>
+  `;
+
+  return sendTemplateEmail(email, subject, htmlContent);
+};
+
+
+/**
+ * Sends an email to notify the user that their CivicLink account has been verified by an admin.
+ * @param {string} email - Recipient's email.
+ * @param {string} name - Recipient's name.
+ * @param {string} verificationCode - The verification code for the user.
+ */
+export const sendAccountVerifiedEmail = (email, name, verificationCode) => {
+  const subject = "Your CivicLink Account Has Been Verified by Admin";
+  const htmlContent = `
+    <body>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          padding: 20px;
+          text-align: center;
+        }
+        .container {
+          max-width: 600px;
+          margin: auto;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          padding: 20px;
+          background-color: #f9f9f9;
+        }
+        .btn {
+          display: inline-block;
+          padding: 10px 20px;
+          background-color: #003994;
+          color: #ffffff;
+          text-decoration: none;
+          border-radius: 5px;
+          margin-top: 15px;
+        }
+        .code {
+          background-color: #eee;
+          display: inline-block;
+          padding: 10px 20px;
+          border-radius: 5px;
+          font-weight: bold;
+          font-size: 18px;
+          margin-top: 10px;
+        }
+      </style>
+
+      <div class="container">
+        <h2>Account Verified by Admin</h2>
+        <p>Hello ${name},</p>
+        <p>
+          We are pleased to inform you that your CivicLink account has been verified by our admin team.
+        </p>
+        <p>Your verification code is:</p>
+        <div class="code">${verificationCode}</div>
+        <p>Please use this code if prompted while logging in or managing your account.</p>
+        <a href="https://civic-link.vercel.app/login" class="btn">Login Now</a>
+        <p>Thank you for being a part of CivicLink!</p>
+      </div>
+    </body>
+  `;
+
   return sendTemplateEmail(email, subject, htmlContent);
 };

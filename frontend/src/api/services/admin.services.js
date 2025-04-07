@@ -35,7 +35,7 @@ export class adminService {
     async rejectReport({ postId, recipient_email, recipient_name, rejectionReason }) {
         try {
             if(
-                [postId, recipient_email, recipient_name,rejectionReason ].some(fields => fields === '')
+                [postId, recipient_email, recipient_name].some(fields => fields === '')
             ) {
                 throw new Error("All fields are required !!")
             }

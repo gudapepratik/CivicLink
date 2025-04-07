@@ -8,6 +8,7 @@ import {
   RiCalendarLine,
   RiCheckboxCircleLine,
   RiErrorWarningLine,
+  RiInformationFill,
   RiLoaderLine,
   RiMapPin2Line,
   RiMessage2Line,
@@ -15,6 +16,7 @@ import {
   RiPinDistanceLine,
   RiProgress2Line,
   RiProgress4Line,
+  RiProhibitedLine,
   RiSendPlane2Line,
   RiSendPlaneLine,
   RiThumbUpFill,
@@ -22,7 +24,7 @@ import {
 } from "@remixicon/react";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate, useParams, useSearchParams } from "react-router";
+import { useLocation, useNavigate, useParams, useSearchParams } from "react-router";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -164,11 +166,13 @@ function Post() {
     fetchPost();
   }, [id]);
 
-  // useEffect(() => {
-  //   if (postDetails) {
-  //     fetchComments(postDetails._id);
-  //   }
-  // }, [reloadTrigger]);
+  useEffect(() => {
+    // use window.scrollTo() method to scroll to top smoothly whenever user clicks on next or prev buttons
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
+  },[])
 
   const fetchComments = async (postId) => {
     try {
@@ -291,7 +295,10 @@ function Post() {
 
   const handleDeleteComment = async (comment) => {
     const isDepartmentComment = comment.isDepartmentUpdate;
-    console.log("deleting..");
+    // console.log("deleting..");
+
+    await CommentService.removeCommentFromPost({ commentId: comment._id });
+
     try {
       // if the comment is authority comment , remove the comment from there, else remove from the postComments
       console.log(departmentComments);
@@ -305,12 +312,11 @@ function Post() {
         );
       }
 
-      await CommentService.removeCommentFromPost({ commentId: comment._id });
-
       ToasterNotification({
         type: "success",
         title: "Comment has been removed successfully",
       });
+
     } catch (error) {
       console.log(error);
 
@@ -403,13 +409,15 @@ function Post() {
         postId: postDetails._id,
         recipient_email: postDetails.userDetails[0].email,
         recipient_name: postDetails.userDetails[0].name,
-        rejectionReason: "This is the reason for rejection"
+        rejectionReason: ""
       })
 
       // update the postdetails
       setPostDetails(prev => ({
         ...prev,
-        rejectedBy: user._id
+        isApproved: false,
+        rejectedBy: user._id,
+        status: "dismissed"
       }))
 
       ToasterNotification({
@@ -441,7 +449,8 @@ function Post() {
       setPostDetails(prev => ({
         ...prev,
         isApproved: true,
-        approvedBy: user._id
+        approvedBy: user._id,
+        status: "pending"
       }))
 
       ToasterNotification({
@@ -509,7 +518,7 @@ function Post() {
             {/* Status, comment and upvote counts  */}
             <div className="w-full flex justify-between items-center">
               <div className="mr-3">
-                <StatusButton status={postDetails.status} />
+                <StatusButton key={postDetails.status} status={postDetails.status} isApproved={postDetails.isApproved} rejectedBy={postDetails.rejectedBy}/>
               </div>
               <div className="flex gap-3 items-center">
 
@@ -550,6 +559,98 @@ function Post() {
               </div>
             </div>
           </div>
+
+          {user && postDetails && user._id === postDetails.userId && !postDetails.isApproved && !postDetails.rejectedBy && (
+            <div className="w-full flex flex-col gap-1 px-4 justify-center">
+              <div className="flex gap-2 text-orange-600 justify-center py-2 dark:bg-orange-800 font-outfit text-sm dark:text-orange-700 dark:bg-opacity-20 dark:border-orange-950 items-center border bg-orange-50 border-orange-600  p-1 rounded-md">
+                <RiLoaderLine size={15} className="animate-spin duration-1000"/>
+                <h2>Awaiting Approval</h2>
+              </div>
+
+              <div className="p-4 bg-orange-50 my-2 dark:bg-orange-800 dark:bg-opacity-20 rounded-lg flex items-start">
+                    <RiInformationFill className="text-orange-500 dark:text-orange-700 dark:text-opacity-80 mr-3 mt-0.5 flex-shrink-0" size={20} />
+                    <div className="text-sm text-orange-600 dark:text-orange-700 dark:text-opacity-80">
+                      <p>
+                      Your report is currently being reviewed by the admin. Once a decision is made, you will be notified. Thank you for your patience.
+                      </p>
+                    </div>
+              </div>
+            </div>
+          )}
+
+          {user && postDetails && user._id === postDetails.userId && !postDetails.isApproved && postDetails.rejectedBy && (
+            <div className="w-full flex flex-col gap-1 px-4 justify-center">
+              <div className="flex gap-2 text-rose-600 justify-center py-2 dark:bg-rose-800 font-outfit text-sm dark:text-rose-700 dark:bg-opacity-20 dark:border-rose-950 items-center border bg-rose-50 border-rose-600  p-1 rounded-md">
+                <RiProhibitedLine size={15} />
+                <h2>Dismissed</h2>
+              </div>
+
+              <div className="p-4 bg-rose-50 my-2 dark:bg-rose-800 dark:bg-opacity-20 rounded-lg flex items-start">
+                    <RiInformationFill className="text-rose-500 dark:text-rose-700 dark:text-opacity-80 mr-3 mt-0.5 flex-shrink-0" size={20} />
+                    <div className="text-sm text-rose-600 dark:text-rose-700 dark:text-opacity-80">
+                      <p>
+                        Your report has been dismissed by the admin and will not be visible on the platform. If you have any concerns, please reach out to support.
+                      </p>
+                    </div>
+              </div>
+            </div>
+          )}
+
+          {postDetails && postDetails.status === "resolved" && postDetails.isApproved && (
+            <div className="w-full flex flex-col gap-1 px-4 justify-center">
+              <div className="flex gap-2 text-green-600 justify-center py-2 dark:bg-green-800 font-outfit text-sm dark:text-green-700 dark:bg-opacity-20 dark:border-green-950 items-center border bg-green-50 border-green-600  p-1 rounded-md">
+                <RiCheckboxCircleLine size={15} />
+                <h2>Resolved</h2>
+              </div>
+
+              <div className="p-4 bg-green-50 my-2 dark:bg-green-800 dark:bg-opacity-20 rounded-lg flex items-start">
+                    <RiInformationFill className="text-green-500 dark:text-green-700 dark:text-opacity-80 mr-3 mt-0.5 flex-shrink-0" size={20} />
+                    <div className="text-sm text-green-600 dark:text-green-700 dark:text-opacity-80">
+                      <p>
+                      The reported issue has been resolved by the authorities. More details by Department are available in the Updates tab below.
+                      </p>
+                    </div>
+              </div>
+            </div>
+          )}
+
+
+          {postDetails && postDetails.status === "rejected" && postDetails.isApproved && (
+              <div className="w-full flex flex-col gap-1 px-4 justify-center">
+              <div className="flex gap-2 text-rose-600 justify-center py-2 dark:bg-rose-800 font-outfit text-sm dark:text-rose-700 dark:bg-opacity-20 dark:border-rose-950 items-center border bg-rose-50 border-rose-600  p-1 rounded-md">
+                <RiProhibitedLine size={15} />
+                <h2>Rejected</h2>
+              </div>
+
+              <div className="p-4 bg-rose-50 my-2 dark:bg-rose-800 dark:bg-opacity-20 rounded-lg flex items-start">
+                    <RiInformationFill className="text-rose-500 dark:text-rose-700 dark:text-opacity-80 mr-3 mt-0.5 flex-shrink-0" size={20} />
+                    <div className="text-sm text-rose-600 dark:text-rose-700 dark:text-opacity-80">
+                      <p>
+                        After review, the authorities have decided not to proceed with this report. More details by Department are available in the Updates tab below.
+                      </p>
+                    </div>
+              </div>
+            </div>
+          )}
+
+
+          {postDetails && postDetails.status === "pending" && postDetails.isApproved && (
+              <div className="w-full flex flex-col gap-1 px-4 justify-center">
+              <div className="flex gap-2 text-yellow-500 justify-center py-2 dark:bg-yellow-700 font-outfit text-sm dark:text-yellow-600 dark:bg-opacity-20 dark:border-yellow-950 items-center border bg-yellow-50 border-yellow-500  p-1 rounded-md">
+                <RiProgress2Line size={15} />
+                <h2>Pending</h2>
+              </div>
+
+              <div className="p-4 bg-yellow-50 my-2 dark:bg-yellow-700 dark:bg-opacity-20 rounded-lg flex items-start">
+                    <RiInformationFill className="text-yellow-500 dark:text-yellow-600 dark:text-opacity-80 mr-3 mt-0.5 flex-shrink-0" size={20} />
+                    <div className="text-sm text-yellow-500 dark:text-yellow-600 dark:text-opacity-80">
+                      <p>
+                      This report is currently under review by the authorities. They’re assessing the situation and will take action soon. For updates, check the Updates tab below.
+                      </p>
+                    </div>
+              </div>
+            </div>
+          )}
 
           {user && postDetails && user.role === "admin" && !postDetails.isApproved ? (
             <div className="w-full px-4">

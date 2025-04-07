@@ -2,7 +2,7 @@ import { Router } from "express"
 import { verifyJWT } from "../middlewares/auth.middleware.js"
 import { authorizeRole } from "../middlewares/authRole.middleware.js"
 import { upload } from "../middlewares/multer.middleware.js"
-import { addNewPost, deletePost, getPostById, getPostsByDepartment, getPostsByLocation, getPostsByUser, updatePostStatus } from "../controllers/post.controllers.js"
+import { addNewPost, deletePost, getAuthorityDashboardOverview, getPostById, getPostsByDepartment, getPostsByLocation, getPostsByUser, updatePostStatus } from "../controllers/post.controllers.js"
 import { fetchSuggestions } from "../utils/googleSuggestions.js"
 
 const postRouter = Router()
@@ -28,6 +28,12 @@ postRouter.route('/remove-post').delete(
     verifyJWT,
     authorizeRole("admin",'citizen'),
     deletePost
+)
+
+postRouter.route('/get-authority-dashboard-data').get(
+    verifyJWT,
+    authorizeRole("admin",'authority'),
+    getAuthorityDashboardOverview
 )
 
 postRouter.route('/update-post-status').post(

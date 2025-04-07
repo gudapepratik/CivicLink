@@ -318,7 +318,7 @@ function Login() {
       <div className="relative">
         {previewAvatar ? (
           <div className="relative">
-            <div className="h-24 w-24 rounded-full overflow-hidden border-2 border-gray-300 dark:border-zinc-600">
+            <div className="h-24 w-24 rounded-full overflow-hidden border-2 border-zinc-300 dark:border-zinc-700">
               <img
                 src={previewAvatar || "/placeholder.svg"}
                 alt="Profile preview"
@@ -328,21 +328,21 @@ function Login() {
             <button
               type="button"
               onClick={removeProfileImage}
-              className="absolute -top-2 -right-2 bg-white dark:bg-zinc-700 rounded-full p-1 shadow-md hover:bg-gray-100 dark:hover:bg-zinc-600 transition-colors"
+              className="absolute -top-2 -right-2 bg-white dark:bg-zinc-900 rounded-full p-1 shadow-md hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
               aria-label="Remove profile image"
             >
               <RiCloseLine className="text-gray-700 dark:text-zinc-300" size={18} />
             </button>
           </div>
         ) : (
-          <div className="h-24 w-24 rounded-full bg-gray-200 dark:bg-zinc-700 flex items-center justify-center border-2 border-gray-300 dark:border-zinc-600">
+          <div className="h-24 w-24 rounded-full bg-gray-200 dark:bg-zinc-900 flex items-center justify-center border-2 border-zinc-300 dark:border-zinc-700">
             <RiUserLine className="text-gray-400 dark:text-zinc-400" size={36} />
           </div>
         )}
       </div>
-      <label className="cursor-pointer mt-3 inline-flex items-center space-x-2 bg-gray-100 dark:bg-zinc-700 hover:bg-gray-200 dark:hover:bg-zinc-600 transition duration-200 py-2 px-4 rounded-md">
+      <label className="cursor-pointer mt-3 inline-flex items-center space-x-2 bg-gray-100 dark:bg-zinc-800 hover:bg-gray-200 dark:hover:bg-zinc-600 transition duration-200 py-2 px-4 rounded-md">
         <RiUploadLine className="text-gray-600 dark:text-zinc-300" />
-        <span className="text-sm text-gray-600 dark:text-zinc-300">{previewAvatar ? "Change Image" : "Upload Image"}</span>
+        <span className="text-sm text-gray-600  dark:text-zinc-300">{previewAvatar ? "Change Image" : "Upload Image"}</span>
         <input type="file" id="avatar" name="avatar" accept="image/*" onChange={handleFileChange} className="hidden" />
       </label>
       {error.avatar && <p className="text-red-500 dark:text-red-400 text-xs">{error.avatar?.message}</p>}
@@ -351,7 +351,7 @@ function Login() {
 
   // Render login form
   const renderLoginForm = () => (
-    <form onSubmit={onLoginUser} className="space-y-4 w-full dark:bg-zinc-800 font-outfit">
+    <form onSubmit={onLoginUser} className="space-y-4 w-full dark:bg-zinc-900 font-outfit">
       <div className="space-y-1">
         <div className="space-y-2">
             <label htmlFor="email" className="block text-sm font-medium dark:text-zinc-300">
@@ -366,7 +366,7 @@ function Login() {
                 name="email"
                 type="email"
                 required
-                className="pl-10 w-full p-2 border border-gray-300 dark:border-zinc-600 rounded-md focus:ring-1 focus:ring-zinc-800 dark:focus:ring-zinc-400 focus:outline-none focus:border-black dark:focus:border-zinc-400 dark:bg-zinc-700 dark:text-zinc-100"
+                className="pl-10 w-full p-2 border border-gray-300 dark:border-zinc-600 rounded-md focus:ring-1 focus:ring-zinc-800 dark:focus:ring-zinc-400 focus:outline-none focus:border-black dark:focus:border-zinc-400 dark:bg-zinc-800 dark:text-zinc-100"
                 placeholder="your@email.com"
                 {...register("email", { required: "email is required" })}
               />
@@ -389,7 +389,7 @@ function Login() {
               name="password"
               type="password"
               required
-              className="pl-10 w-full p-2 border border-gray-300 dark:border-zinc-600 rounded-md focus:ring-1 focus:ring-zinc-800 dark:focus:ring-zinc-400 focus:outline-none focus:border-black dark:focus:border-zinc-400 dark:bg-zinc-700 dark:text-zinc-100"
+              className="pl-10 w-full p-2 border border-gray-300 dark:border-zinc-600 rounded-md focus:ring-1 focus:ring-zinc-800 dark:focus:ring-zinc-400 focus:outline-none focus:border-black dark:focus:border-zinc-400 dark:bg-zinc-800 dark:text-zinc-100"
               placeholder="••••••••"
               {...register("password", { required: "password is required"})}
             />
@@ -408,7 +408,7 @@ function Login() {
               id="loginVerificationCode"
               name="loginVerificationCode"
               type="text"
-              className="w-full p-2 border border-gray-300 dark:border-zinc-600 rounded-md focus:ring-1 focus:ring-black dark:focus:ring-zinc-400 focus:border-black dark:focus:border-zinc-400 dark:bg-zinc-700 dark:text-zinc-100"
+              className="w-full p-2 border border-gray-300 dark:border-zinc-600 focus:outline-none rounded-md focus:ring-1 focus:ring-black dark:focus:ring-zinc-400 focus:border-black dark:focus:border-zinc-400 dark:bg-zinc-800 dark:text-zinc-100"
               placeholder={`Enter verification code..`}
               {...register("loginVerificationCode")}
             />
@@ -420,9 +420,9 @@ function Login() {
 
       <button
         type="submit"
-        className="w-full bg-black dark:bg-zinc-900 text-white dark:text-zinc-100 py-2 px-4 rounded-md hover:bg-gray-800 dark:hover:bg-zinc-700 transition duration-200"
+        className="w-full bg-black dark:bg-zinc-800 text-white dark:text-zinc-100 py-2 px-4 rounded-md hover:bg-gray-800 dark:hover:bg-zinc-900 dark:border-zinc-700  dark:border transition duration-200"
       >
-        {isLoading ? "Loading..." : "Login"}
+        {isLoading ? "Logging in..." : "Login"}
       </button>
 
       <div className="flex justify-between items-center text-sm">
@@ -436,7 +436,7 @@ function Login() {
         >
           Forgot password?
         </button>
-        <button type="button" onClick={() => setIsLogin(false)} className="text-gray-600 dark:text-zinc-400 hover:underline">
+        <button type="button" onClick={() => setIsLogin(false)} className="text-zinc-600 dark:text-zinc-400 hover:underline">
           Create account
         </button>
       </div>
@@ -445,7 +445,7 @@ function Login() {
 
   // Render signup form
   const renderSignupForm = () => (
-    <form onSubmit={onRegisterUser} className="space-y-4 w-full dark:bg-zinc-800">
+    <form onSubmit={onRegisterUser} className="space-y-4 w-full dark:bg-zinc-900">
       {/* Profile Image Upload at the top */}
       <ProfileImageUpload />
 
@@ -463,7 +463,7 @@ function Login() {
                 name="name"
                 type="text"
                 required
-                className="pl-10 w-full p-2 border border-gray-300 dark:border-zinc-600 rounded-md focus:ring-1 focus:ring-black dark:focus:ring-zinc-400 focus:border-black dark:focus:border-zinc-400 dark:bg-zinc-700 dark:text-zinc-100"
+                className="pl-10 w-full p-2 border border-gray-300 dark:border-zinc-600 rounded-md focus:ring-1 focus:ring-black dark:focus:ring-zinc-400 focus:border-black dark:focus:border-zinc-400 dark:bg-zinc-800 dark:text-zinc-100"
                 placeholder="your name..."
                 {...register("name", {minLength: {value: 6, message: "Name must be minimum 7 characters long"}})}
               />
@@ -486,7 +486,7 @@ function Login() {
                 name="age"
                 type="number"
                 required
-                className="pl-10 w-full p-2 border border-gray-300 dark:border-zinc-600 rounded-md focus:ring-1 focus:ring-black dark:focus:ring-zinc-400 focus:border-black dark:focus:border-zinc-400 dark:bg-zinc-700 dark:text-zinc-100"
+                className="pl-10 w-full p-2 border border-gray-300 dark:border-zinc-600 rounded-md focus:ring-1 focus:ring-black dark:focus:ring-zinc-400 focus:border-black dark:focus:border-zinc-400 dark:bg-zinc-800 dark:text-zinc-100"
                 placeholder="25"
                 {...register("age", {required: "age is required" , min: {value: 18, message: "Age must be minimum 18 years old"}, max: {value: 110, message: "Age can't be greater than 110 years old"}})}
               />
@@ -509,7 +509,7 @@ function Login() {
                 name="email"
                 type="email"
                 required
-                className="pl-10 w-full p-2 border border-gray-300 dark:border-zinc-600 rounded-md focus:ring-1 focus:ring-zinc-800 dark:focus:ring-zinc-400 focus:outline-none focus:border-black dark:focus:border-zinc-400 dark:bg-zinc-700 dark:text-zinc-100"
+                className="pl-10 w-full p-2 border border-gray-300 dark:border-zinc-600 rounded-md focus:ring-1 focus:ring-zinc-800 dark:focus:ring-zinc-400 focus:outline-none focus:border-black dark:focus:border-zinc-400 dark:bg-zinc-800 dark:text-zinc-100"
                 placeholder="your@email.com"
                 {...register("email", { required: "email is required" })}
               />
@@ -559,7 +559,7 @@ function Login() {
               onClick={() => setRole(option.id)}
               className={`cursor-pointer border rounded-lg p-3 transition-all ${
                 role === option.id 
-                  ? "border-black dark:border-zinc-400 bg-gray-50 dark:bg-zinc-700" 
+                  ? "border-black dark:border-zinc-400 bg-gray-50 dark:bg-zinc-800" 
                   : "border-gray-200 dark:border-zinc-700 hover:border-gray-400 dark:hover:border-zinc-500"
               }`}
             >
@@ -584,7 +584,7 @@ function Login() {
       </div>
 
       {(role === "authority") && (
-        <div className="space-y-2 p-3 border border-gray-200 dark:border-zinc-700 rounded-md bg-gray-50 dark:bg-zinc-700/50">
+        <div className="space-y-2 p-3 border border-gray-200 dark:border-zinc-700 rounded-md bg-gray-50 dark:bg-zinc-800/50">
           {role === "authority" && (
             <div className="space-y-2">
               <div className="space-y-1">
@@ -600,14 +600,14 @@ function Login() {
                     id="department"
                     name="department"
                     required
-                    className="pl-10 w-full p-2 border border-gray-300 dark:border-zinc-600 rounded-md focus:ring-1 focus:ring-black dark:focus:ring-zinc-400 focus:border-black dark:focus:border-zinc-400 dark:bg-zinc-700 dark:text-zinc-100 appearance-none"
+                    className="pl-10 w-full p-2 border border-gray-300 dark:border-zinc-600 rounded-md focus:ring-1 focus:ring-black dark:focus:ring-zinc-400 focus:border-black dark:focus:border-zinc-400 dark:bg-zinc-800 dark:text-zinc-100 appearance-none"
                     {...register("departmentId", {
                       required: "Department is required",
                     })}
                   >
                     <option value="">Select department</option>
                     {departmentInfo.map((dept) => (
-                      <option key={dept.departmentId} value={dept.departmentId} className="dark:bg-zinc-700">
+                      <option key={dept.departmentId} value={dept.departmentId} className="dark:bg-zinc-800">
                         {dept.title}
                       </option>
                     ))}
@@ -634,7 +634,7 @@ function Login() {
               name="password"
               type="password"
               required
-              className="pl-10 w-full p-2 border border-gray-300 dark:border-zinc-600 rounded-md focus:ring-1 focus:ring-zinc-800 dark:focus:ring-zinc-400 focus:outline-none focus:border-black dark:focus:border-zinc-400 dark:bg-zinc-700 dark:text-zinc-100"
+              className="pl-10 w-full p-2 border border-gray-300 dark:border-zinc-600 rounded-md focus:ring-1 focus:ring-zinc-800 dark:focus:ring-zinc-400 focus:outline-none focus:border-black dark:focus:border-zinc-400 dark:bg-zinc-800 dark:text-zinc-100"
               placeholder="••••••••"
               {...register("password", {required: "password is required", minLength: {value: 6, message: "Password must be atleast 6 chrachters long"}})}
             />
@@ -645,9 +645,9 @@ function Login() {
 
       <button
         type="submit"
-        className="w-full bg-black dark:bg-zinc-900 text-white dark:text-zinc-100 py-2 px-4 rounded-md hover:bg-gray-800 dark:hover:bg-zinc-700 transition duration-200"
+        className="w-full bg-black dark:bg-zinc-800 text-white dark:text-zinc-100 py-2 px-4 rounded-md hover:bg-gray-800 dark:hover:bg-zinc-900 dark:border-zinc-700  dark:border transition duration-200"
       >
-        {isLoading ? "Loading..." : "Create Account"}
+        {isLoading ? "Creating account..." : "Create Account"}
       </button>
 
       <div className="text-center text-sm">
@@ -660,7 +660,7 @@ function Login() {
 
   // Render forget password form
   const renderForgetPasswordForm = () => (
-    <form onSubmit={handleForgetPassword} className="space-y-4 w-full dark:bg-zinc-800">
+    <form onSubmit={handleForgetPassword} className="space-y-4 w-full dark:bg-zinc-900">
       {!verificationSent ? (
         <>
           <div className="space-y-1">
@@ -677,7 +677,7 @@ function Login() {
                       name="email"
                       type="email"
                       required
-                      className="pl-10 w-full p-2 border border-gray-300 dark:border-zinc-600 rounded-md focus:ring-1 focus:ring-zinc-800 dark:focus:ring-zinc-400 focus:outline-none focus:border-black dark:focus:border-zinc-400 dark:bg-zinc-700 dark:text-zinc-100"
+                      className="pl-10 w-full p-2 border border-gray-300 dark:border-zinc-600 rounded-md focus:ring-1 focus:ring-zinc-800 dark:focus:ring-zinc-400 focus:outline-none focus:border-black dark:focus:border-zinc-400 dark:bg-zinc-800 dark:text-zinc-100"
                       placeholder="your@email.com"
                       {...register("email", { required: "email is required" })}
                     />
@@ -688,14 +688,14 @@ function Login() {
 
           <button
             type="submit"
-            className="w-full bg-black dark:bg-zinc-900 text-white dark:text-zinc-100 py-2 px-4 rounded-md hover:bg-gray-800 dark:hover:bg-zinc-700 transition duration-200"
+            className="w-full bg-black dark:bg-zinc-800 text-white dark:text-zinc-100 py-2 px-4 rounded-md hover:bg-gray-800 dark:hover:bg-zinc-900 dark:border-zinc-700  dark:border transition duration-200"
           >
             Send Verification Code
           </button>
         </>
       ) : (
         <>
-          <div className="p-3 bg-gray-100 dark:bg-zinc-700 rounded-md text-sm dark:text-zinc-300">
+          <div className="p-3 bg-gray-100 dark:bg-zinc-800 rounded-md text-sm dark:text-zinc-300">
             A verification code has been sent to your email address. Please check your inbox.
           </div>
 
@@ -709,7 +709,7 @@ function Login() {
                   name="verificationCode"
                   type="text"
                   required
-                  className="w-full p-2 border border-gray-300 dark:border-zinc-600 rounded-md focus:ring-1 focus:ring-black dark:focus:ring-zinc-400 focus:border-black dark:focus:border-zinc-400 dark:bg-zinc-700 dark:text-zinc-100"
+                  className="w-full p-2 border border-gray-300 focus:outline-none dark:border-zinc-600 rounded-md focus:ring-1 focus:ring-black dark:focus:ring-zinc-400 focus:border-black dark:focus:border-zinc-400 dark:bg-zinc-800 dark:text-zinc-100"
                   placeholder="Enter code"
                   {...register("verificationCode", { required: "verification code is required" })}
                 />
@@ -731,7 +731,7 @@ function Login() {
                     name="password"
                     type="password"
                     required
-                    className="pl-10 w-full p-2 border border-gray-300 dark:border-zinc-600 rounded-md focus:ring-1 focus:ring-zinc-800 dark:focus:ring-zinc-400 focus:outline-none focus:border-black dark:focus:border-zinc-400 dark:bg-zinc-700 dark:text-zinc-100"
+                    className="pl-10 w-full p-2 border border-gray-300 dark:border-zinc-600 rounded-md focus:ring-1 focus:ring-zinc-800 dark:focus:ring-zinc-400 focus:outline-none focus:border-black dark:focus:border-zinc-400 dark:bg-zinc-800 dark:text-zinc-100"
                     placeholder="••••••••"
                     {...register("password", {required: "password is required", minLength: {value: 6, message: "Password must be atleast 6 chrachters long"}})}
                   />
@@ -742,7 +742,7 @@ function Login() {
 
           <button
             type="submit"
-            className="w-full bg-black dark:bg-zinc-900 text-white dark:text-zinc-100 py-2 px-4 rounded-md hover:bg-gray-800 dark:hover:bg-zinc-700 transition duration-200"
+            className="w-full bg-black dark:bg-zinc-800 text-white dark:text-zinc-100 py-2 px-4 rounded-md hover:bg-gray-800 dark:hover:bg-zinc-900 dark:border-zinc-700  dark:border transition duration-200"
           >
             Reset Password
           </button>
@@ -770,7 +770,7 @@ function Login() {
     if (isForgetPassword) return null
 
     return (
-      <div className="mt-6 p-4 border border-zinc-200 dark:bg-zinc-800 dark:border-zinc-600 rounded-md bg-zinc-50">
+      <div className="mt-6 p-4 border border-zinc-200 dark:bg-zinc-900 dark:border-zinc-600 rounded-md bg-zinc-50">
         <h3 className="text-sm font-medium flex items-center">
           <RiInformationLine className="mr-2" /> Guidelines
         </h3>
@@ -823,7 +823,7 @@ function Login() {
           </p>
         </div>
 
-        <div className="bg-white dark:bg-zinc-800 dark:border-zinc-700 p-6 border border-zinc-200 rounded-lg shadow-sm">
+        <div className="bg-white dark:bg-zinc-900 dark:border-zinc-700 p-6 border border-zinc-200 rounded-lg shadow-sm">
           {isLogin && !isForgetPassword && renderLoginForm()}
           {!isLogin && !isForgetPassword && renderSignupForm()}
           {isForgetPassword && renderForgetPasswordForm()}

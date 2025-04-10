@@ -97,7 +97,7 @@ const getPostComments = asyncHandler(async (req,res) => {
     // get the Post id
     const {postId} = req.query
     if(!mongoose.isValidObjectId(postId)) throw new ApiError(400, "Invalid post id")
-    console.log("Asf")
+    // console.log("Asf")
     const aggregate = [
         {
             $match: {

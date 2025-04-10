@@ -28,7 +28,7 @@ function Comment({  onDeleteComment, commentDetails, setReloadTrigger }) {
   }
 
   const editCommentHandler = async () => {
-    console.log("editing")
+    // console.log("editing")
     ToasterNotification({
       type: "info",
       title: "Not available yet",

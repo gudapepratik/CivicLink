@@ -32,7 +32,7 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
   } catch (error) {
     if(error.name === 'TokenExpiredError') {
       throw new ApiError(401, "Access token has expired. Please refresh your token");
-      console.log("Efas")
+      // console.log("Efas")
       // WHAT NOW ?
       // When an API request fails with 401 due to an expired access token:
       // The client intercepts the response.

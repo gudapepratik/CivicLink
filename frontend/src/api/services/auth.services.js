@@ -17,7 +17,7 @@ export class AuthService {
             }
 
             if(!avatar) throw new Error("Profile image is required")
-                // console.log(departmentId)
+                // // console.log(departmentId)
             if(!latitude || !longitude) throw new Error("Location is required")
              // Create a new FormData instance
             
@@ -72,7 +72,7 @@ export class AuthService {
 
     async logoutUser() {
         try{
-            console.log("asf")
+            // console.log("asf")
             const logoutResponse = await httpClient.post(`${API_ENDPOINTS.AUTH}/logout`)
             // const device = localStorage.getItem('deviceId')
             return logoutResponse
@@ -98,7 +98,7 @@ export class AuthService {
             ) {
                 throw new Error("All fields are required !!")
             }
-            console.log(name, email, age, avatar)
+            // console.log(name, email, age, avatar)
 
             const formData = new FormData();
     

@@ -43,7 +43,7 @@ const getDepartments = asyncHandler(async (req,res) => {
 
 const getDepartmentById = asyncHandler(async (req,res) => {
     const {id} = req.query
-    console.log(id)
+    // console.log(id)
 
     if(!mongoose.isValidObjectId(id)) throw new ApiError(400, "The DepartmentId is invalid")
     const response = await Department.findById(id)

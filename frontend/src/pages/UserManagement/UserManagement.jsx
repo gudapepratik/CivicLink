@@ -31,12 +31,12 @@ function UserManagement() {
         const response = await AuthService.getUsers({
             getAllUsers: activeTab === "pending" ? false : true
         })
-        console.log(response)
+        // console.log(response)
   
         setUsers(response)
         setUsersCopy(response)
       } catch (error) {
-        console.log(error)
+        // console.log(error)
         ToasterNotification({
           type: "warning",
           description: "Error Occurred while fetching users"

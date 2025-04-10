@@ -41,7 +41,7 @@ export class CommentService {
   async getCommentsOnPost({postId}) {
     try{
         if(!postId || postId === "") throw new Error("postID required") 
-            console.log(postId)
+            // console.log(postId)
       const response = await httpClient.get(`${API_ENDPOINTS.COMMENT}/get-comments-for-post`,{
         params: {
             postId
@@ -58,7 +58,7 @@ export class CommentService {
 
   async removeCommentFromPost({commentId}) {
     try{
-      console.log(commentId)
+      // console.log(commentId)
       if(!commentId || commentId === "") throw new Error("Comment id is required")
 
       const response = await httpClient.delete(`${API_ENDPOINTS.COMMENT}/remove-comment-from-post`, {

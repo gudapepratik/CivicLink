@@ -124,7 +124,7 @@ function Navbar() {
         description: "User logged out successfully",
       });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       ToasterNotification({
         type: "warning",
         title: "Logout Failed",

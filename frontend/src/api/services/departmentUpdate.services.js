@@ -24,7 +24,7 @@ export class departmentUpdateService {
       formData.append("recipient_name", recipient_name);
       formData.append("report_title", report_title);
       formData.append("expectedResolutionDate", expectedResolutionDate);
-      console.log(docs);
+      // console.log(docs);
       docs.forEach((pdf, index) => {
         formData.append("docs", pdf); // Field name matches your multer configuration
       });

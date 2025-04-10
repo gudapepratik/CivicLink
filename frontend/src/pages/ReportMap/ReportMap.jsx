@@ -1,7 +1,3 @@
-import GoogleMapClusterComp from '@/components/GoogleMap/GoogleMapReportComp';
-import GoogleMapComponent from '@/components/GoogleMap/GoogleMapComponent';
-import GoogleMapReportCluster from '@/components/GoogleMap/GoogleMapReportCluster'
-import ReportMapLeaflet from '@/components/GoogleMap/ReportMapLeaflet';
 import React from 'react'
 import GoogleMapReportComp from '@/components/GoogleMap/GoogleMapReportComp';
 

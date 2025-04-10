@@ -96,7 +96,7 @@ function Login() {
       const onLoginUser = handleSubmit(async (data) => {
         try {
           setIsLoading(true);
-          // console.log(data)
+          // // console.log(data)
 
           // login the user
           await AuthService.loginUser({
@@ -131,7 +131,7 @@ function Login() {
           }, 2000);
           
         } catch (error) {
-          console.log(error);
+          // console.log(error);
           setResendEmail(data.email)
 
           if(error.message === "Verification Code Expired" || error.message === "Invalid Verification Code") {
@@ -164,7 +164,7 @@ function Login() {
 
       setIsLoading(true)
 
-      console.log(data, role, gender, avatar, location)
+      // console.log(data, role, gender, avatar, location)
   
       if(!avatar || !location.latitude || !location.longitude) {
         setError(prev => ({
@@ -214,7 +214,7 @@ function Login() {
       setIsLogin(true)
       reset()
     } catch(error) {
-      console.log(error)
+      // console.log(error)
 
       ToasterNotification({
         type: "error",
@@ -241,7 +241,7 @@ function Login() {
       });
 
     }catch(error) {
-      console.log(error)
+      // console.log(error)
       ToasterNotification({
         type: "error",
         title: "Resend Verification Code Failed",
@@ -277,7 +277,7 @@ function Login() {
   const handleForgetPassword = handleSubmit(async (data) => {
     try {
       setIsLoading(true)
-      console.log(data)
+      // console.log(data)
 
       if(!verificationSent) {
         const response = await AuthService.updateUserPassword({email: data.email, newPassword: data.password, isCodeSent: false})
@@ -301,7 +301,7 @@ function Login() {
       }
       reset()
     } catch(error) {
-      console.log(error)
+      // console.log(error)
       ToasterNotification({
         type: "error",
         title: "",

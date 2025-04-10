@@ -52,7 +52,7 @@ function Account() {
       });
       setAddress(response);
     } catch (error) {
-      console.log(error)
+      // console.log(error)
       ToasterNotification({
         type: "warning",
         title: "Error Occurred",
@@ -102,7 +102,7 @@ function Account() {
         description: `Your profile has been updated successfully!`,
       });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       ToasterNotification({
         type: "warning",
         title: "Error occurred",
@@ -141,7 +141,7 @@ function Account() {
 
       dispatch(logout());
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       ToasterNotification({
         type: "warning",
         title: "Error occurred",

@@ -37,7 +37,7 @@ function UserDetailsModal({ user, isOpen, onClose }) {
         description: "Account has been verified successfully",
       })
     } catch (error) {
-      console.log(error)
+      // console.log(error)
       ToasterNotification({
         type: "error",
         description: `${error.message}`,
@@ -57,7 +57,7 @@ function UserDetailsModal({ user, isOpen, onClose }) {
         description: "Account has been rejected successfully",
       })
     } catch (error) {
-      console.log(error)
+      // console.log(error)
       ToasterNotification({
         type: "error",
         description: `${error.message}`,

@@ -52,7 +52,7 @@ function SearchBar() {
         lng: coordinates.lng
       })
     } catch (error) {
-      console.log(error)
+      // console.log(error)
     }
   }
 

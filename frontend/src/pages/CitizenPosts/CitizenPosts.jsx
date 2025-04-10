@@ -36,7 +36,7 @@ function CitizenPosts() {
         try {
             setIsLoading(true)
             const response = await PostService.getPostsByUser({filter: statusFilter});
-            console.log(response)
+            // console.log(response)
             setPosts(response.data.data)
         } catch (error) {
             ToasterNotification({

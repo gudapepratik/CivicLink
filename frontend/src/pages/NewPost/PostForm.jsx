@@ -60,8 +60,8 @@ function PostForm() {
       setLoading(true);
       setIsSubmitted(false);
 
-      console.log(data, location,locationAddress, images);
-      console.log("asf");
+      // console.log(data, location,locationAddress, images);
+      // console.log("asf");
 
       if (!locationAddress || !location) throw new Error("Please select location")
 
@@ -90,7 +90,7 @@ function PostForm() {
       //   navigate("/");
       // }, 2000);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       ToasterNotification({
         type: "info",
         title: "Upload error",
@@ -106,7 +106,7 @@ function PostForm() {
 
   // handle avatar file input
   const handleFileChange = (files) => {
-    console.log(files);
+    // console.log(files);
     if (!files.length) {
       setError(
         "files",
@@ -142,7 +142,7 @@ function PostForm() {
   useEffect(() => {
     const fetchAddress = async () => {
       const response = await getAddressFromCoordinates(location);
-      console.log(response);
+      // console.log(response);
       setLocationAddress(response);
     };
     if (location) {

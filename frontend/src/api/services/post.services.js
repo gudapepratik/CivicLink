@@ -53,7 +53,7 @@ export class PostService {
 
   async getPostsByLocation({ latitude, longitude, status, distance, category, sortBy,approvalStatus, isAdminFetch, isSpecificFetch, userId}) {
     try {
-      console.log(latitude, longitude);
+      // console.log(latitude, longitude);
       if (!latitude || !longitude) throw new Error("Location is missing");
 
       const response = await httpClient.get(
@@ -120,7 +120,7 @@ export class PostService {
 
   async getPostsByUser({ filter }) {
     try {
-      console.log(filter);
+      // console.log(filter);
       const reponse = await httpClient.get(
         `${API_ENDPOINTS.POST}/get-posts-by-user`,
         {
@@ -138,7 +138,7 @@ export class PostService {
 
   async deletePost({ postId }) {
     try {
-      console.log(postId);
+      // console.log(postId);
       await httpClient.delete(`${API_ENDPOINTS.POST}/remove-post`, {
         params: {
           postId,

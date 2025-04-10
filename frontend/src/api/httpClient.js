@@ -35,7 +35,7 @@ httpClient.interceptors.response.use(
         return response;
     },
     async (error) => {
-        console.log(error)
+        // console.log(error)
         const originalRequest = error.config;
 
         // If the error is 401 (Unauthorized) and the request has not been retried
@@ -69,7 +69,7 @@ httpClient.interceptors.response.use(
 
             // Update the Authorization header for the original request
             httpClient.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
-            console.log(newAccessToken, refreshResponse)
+            // console.log(newAccessToken, refreshResponse)
 
             // Process all queued requests
             processQueue(null, newAccessToken);
@@ -77,7 +77,7 @@ httpClient.interceptors.response.use(
             // Retry the original request with the new token
             return httpClient(originalRequest);
         } catch (refreshError) {
-            console.log(refreshError)
+            // console.log(refreshError)
             // If refresh token is also invalid or expired, redirect to login
             processQueue(refreshError, null);
             // window.location.href = '/login'

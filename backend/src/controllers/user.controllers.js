@@ -51,7 +51,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   // upload the avatar to cloudinary
   const uploadResponse = await uploadOnCloudinary(locatAvatarFile.path);
-  // console.log(uploadResponse)
+  // // console.log(uploadResponse)
   // create new user
   const user = await User.create({
     name,
@@ -407,7 +407,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 
 // refresh access token
 const refreshAccessToken = asyncHandler(async (req, res) => {
-  console.log("asfa");
+  // console.log("asfa");
   // get the refresh token
   const refreshToken =
     req.cookies?.refreshToken || req.headers["x-refresh-token"];
@@ -441,7 +441,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     secure: true,
     sameSite: "none",
   };
-  console.log(refreshToken);
+  // console.log(refreshToken);
   // send the tokens in response and in cookie also
   return res
     .status(200)
@@ -471,7 +471,7 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 const updateUserPassword = asyncHandler(async (req, res) => {
   // get the updated password and previous password from the user
   const { email, newPassword, isCodeSent} = req.body;
-  console.log(isCodeSent)
+  // console.log(isCodeSent)
 
   // check is both are present
   if (isCodeSent && (!email || !newPassword))

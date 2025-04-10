@@ -32,7 +32,7 @@ const addNewPost = asyncHandler(async (req, res) => {
     !longitude
   )
     throw new ApiError(400, "Insufficient data");
-  // console.log(localImageFiles);
+  // // console.log(localImageFiles);
   // upload the images to cloudinary
   const imageUploadResponse = await Promise.all(
     localImageFiles.images.map(async (localImage) => {
@@ -344,7 +344,7 @@ const getPostsByUser = asyncHandler(async (req, res) => {
 //     sort = { field: "commentCount", sortIn: -1 }; // Most commented first
 //   }
 
-//   console.log(isAdminFetch, approvalStatus)
+//   // console.log(isAdminFetch, approvalStatus)
 
 //   // const posts = await Post.find({
 //   //     departmentId
@@ -688,7 +688,7 @@ const deletePost = asyncHandler(async (req, res) => {
   const { postId } = req.query;
   // get the user
   const user = req.user;
-  console.log(postId);
+  // console.log(postId);
 
   if (!mongoose.isValidObjectId(postId))
     throw new ApiError(400, "The post Id is Invalid");

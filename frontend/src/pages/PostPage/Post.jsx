@@ -145,15 +145,15 @@ function Post() {
         postId: id,
         userId: user?._id,
       });
-      console.log(response);
-      // console.log(response.data.data[0].userDetails)
+      // console.log(response);
+      // // console.log(response.data.data[0].userDetails)
       setPostDetails(response.data.data[0]);
 
       // fetch comments after that
       fetchComments(response.data.data[0]._id);
       fetchDepartmentUpdates(response.data.data[0]._id);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       ToasterNotification({
         type: "warning",
         title: "Error Occurred",
@@ -176,7 +176,7 @@ function Post() {
 
   const fetchComments = async (postId) => {
     try {
-      // console.log("here");
+      // // console.log("here");
       setDepartmentComments([]);
       setPostComments([]);
 
@@ -211,11 +211,11 @@ function Post() {
       const departmentUpdateResponse =
         await departmentUpdateServices.getDepartmentUpdatesOnPost(postId);
 
-      console.log(departmentUpdateResponse.data.data);
+      // console.log(departmentUpdateResponse.data.data);
 
       setDepartmentUpdates(departmentUpdateResponse.data.data);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       ToasterNotification({
         type: "warning",
         title: "",
@@ -240,7 +240,7 @@ function Post() {
         navigate("/");
       }, 2000);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       ToasterNotification({
         type: "error",
         title: "Error Occurred",
@@ -275,7 +275,7 @@ function Post() {
         await UpvoteService.addNewUpvote({ postId: postDetails._id });
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
 
       if (user) {
         // Rollback the state changes if an error occurs
@@ -297,13 +297,13 @@ function Post() {
 
   const handleDeleteComment = async (comment) => {
     const isDepartmentComment = comment.isDepartmentUpdate;
-    // console.log("deleting..");
+    // // console.log("deleting..");
 
     await CommentService.removeCommentFromPost({ commentId: comment._id });
 
     try {
       // if the comment is authority comment , remove the comment from there, else remove from the postComments
-      console.log(departmentComments);
+      // console.log(departmentComments);
       if (isDepartmentComment) {
         setDepartmentComments((prev) =>
           prev.filter((item) => item._id !== comment._id)
@@ -320,7 +320,7 @@ function Post() {
       });
 
     } catch (error) {
-      console.log(error);
+      // console.log(error);
 
       if (isDepartmentComment) {
         departmentComments.push(comment);
@@ -344,7 +344,7 @@ function Post() {
   }) => {
     try {
       setIsLoading(true)
-      // console.log(remark, docs, updatedStatus, expectedResolutionDate, postDetails._id)
+      // // console.log(remark, docs, updatedStatus, expectedResolutionDate, postDetails._id)
       const response = await departmentUpdateServices.addNewDepartmentUpdate({
         postId: postDetails?._id,
         docs,
@@ -355,7 +355,7 @@ function Post() {
         recipient_name: postDetails.userDetails[0].name, 
         report_title: postDetails.title
       });
-      console.log(response.data.data);
+      // console.log(response.data.data);
       setDepartmentUpdates((prev) => [response.data.data[0], ...prev]);
       setPostDetails((prev) => ({ ...prev, status: updatedStatus }));
       ToasterNotification({
@@ -363,7 +363,7 @@ function Post() {
         description: "Update done successfully",
       });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       ToasterNotification({
         type: "warning",
         description: `${error.message}`,
@@ -427,7 +427,7 @@ function Post() {
         description: "Report has been rejected succesfully"
       })
     } catch (error) {
-      console.log(error)
+      // console.log(error)
       ToasterNotification({
         type: "warning",
         description: `${error.message}`
@@ -460,7 +460,7 @@ function Post() {
         description: "Report has been approved succesfully"
       })
     } catch (error) {
-      console.log(error)
+      // console.log(error)
       ToasterNotification({
         type: "warning",
         description: `${error.message}`

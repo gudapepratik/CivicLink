@@ -19,7 +19,7 @@ const addNewProduct = asyncHandler(async (req,res) => {
     ) {
         throw new ApiError(400, "All fields are required")
     }
-    console.log(stockInfo)
+    // console.log(stockInfo)
 
     if(stockInfo.length === 0) throw new ApiError(400, "Stock Information required !")
 
@@ -60,7 +60,7 @@ const getProducts = asyncHandler(async (req,res) => {
     // get the page number and the limit
     const page = req.query.page
     const limit = req.query.limit
-    console.log(req)
+    // console.log(req)
 
     // if(!page || !limit) throw new ApiError(400, "missing required attributes")
 
@@ -263,7 +263,7 @@ const deleteProductById = asyncHandler(async (req,res) => {
     // get the product id and user
     const productId = req.params.id
     const currentUser = req.user
-    console.log(productId, currentUser)
+    // console.log(productId, currentUser)
 
     if (!mongoose.Types.ObjectId.isValid(productId)) {
         return res.status(400).json({ message: 'Invalid Product ID' });

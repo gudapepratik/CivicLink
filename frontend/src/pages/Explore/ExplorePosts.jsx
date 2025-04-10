@@ -35,9 +35,9 @@ function ExplorePosts() {
   const fetchPosts = async () => {
     try {
       setIsLoading(true)
-      console.log("aaaacallll")
+      // console.log("aaaacallll")
       setPrevLocation(location);
-      // console.log(location)
+      // // console.log(location)
       const response = await PostService.getPostsByLocation({
         latitude: location.lat,
         longitude: location.lng,
@@ -47,7 +47,7 @@ function ExplorePosts() {
         ...filterData
       });
 
-      // console.log(response.data.data);
+      // // console.log(response.data.data);
       setPosts([...response.data.data]);
 
       const newMarkerLocations = [];
@@ -69,7 +69,7 @@ function ExplorePosts() {
       setMarkerLocations(newMarkerLocations);
       setMarkerDetails(newMarkerDetails);
     } catch (error) {
-      console.log(error)
+      // console.log(error)
       ToasterNotification({
         type: "warning",
         title: "Error Occurred",
@@ -95,7 +95,7 @@ function ExplorePosts() {
   }, [user]);
 
   useEffect(() => {
-    // console.log(location, defaultCoordinates, prevLocation);
+    // // console.log(location, defaultCoordinates, prevLocation);
     if (
       prevLocation &&
       (prevLocation.lat !== location.lat || prevLocation.lng !== location.lng)
@@ -118,7 +118,7 @@ function ExplorePosts() {
   // to reset the filters 
   // useEffect(() => {
   //   const prevPath = pathRef.current;
-  //   console.log(prevPath, pathRef)
+  //   // console.log(prevPath, pathRef)
 
   //   if(prevPath && !prevPath.startsWith("/explore-posts/")) {
   //     ResetFilterData()

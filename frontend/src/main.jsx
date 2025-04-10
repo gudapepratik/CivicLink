@@ -97,7 +97,7 @@ const CheckAuth = ({ children }) => {
 // const SocketProvider = ({ children }) => {
 //   useEffect(() => {
 //     socket.on("connect", () => {
-//       console.log("Connected to server:", socket.id);
+//       // console.log("Connected to server:", socket.id);
 //     });
 
 //     return () => {

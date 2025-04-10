@@ -117,7 +117,7 @@ const changeProductQuantity = asyncHandler(async (req,res) => {
     // get the new quantity and the product id
     const {productId, quantity} = req.body
     // get the user id
-    console.log('asf')
+    // console.log('asf')
     const userId = req.user?._id
     // validate the product id and quantity
     if (!mongoose.Types.ObjectId.isValid(productId)) throw new ApiError(400, "Invalid Product ID")
@@ -163,7 +163,7 @@ const changeProductSize = asyncHandler(async (req,res) => {
             size: size
         }
     )
-    console.log(CartItem)
+    // console.log(CartItem)
 
     if(!cartItem) throw new ApiError(200, "Product does not exists in cart")
 

@@ -8,13 +8,13 @@ import { useNavigate } from 'react-router'
 import StatusButton from '../StatusButtons/StatusButton'
 
 function DepartmentUpdate({onDeleteComment, updateDetails, setReloadTrigger}) {
-    // console.log("asf")
+    // // console.log("asf")
   const user = useSelector(state => state.authSlice.user)
 
   const [fileDetails, setFileDetails] = useState([])
 
   const editCommentHandler =async () => {
-    console.log("editing")
+    // console.log("editing")
     ToasterNotification({
       type: "info",
       title: "yet to be implemented"

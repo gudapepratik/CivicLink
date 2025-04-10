@@ -24,7 +24,7 @@ const newDeptUpdate = asyncHandler(async (req,res) => {
         [postId, updatedStatus, remark].some(field => field === "") || !expectedResolutionDate
     ) throw new ApiError(400, "Insufficient data")
 
-    console.log(localDocFiles)
+    // console.log(localDocFiles)
     // upload the images to cloudinary
     let pdfUploadResponse;
     if(localDocFiles.docs) {

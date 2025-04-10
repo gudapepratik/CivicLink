@@ -110,7 +110,7 @@ function PostTabDetails({postDetails, activeTab,newDepartmentUpdate, departmentC
                             setReloadTrigger={setReloadTrigger}
                             />
                         ))}
-                        {departmentComments.length !== 0 &&
+                        {/* {departmentComments.length !== 0 &&
                         departmentComments.map((comment, index) => (
                             <Comment
                             key={index}
@@ -119,7 +119,7 @@ function PostTabDetails({postDetails, activeTab,newDepartmentUpdate, departmentC
                             isAuthorityComment={true}
                             setReloadTrigger={setReloadTrigger}
                             />
-                        ))}
+                        ))} */}
                     </div>
                 ): (
                     <div className="w-full flex flex-col gap-2">
@@ -144,7 +144,7 @@ function PostTabDetails({postDetails, activeTab,newDepartmentUpdate, departmentC
                     <Comment
                         key={index}
                         commentDetails={comment}
-                        isAuthorityComment={false}
+                        // isAuthorityComment={false}
                         onDeleteComment={() => handleDeleteComment(comment)}
                         setReloadTrigger={setReloadTrigger}
                     />

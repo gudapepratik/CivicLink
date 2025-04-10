@@ -97,7 +97,7 @@ const getPostComments = asyncHandler(async (req,res) => {
     // get the Post id
     const {postId} = req.query
     if(!mongoose.isValidObjectId(postId)) throw new ApiError(400, "Invalid post id")
-    
+    console.log("Asf")
     const aggregate = [
         {
             $match: {
@@ -119,6 +119,11 @@ const getPostComments = asyncHandler(async (req,res) => {
                 "userDetails.updatedAt": 0,
                 "userDetails.password": 0,
                 "userDetails.refreshToken": 0,
+            }
+        },
+        {
+            $sort: {
+                createdAt: -1
             }
         }
     ]

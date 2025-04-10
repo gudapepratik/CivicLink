@@ -176,7 +176,7 @@ function Post() {
 
   const fetchComments = async (postId) => {
     try {
-      console.log("here");
+      // console.log("here");
       setDepartmentComments([]);
       setPostComments([]);
 
@@ -186,13 +186,15 @@ function Post() {
 
       const comments = commentsResponse.data.data;
 
-      comments.map((comment) => {
-        if (comment.isDepartmentUpdate) {
-          setDepartmentComments((prev) => [...prev, comment]);
-        } else {
-          setPostComments((prev) => [...prev, comment]);
-        }
-      });
+      setPostComments(comments);
+
+      // comments.map((comment) => {
+      //   if (comment.isDepartmentUpdate) {
+      //     setDepartmentComments((prev) => [...prev, comment]);
+      //   } else {
+      //     setPostComments((prev) => [...prev, comment]);
+      //   }
+      // });
     } catch (error) {
       ToasterNotification({
         type: "warning",
@@ -468,7 +470,6 @@ function Post() {
     }
   }
 
-  const [expandDesc, setExpandDesc] = useState(false)
   const [activeTab, setActiveTab] = useState("Details")
 
   return (

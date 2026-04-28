@@ -52,6 +52,15 @@ app.get('/', (req, res) => {
     res.send("Server is alive!");
 });
 
+// Health check endpoint for cron jobs (Render auto-sleep prevention)
+app.get('/health', (req, res) => {
+    res.status(200).json({
+        status: 'ok',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime()
+    });
+});
+
 // // user router
 import userRouter from './routes/user.routes.js'
 app.use('/api/v1/users',userRouter)

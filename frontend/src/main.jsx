@@ -67,28 +67,28 @@ const router = createBrowserRouter(
   )
 );
 
-const CheckAuth = ({ children }) => {
-  const dispatch = useDispatch();
+  const CheckAuth = ({ children }) => {
+    const dispatch = useDispatch();
 
-  useEffect(() => {
-    const checkToken = async () => {
-      try {
-        const user = await AuthService.getCurrentUser(); // Calls backend to check session
+    useEffect(() => {
+      const checkToken = async () => {
+        try {
+          const user = await AuthService.getCurrentUser(); // Calls backend to check session
 
-        if (user) {
-          dispatch(login(user));
-        } else {
-          dispatch(logout());
+          if (user) {
+            dispatch(login(user));
+          } else {
+            dispatch(logout());
+          }
+        } catch (error) {
+          ErrorHandler(error);
         }
-      } catch (error) {
-        ErrorHandler(error);
-      }
-    };
-    checkToken();
-  }, [dispatch]);
+      };
+      checkToken();
+    }, [dispatch]);
 
-  return children;
-};
+    return children;
+  };
 
 // socket io trails
 // const SocketContext = createContext(null);

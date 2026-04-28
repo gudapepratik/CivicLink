@@ -90,7 +90,6 @@ app.use((err, req, res, next) => {
         });
     } else {
         const { statusCode, message, errors} = err;
-        console.log(err, "asfasagaga")
         res.status(500).json({
             success: false,
             errors,

@@ -101,7 +101,7 @@ const statusFilters = [
 
 export const SearchFilterProvider = ({ children }) => {
 
-    const [filterTrigger, setFilterTrigger] = useState(false);
+  const [filterTrigger, setFilterTrigger] = useState(false);
 
   const [filterData, setFilterData] = useState({
     status: ["all"],

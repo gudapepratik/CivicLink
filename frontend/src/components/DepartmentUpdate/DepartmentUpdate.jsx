@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Tooltip from '../MenuList/MenuList'
 import { RiAddLine, RiCalendar2Line, RiDownloadLine, RiEdit2Line, RiFileFill } from '@remixicon/react'
 import { ToasterNotification } from '@/utils/ToastNotification/ToastNotification'
@@ -34,31 +34,48 @@ function DepartmentUpdate({onDeleteComment, updateDetails, setReloadTrigger}) {
   ]
 
 
-    const getFileDetails = async () => {
+    useEffect(() => {
+      let isActive = true
+
+      const getFileDetails = async () => {
+        if (!updateDetails?.docs?.length) {
+          if (isActive) {
+            setFileDetails([])
+          }
+          return
+        }
+
         const fileData = await Promise.all(
-            updateDetails.docs.map(async (doc, index) => {
-                const response = await fetch(doc.publicUrl, { method: "HEAD" });
+          updateDetails.docs.map(async (doc) => {
+            const response = await fetch(doc.publicUrl, { method: "HEAD" });
 
-                if (!response.ok) {
-                    console.error("Error fetching file details:", response.statusText);
-                    return;
-                }
-                
-                const fileSize = response.headers.get("content-length"); // File size in bytes
-                const fileName = doc.publicUrl.split("/").pop()|| ""; // Extract filename from URL
+            if (!response.ok) {
+              console.error("Error fetching file details:", response.statusText);
+              return null;
+            }
+                    
+            const fileSize = response.headers.get("content-length");
+            const fileName = doc.publicUrl.split("/").pop() || "";
 
-                return {
-                    url: doc.publicUrl,
-                    fileName: fileName || "",
-                    fileSize: fileSize ? (fileSize / 1024).toFixed(2) + " KB" : "Unknown"
-                }
-            })
+            return {
+              url: doc.publicUrl,
+              fileName,
+              fileSize: fileSize ? (fileSize / 1024).toFixed(2) + " KB" : "Unknown"
+            }
+          })
         )
 
-        setFileDetails(fileData)
-    }
+        if (isActive) {
+          setFileDetails(fileData.filter(Boolean))
+        }
+      }
 
-    getFileDetails();
+      getFileDetails()
+
+      return () => {
+        isActive = false
+      }
+    }, [updateDetails?.docs])
 
     const navigate = useNavigate()
     const downloadPdf = (fileData) => {
